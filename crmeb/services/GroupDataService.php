@@ -65,14 +65,16 @@ class GroupDataService
                 return [];
             }
         };
+        
         try {
             $cacheName = $limit ? "data_{$config_name}_{$limit}" : "data_{$config_name}";
-
+            return $callable();
+            /*
             if ($isCaChe)
                 return $callable();
 
             return CacheService::get($cacheName, $callable);
-
+            */
         } catch (\Throwable $e) {
             return $callable();
         }

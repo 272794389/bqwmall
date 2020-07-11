@@ -79,4 +79,66 @@ class StoreService extends BaseModel
     public static function getStoreServiceOrderNotice(){
         return self::where('status',1)->where('notify',1)->column('uid','uid');
     }
+    
+    // 获取管理的商家
+    public static function getAdminMerList($uid){
+        return self::where('is_admin',1)->where('uid',$uid)->column('store_id','store_id');
+    }
+    
+    
+    // 是否有核销的权限
+    public static function isCanCheck($merId, $userId)
+    {
+        $rs1 = self::where('store_id', $merId)->where('uid', $userId)->where('is_check', 1)->find();
+        $rs2 = self::where('store_id', $merId)->where('uid', $userId)->where('is_admin', 1)->find();
+        return !empty($rs1) || !empty($rs2);
+    }
+    
+    
+    // 是否有核销的权限
+    public static function isOnlyCanCheck($userId)
+    {
+        $rs1 = self::where('uid', $userId)->where('is_check', 1)->find();
+        return !empty($rs1);
+    }
+    
+    
+    public static function isCanOrder($userId){
+        $rs1 = self::where('uid', $userId)->where('is_admin', 1)->find();
+        return !empty($rs1);
+    }
+    
+    /**
+     * 取得当商户的全部客服
+     * @param $merId
+     * @return \think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function getMerService($merId){
+        return self::where('store_id',  $merId)->select();
+    }
+    
+    // 设置管理员
+    public static function setAdmin($id, $status)
+    {
+        return self::where('id', $id)->update([
+            'is_admin' => $status
+        ]);
+    
+    }
+    
+    // 设置核销员
+    public static function setCheck($id, $status)
+    {
+        return self::where('id', $id)->update([
+            'is_check' => $status
+        ]);
+    }
+    
+    public static function isBind($merId,$userId){
+        $rs1 = self::where('mer_id', $merId)->where('uid', $userId)->find();
+        return !empty($rs1);
+    }
 }

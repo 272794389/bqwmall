@@ -39,8 +39,8 @@ class SystemStore extends AuthController
     public function index()
     {
         $type = $this->request->param('type');
-        $show = SystemStoreModel::where('is_show', 1)->where('is_del', 0)->count();//显示中的门店
-        $hide = SystemStoreModel::where('is_show', 0)->count();//隐藏的门店
+        $show = SystemStoreModel::where('status', 1)->where('is_del', 0)->count();//显示中的门店
+        $hide = SystemStoreModel::where('status', 0)->count();//隐藏的门店
         $recycle = SystemStoreModel::where('is_del', 1)->count();//删除的门店
         if ($type == null) $type = 1;
         $this->assign(compact('type', 'show', 'hide', 'recycle'));
@@ -96,6 +96,23 @@ class SystemStore extends AuthController
             return JsonService::successful($is_show == 1 ? '设置显示成功' : '设置隐藏成功');
         } else {
             return JsonService::fail($is_show == 1 ? '设置显示失败' : '设置隐藏失败');
+        }
+    }
+    
+    /**
+     * 设置单个门店是否审核
+     * @param string $is_show
+     * @param string $id
+     * @return json
+     */
+    public function set_status($status = '', $id = '')
+    {
+        ($status == '' || $id == '') && JsonService::fail('缺少参数');
+        $res = SystemStoreModel::where(['id' => $id])->update(['status' => (int)$status]);
+        if ($res) {
+            return JsonService::successful($status == 1 ? '审核成功' : '恢复待审核成功');
+        } else {
+            return JsonService::fail($status == 1 ? '审核失败' : '设置待审核失败');
         }
     }
 

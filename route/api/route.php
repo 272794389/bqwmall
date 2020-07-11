@@ -152,6 +152,20 @@ Route::group(function () {
     Route::post('recharge/routine', 'user.UserRechargeController/routine')->name('rechargeRoutine');//小程序充值
     Route::post('recharge/wechat', 'user.UserRechargeController/wechat')->name('rechargeWechat');//公众号充值
     Route::get('recharge/index','user.UserRechargeController/index')->name('rechargeQuota');//充值余额选择
+    // 商家类
+    Route::post('merchant/apply', 'admin.MerchantController/apply')->name('rechargeRoutine');// 商家申请
+    Route::get('merchant/home', 'admin.MerchantController/home')->name('rechargeRoutine');// 商家主页
+    Route::get('merchant/service', 'admin.MerchantController/serviceList')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/serviceAdd', 'admin.MerchantController/serviceAdd')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/serviceDel', 'admin.MerchantController/serviceDel')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/serviceCheck', 'admin.MerchantController/serviceCheck')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/serviceAdmin', 'admin.MerchantController/serviceAdmin')->name('rechargeRoutine');// 商家主页
+    Route::get('merchant/store', 'admin.MerchantController/storeList')->name('rechargeRoutine');// 商家主页
+    Route::get('merchant/storeInfo', 'admin.MerchantController/storeInfo')->name('rechargeRoutine');// 商家主页
+    
+    Route::post('merchant/storeAdd', 'admin.MerchantController/storeAdd')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/storeDel', 'admin.MerchantController/storeDel')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/serviceShow', 'admin.MerchantController/serviceShow')->name('rechargeRoutine');// 商家主页
     //会员等级类
     Route::get('menu/user', 'PublicController/menu_user')->name('menuUser');//个人中心菜单
     Route::get('user/level/detection', 'user.UserLevelController/detection')->name('userLevelDetection');//检测用户是否可以成为会员

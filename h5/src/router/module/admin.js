@@ -59,5 +59,84 @@ export default [
       backgroundColor: "#fff"
     },
     component: () => import("@views/orderAdmin/OrderCancellation.vue")
-  }
+  },
+  {
+    path: "/merchant/apply",
+    name: "MerchantApply",
+    meta: {
+      title: "商家申请",
+      keepAlive: true,
+      auth: true,
+      backgroundColor: "#fff"
+    },
+    component: () => import("@views/user/merchant/MerApply.vue")
+  },
+  {
+    path: "/merchant/home",
+    name: "MerchantHome",
+    meta: {
+      title: "商家首页",
+      keepAlive: true,
+      auth: true,
+    },
+    component: () => import("@views/user/merchant/MerHome.vue")
+  },
+  {
+    path: "/merchant/service/:id",
+    name: "MerchantService",
+    meta: {
+      title: "客服管理",
+      keepAlive: true,
+      auth: true,
+    },
+    component: () => import("@views/user/merchant/MerService.vue")
+  },
+  {
+    path: "/merchant/store/:id",
+    name: "MerchantStore",
+    meta: {
+      title: "门店管理",
+      keepAlive: true,
+      auth: true,
+    },
+    component: () => import("@views/user/merchant/MerStore.vue")
+  },
+  {
+    path: "/merchant/storeAdd/:id",
+    name: "MerchantStoreAdd",
+    meta: {
+      title: "门店新增",
+      keepAlive: true,
+      auth: true,
+      backgroundColor: "#fff"
+    },
+    component: () => import("@views/user/merchant/AddStore.vue")
+  },
+
+  {
+    path: "/merchant/product",
+    name: "MerchantProduct",
+    meta: {
+      title: "门店管理",
+      keepAlive: true,
+      auth: true,
+      backgroundColor: "#fff"
+    },
+    component: () => import("@views/user/merchant/MerProduct.vue")
+  },
+  {
+    path: "/merchant/serviceAdd/:id",
+    name: "MerchantService",
+    meta: {
+      title: "客服管理",
+      keepAlive: true,
+      auth: true,
+      backgroundColor: "#fff"
+    },
+    component: () => import("@views/user/merchant/AddService.vue")
+  },
+  
+  
+  
+  
 ];

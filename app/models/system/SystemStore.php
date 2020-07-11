@@ -163,5 +163,28 @@ class SystemStore extends BaseModel
         }
         return $list;
     }
+    
+    public static function getStoreList($merId){
+        return self::where('mer_id',  $merId)->select();
+    }
+    
+    public static function setShow($id, $status)
+    {
+        return self::where('id', $id)->update([
+            'is_show' => $status
+        ]);
+    }
+    
+    public static function setDel($id, $status)
+    {
+        return self::where('id', $id)->update([
+            'is_del' => $status
+        ]);
+    }
+    
+    public static function getUserMer($uid){
+        return self::where('user_id',$uid)->find();
+    }
+    
 
 }

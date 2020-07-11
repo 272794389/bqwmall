@@ -118,10 +118,10 @@ class SystemStore extends BaseModel
     {
         switch ((int)$type) {
             case 1:
-                $data = ['is_show' => 1, 'is_del' => 0];
+                $data = ['status' => 1, 'is_del' => 0];
                 break;
             case 2:
-                $data = ['is_show' => 0, 'is_del' => 0];
+                $data = ['status' => 0, 'is_del' => 0];
                 break;
             case 3:
                 $data = ['is_del' => 1];

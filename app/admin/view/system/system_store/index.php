@@ -7,13 +7,13 @@
     <div class="layui-tab layui-tab-brief" lay-filter="tab">
         <ul class="layui-tab-title">
             <li lay-id="list" {eq name='type' value='1'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">显示中的门店({$show})</a>
+                <a href="{eq name='type' value='1'}javascript:;{else}{:Url('index',['type'=>1])}{/eq}">经营中的商家({$show})</a>
             </li>
             <li lay-id="list" {eq name='type' value='2'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['type'=>2])}{/eq}">隐藏中的门店({$hide})</a>
+                <a href="{eq name='type' value='2'}javascript:;{else}{:Url('index',['type'=>2])}{/eq}">待审核的商家({$hide})</a>
             </li>
             <li lay-id="list" {eq name='type' value='3'}class="layui-this" {/eq}>
-                <a href="{eq name='type' value='3'}javascript:;{else}{:Url('index',['type'=>3])}{/eq}">回收站的门店({$recycle})</a>
+                <a href="{eq name='type' value='3'}javascript:;{else}{:Url('index',['type'=>3])}{/eq}">回收站的商家({$recycle})</a>
             </li>
         </ul>
     </div>
@@ -24,9 +24,9 @@
                     <form class="layui-form layui-form-pane" action="">
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">门店名称</label>
+                                <label class="layui-form-label">商家名称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="name" class="layui-input" placeholder="请输入门店名称,关键字,编号">
+                                    <input type="text" name="name" class="layui-input" placeholder="请输入商家名称,关键字,编号">
                                     <input type="hidden" name="type" value="{$type}">
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                 <div class="layui-card-body">
                     <div class="layui-btn-container">
                         <button class="layui-btn layui-btn-sm"
-                                onclick="$eb.createModalFrame(this.innerText,'{:Url('add')}',{h:700,w:1100})">添加门店
+                                onclick="$eb.createModalFrame(this.innerText,'{:Url('add')}',{h:700,w:1100})">添加商家
                         </button>
                     </div>
                     <table class="layui-hide" id="List" lay-filter="List"></table>
@@ -60,18 +60,18 @@
                         {{d.address}} {{d.detailed_address}}
                     </script>
                     <script type="text/html" id="checkboxstatus">
-                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_show'
-                               lay-text='显示|隐藏' {{ d.is_show== 1 ? 'checked' : '' }}>
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
+                               lay-text='通过|待审核' {{ d.status== 1 ? 'checked' : '' }}>
                     </script>
                     <script type="text/html" id="act">
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
-                            编辑门店
+                            编辑商家
                         </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='del'>
                             {{# if(d.is_del){ }}
-                            恢复门店
+                            恢复商家
                             {{# }else{ }}
-                            删除门店
+                            删除显示
                             {{# } }}
                         </button>
                     </script>
@@ -88,13 +88,16 @@
     layList.tableList('List', "{:Url('list',['type'=>$type])}", function () {
         return [
             {field: 'id', title: 'ID', sort: true, event: 'id', width: '4%'},
-            {field: 'image', title: '门店图片', templet: '#headimgurl', width: '6%'},
+            {field: 'image', title: '商家图片', templet: '#headimgurl', width: '6%'},
+            {field: 'mer_name', title: '商家名称', width: '10%'},
+            {field: 'link_name', title: '商家联系人', width: '6%'},
+            {field: 'link_phone', title: '商家电话', width: '10%'},
             {field: 'name', title: '门店名称', width: '10%'},
-            {field: 'phone', title: '门店电话', width: '10%'},
+            {field: 'phone', title: '门店电话', width: '8%'},
             {field: 'address', title: '地址', templet: '#address'},
-            {field: 'day_time', title: '营业时间', width: '15%'},
+            {field: 'day_time', title: '营业时间', width: '10%'},
             // {field: 'valid_time', title: '核销有效日期', width: '11%'},
-            {field: 'status', title: '是否显示', templet: "#checkboxstatus", width: '8%'},
+            {field: 'status', title: '状态', templet: "#checkboxstatus", width: '8%'},
             {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '14%'},
         ];
     });
@@ -108,12 +111,12 @@
         location.href=layList.U({c:'system.system_store',a:'list',q:where});
     })
     //门店是否显示
-    layList.switch('is_show', function (odj, value) {
+    layList.switch('status', function (odj, value) {
         if (odj.elem.checked == true) {
             layList.baseGet(layList.Url({
                 c: 'system.system_store',
-                a: 'set_show',
-                p: {is_show: 1, id: value}
+                a: 'set_status',
+                p: {status: 1, id: value}
             }), function (res) {
                 layList.msg(res.msg, function () {
                     layList.reload();
@@ -122,8 +125,8 @@
         } else {
             layList.baseGet(layList.Url({
                 c: 'system.system_store',
-                a: 'set_show',
-                p: {is_show: 0, id: value}
+                a: 'set_status',
+                p: {status: 0, id: value}
             }), function (res) {
                 layList.msg(res.msg, function () {
                     layList.reload();
