@@ -65,6 +65,16 @@ export function cancelOrder(id) {
   return request.post("/order/cancel", { id });
 }
 
+
+/**
+ * 上下架商品
+ * @returns {*}
+ */
+export function cancelProduct(id) {
+  return request.post("/merchant/cancel", { id });
+}
+
+
 /**
  * 订单详情
  * @returns {*}

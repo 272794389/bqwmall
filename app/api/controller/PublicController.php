@@ -97,7 +97,7 @@ class PublicController
         $vipOpen = is_string($vipOpen) ? (int)$vipOpen : $vipOpen;
         foreach ($menusInfo as $key => &$value) {
             $value['pic'] = set_file_url($value['pic']);
-            /*
+            
             if ($value['id'] == 137 && !(intval(sys_config('store_brokerage_statu')) == 2 || $user->is_promoter == 1))
                 unset($menusInfo[$key]);
             if ($value['id'] == 174 && !StoreService::orderServiceStatus($user->uid))
@@ -111,7 +111,7 @@ class PublicController
             if ($value['wap_url'] == '/user/vip' && !$vipOpen)
                 unset($menusInfo[$key]);
             if ($value['wap_url'] == '/customer/index' && !StoreService::orderServiceStatus($user->uid))
-                unset($menusInfo[$key]);*/
+                unset($menusInfo[$key]);
         }
         return app('json')->successful(['routine_my_menus' => $menusInfo]);
     }

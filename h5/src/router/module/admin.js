@@ -112,18 +112,6 @@ export default [
     },
     component: () => import("@views/user/merchant/AddStore.vue")
   },
-
-  {
-    path: "/merchant/product",
-    name: "MerchantProduct",
-    meta: {
-      title: "门店管理",
-      keepAlive: true,
-      auth: true,
-      backgroundColor: "#fff"
-    },
-    component: () => import("@views/user/merchant/MerProduct.vue")
-  },
   {
     path: "/merchant/serviceAdd/:id",
     name: "MerchantService",
@@ -135,8 +123,14 @@ export default [
     },
     component: () => import("@views/user/merchant/AddService.vue")
   },
-  
-  
-  
-  
+  {
+	    path: "/merchant/plist/:type?",
+	    name: "MerchantProduct",
+	    meta: {
+	      title: "商品管理",
+	      keepAlive: false,
+	      auth: true
+	    },
+	    component: () => import("@views/user/merchant/MerProduct.vue")
+	  },
 ];

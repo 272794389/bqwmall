@@ -9,6 +9,8 @@ namespace app\models\store;
 
 use app\admin\model\store\StoreProductAttrValue as StoreProductAttrValueModel;
 use app\models\system\SystemUserLevel;
+use app\models\system\SystemStore;
+
 use app\models\user\UserLevel;
 use crmeb\basic\BaseModel;
 use crmeb\services\GroupDataService;
@@ -80,6 +82,76 @@ class StoreProduct extends BaseModel
     public static function validWhere()
     {
         return self::where('is_del', 0)->where('is_show', 1)->where('mer_id', 0);
+    }
+    
+    
+    /**
+     * 商品统计数据
+     * @param $page
+     * @param $limit
+     * @return array
+     */
+    public static function getProductData($store_id)
+    {
+        $model = new self;
+        $model = $model->field('count(id) as pcount');
+        $model = $model->where('is_show', 1);
+        $model = $model->where('store_id', $store_id);
+        $proinfo = $model->find();
+         $model = new self;
+         $model = $model->field('count(id) as count');
+         $model = $model->where('is_show', 0);
+         $model = $model->where('store_id', $store_id);
+         $xproinfo = $model->find();
+         $proinfo['xcount'] = $xproinfo['count'];
+        return ['proinfo'=>$proinfo];
+    }
+    
+    /**
+     * 上下架商品
+     * @param string product_id 商品id
+     * @param $uid
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function cancelProduct($order_id, $uid)
+    {
+        $product = self::where('id', $order_id)->find();
+        if (!$product) return self::setErrorInfo('没有查到此商品');
+        $store_id = $product['store_id'];
+        $is_show = $product['is_show'];
+        if($is_show>0){
+            $is_show=0;
+        }else{
+            $is_show=1;
+        }
+        $storeinfo = SystemStore::where('id', $store_id)->where('user_id', $uid)->find();
+        if (!$storeinfo) return self::setErrorInfo('无权限操作');
+        $product->is_show = $is_show;
+        if($product->save()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    
+    /**
+     * 前台订单管理订单列表获取
+     * @param $where
+     * @return mixed
+     */
+    public static function productList($uid,$where)
+    {
+        $model = new self;
+        $merList =   StoreService::getAdminMerList($uid);
+        $model = $model->where('store_id', 'in', $merList);
+        $model = $model->where('is_show', $where['type']);
+        $model = $model->order('id desc');
+        $data = ($data = $model->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
+        return $data;
     }
 
     public static function getProductList($data, $uid)

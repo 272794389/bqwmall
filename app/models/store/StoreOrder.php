@@ -1295,24 +1295,25 @@ class StoreOrder extends BaseModel
      * 获取 今日 昨日 本月 订单金额
      * @return mixed
      */
-    public static function getOrderTimeData()
+    public static function getOrderTimeData($uid)
     {
         $to_day = strtotime(date('Y-m-d'));//今日
         $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
         $now_month = strtotime(date('Y-m'));//本月
+        $merList =   StoreService::getAdminMerList($uid);
         //今日成交额
 //        $data['todayPrice'] = (float)number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
-        $data['todayPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['todayPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1) ->where('store_id','in', $merList)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //今日订单数
-        $data['todayCount'] = self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('refund_status', 0)->count();
+        $data['todayCount'] = self::where('is_del', 0)->where('pay_time', '>=', $to_day)->where('paid', 1) ->where('store_id','in', $merList)->where('refund_status', 0)->count();
         //昨日成交额
-        $data['proPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['proPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1) ->where('store_id','in', $merList)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //昨日订单数
-        $data['proCount'] = self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('refund_status', 0)->count();
+        $data['proCount'] = self::where('is_del', 0)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1) ->where('store_id','in', $merList)->where('refund_status', 0)->count();
         //本月成交额
-        $data['monthPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
+        $data['monthPrice'] = number_format(self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1) ->where('store_id','in', $merList)->where('refund_status', 0)->value('sum(pay_price)'), 2) ?? 0;
         //本月订单数
-        $data['monthCount'] = self::where('is_del', 0)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('refund_status', 0)->count();
+        $data['monthCount'] = self::where('is_del', 0)->where('pay_time', '>=', $now_month) ->where('store_id','in', $merList)->where('paid', 1)->where('refund_status', 0)->count();
         return $data;
     }
 
@@ -1348,24 +1349,25 @@ class StoreOrder extends BaseModel
      * @param $uid
      * @return mixed
      */
-    public static function getOrderDataAdmin()
+    public static function getOrderDataAdmin($uid)
     {
+        $merList =   StoreService::getAdminMerList($uid);
         //订单支付没有退款 数量
-        $data['order_count'] = self::where('is_del', 0)->where('paid', 1)->where('refund_status', 0)->count();
+        $data['order_count'] = self::where('is_del', 0)->where('store_id','in', $merList)->where('paid', 1)->where('refund_status', 0)->count();
         //订单支付没有退款 支付总金额
-        $data['sum_price'] = self::where('is_del', 0)->where('paid', 1)->where('refund_status', 0)->sum('pay_price');
+        $data['sum_price'] = self::where('is_del', 0)->where('store_id','in', $merList)->where('paid', 1)->where('refund_status', 0)->sum('pay_price');
         //订单待支付 数量
-        $data['unpaid_count'] = self::statusByWhere(0, 0)->where('is_del', 0)->count();
+        $data['unpaid_count'] = self::statusByWhere(0, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         //订单待发货 数量
-        $data['unshipped_count'] = self::statusByWhere(1, 0)->where('is_del', 0)->count();
+        $data['unshipped_count'] = self::statusByWhere(1, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         //订单待收货 数量
-        $data['received_count'] = self::statusByWhere(2, 0)->where('is_del', 0)->count();
+        $data['received_count'] = self::statusByWhere(2, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         //订单待评价 数量
-        $data['evaluated_count'] = self::statusByWhere(3, 0)->where('is_del', 0)->count();
+        $data['evaluated_count'] = self::statusByWhere(3, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         //订单已完成 数量
-        $data['complete_count'] = self::statusByWhere(4, 0)->where('is_del', 0)->count();
+        $data['complete_count'] = self::statusByWhere(4, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         //订单退款 数量
-        $data['refund_count'] = self::statusByWhere(-3, 0)->where('is_del', 0)->count();
+        $data['refund_count'] = self::statusByWhere(-3, 0)->where('is_del', 0)->where('store_id','in', $merList)->count();
         return $data;
     }
 
@@ -1595,14 +1597,16 @@ class StoreOrder extends BaseModel
      * @param $limit
      * @return array
      */
-    public static function getOrderDataPriceCount($page, $limit, $start, $stop)
+    public static function getOrderDataPriceCount($uid,$page, $limit, $start, $stop)
     {
+        $merList =   StoreService::getAdminMerList($uid);
         if (!$limit) return [];
         $model = new self;
         if ($start != '' && $stop != '') $model = $model->where('pay_time', '>', $start)->where('pay_time', '<=', $stop);
         $model = $model->field('sum(pay_price) as price,count(id) as count,FROM_UNIXTIME(pay_time, \'%m-%d\') as time');
         $model = $model->where('is_del', 0);
         $model = $model->where('paid', 1);
+        $model = $model->where('store_id', "in",$merList );
         $model = $model->where('refund_status', 0);
         $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
         $model = $model->order('pay_time DESC');
@@ -1949,9 +1953,9 @@ class StoreOrder extends BaseModel
      * @param $stop
      * @return float
      */
-    public static function getOrderTimeBusinessVolumePrice($start, $stop)
+    public static function getOrderTimeBusinessVolumePrice($start, $stop,$merList)
     {
-        return self::where('is_del', 0)->where('paid', 1)->where('refund_status', 0)->where('add_time', '>=', $start)->where('add_time', '<', $stop)->sum('pay_price');
+        return self::where('is_del', 0)->where('paid', 1)->where('store_id','in', $merList)->where('refund_status', 0)->where('add_time', '>=', $start)->where('add_time', '<', $stop)->sum('pay_price');
     }
 
     /**
@@ -1960,9 +1964,9 @@ class StoreOrder extends BaseModel
      * @param $stop
      * @return float
      */
-    public static function getOrderTimeBusinessVolumeNumber($start, $stop)
+    public static function getOrderTimeBusinessVolumeNumber($start, $stop,$merList)
     {
-        return self::where('is_del', 0)->where('paid', 1)->where('refund_status', 0)->where('add_time', '>=', $start)->where('add_time', '<', $stop)->count();
+        return self::where('is_del', 0)->where('paid', 1)->where('store_id','in', $merList)->where('refund_status', 0)->where('add_time', '>=', $start)->where('add_time', '<', $stop)->count();
     }
 
     /**
@@ -1971,12 +1975,13 @@ class StoreOrder extends BaseModel
      * @param $stop  结束时间
      * @return mixed
      */
-    public static function chartTimePrice($start, $stop)
+    public static function chartTimePrice($start, $stop,$merList)
     {
         $model = new self;
         $model = $model->field('sum(pay_price) as num,FROM_UNIXTIME(add_time, \'%Y-%m-%d\') as time');
         $model = $model->where('is_del', 0);
         $model = $model->where('paid', 1);
+        $model = $model->where('store_id','in', $merList);
         $model = $model->where('refund_status', 0);
         $model = $model->where('add_time', '>=', $start);
         $model = $model->where('add_time', '<', $stop);
@@ -1991,12 +1996,13 @@ class StoreOrder extends BaseModel
      * @param $stop  结束时间
      * @return mixed
      */
-    public static function chartTimeNumber($start, $stop)
+    public static function chartTimeNumber($start, $stop,$merList)
     {
         $model = new self;
         $model = $model->field('count(id) as num,FROM_UNIXTIME(add_time, \'%Y-%m-%d\') as time');
         $model = $model->where('is_del', 0);
         $model = $model->where('paid', 1);
+        $model = $model->where('store_id','in', $merList);
         $model = $model->where('refund_status', 0);
         $model = $model->where('add_time', '>=', $start);
         $model = $model->where('add_time', '<', $stop);

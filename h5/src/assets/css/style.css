@@ -1652,6 +1652,11 @@ border-radius:0.3rem;color:#fff;line-height:0.5rem;text-align:center;bottom:0.17
 }
 
 
+/*product列表样式*/
+.productsytle{padding-top: 0.2rem;border-bottom: 1px solid #eee;padding-bottom: 0.2rem;}
+.doxia{background: #E93323;color: #fff;text-align: center;font-size: 0.2rem;line-height: 0.35rem;border-radius:0.5rem;}
+.doshang{background: #3fab03;color: #fff;text-align: center;font-size: 0.2rem;line-height: 0.35rem;border-radius:0.5rem;}
+
 
 
 

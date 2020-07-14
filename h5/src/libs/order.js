@@ -1,4 +1,4 @@
-import { cancelOrder, takeOrder, delOrder, payOrder } from "@api/order";
+import { cancelOrder, takeOrder, delOrder, payOrder,cancelProduct } from "@api/order";
 import dialog from "@utils/dialog";
 import { pay } from "@libs/wechat";
 
@@ -20,6 +20,27 @@ export function cancelOrderHandle(orderId) {
     });
   });
 }
+
+export function cancelProductHandle(product_id) {
+	  return new Promise((resolve, reject) => {
+	    dialog.confirm({
+	      mes: "确认操作商品?",
+	      opts() {
+	    	  cancelProduct(product_id)
+	          .then(res => {
+	            dialog.success("操作成功");
+	            resolve(res);
+	          })
+	          .catch(err => {
+	            dialog.error("操作失败");
+	            reject(err);
+	          });
+	      }
+	    });
+	  });
+	}
+
+
 
 export function takeOrderHandle(orderId) {
   return new Promise((resolve, reject) => {

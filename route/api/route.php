@@ -166,6 +166,11 @@ Route::group(function () {
     Route::post('merchant/storeAdd', 'admin.MerchantController/storeAdd')->name('rechargeRoutine');// 商家主页
     Route::post('merchant/storeDel', 'admin.MerchantController/storeDel')->name('rechargeRoutine');// 商家主页
     Route::post('merchant/serviceShow', 'admin.MerchantController/serviceShow')->name('rechargeRoutine');// 商家主页
+    Route::get('merchant/data', 'admin.MerchantController/data')->name('productDataRoutine');// 商家主页
+    Route::get('merchant/plist', 'admin.MerchantController/plist')->name('rechargeRoutine');// 商家主页
+    Route::post('merchant/cancel', 'admin.MerchantController/cancel')->name('productCancel'); //上下架商品
+    
+    
     //会员等级类
     Route::get('menu/user', 'PublicController/menu_user')->name('menuUser');//个人中心菜单
     Route::get('user/level/detection', 'user.UserLevelController/detection')->name('userLevelDetection');//检测用户是否可以成为会员

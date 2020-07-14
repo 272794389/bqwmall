@@ -33,8 +33,8 @@ class StoreOrderController
         $uid = $request->uid();
         if (!StoreService::orderServiceStatus($uid))
             return app('json')->fail('权限不足');
-        $dataCount = StoreOrder::getOrderDataAdmin();
-        $dataPrice = StoreOrder::getOrderTimeData();
+        $dataCount = StoreOrder::getOrderDataAdmin($uid);
+        $dataPrice = StoreOrder::getOrderTimeData($uid);
         $data = array_merge($dataCount, $dataPrice);
         return app('json')->successful($data);
     }
@@ -56,7 +56,7 @@ class StoreOrderController
             ['stop', '']
         ], $request, true);
         if (!$limit) return app('json')->successful([]);
-        $data = StoreOrder::getOrderDataPriceCount($page, $limit, $start, $stop);
+        $data = StoreOrder::getOrderDataPriceCount($uid,$page, $limit, $start, $stop);
         if ($data) return app('json')->successful($data->toArray());
         return app('json')->successful([]);
     }
@@ -278,10 +278,11 @@ class StoreOrderController
         }
         $space = bcsub($stop, $start, 0);//间隔时间段
         $front = bcsub($start, $space, 0);//第一个时间段
+        $merList =   StoreService::getAdminMerList($uid);
         if ($type == 1) {//销售额
-            $frontPrice = StoreOrder:: getOrderTimeBusinessVolumePrice($front, $start);
-            $afterPrice = StoreOrder:: getOrderTimeBusinessVolumePrice($start, $stop);
-            $chartInfo = StoreOrder::chartTimePrice($start, $stop);
+            $frontPrice = StoreOrder:: getOrderTimeBusinessVolumePrice($front, $start, $merList);
+            $afterPrice = StoreOrder:: getOrderTimeBusinessVolumePrice($start, $stop, $merList);
+            $chartInfo = StoreOrder::chartTimePrice($start, $stop, $merList);
             $data['chart'] = $chartInfo;//营业额图表数据
             $data['time'] = $afterPrice;//时间区间营业额
             $increase = (float)bcsub($afterPrice, $frontPrice, 2); //同比上个时间区间增长营业额
@@ -292,9 +293,9 @@ class StoreOrderController
             $data['increase_time'] = abs($increase); //同比上个时间区间增长营业额
             $data['increase_time_status'] = $increase >= 0 ? 1 : 2; //同比上个时间区间增长营业额增长 1 减少 2
         } else {//订单数
-            $frontNumber = StoreOrder:: getOrderTimeBusinessVolumeNumber($front, $start);
-            $afterNumber = StoreOrder:: getOrderTimeBusinessVolumeNumber($start, $stop);
-            $chartInfo = StoreOrder::chartTimeNumber($start, $stop);
+            $frontNumber = StoreOrder:: getOrderTimeBusinessVolumeNumber($front, $start, $merList);
+            $afterNumber = StoreOrder:: getOrderTimeBusinessVolumeNumber($start, $stop, $merList);
+            $chartInfo = StoreOrder::chartTimeNumber($start, $stop, $merList);
             $data['chart'] = $chartInfo;//订单数图表数据
             $data['time'] = $afterNumber;//时间区间订单数
             $increase = (int)bcsub($afterNumber, $frontNumber, 0); //同比上个时间区间增长订单数
