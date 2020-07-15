@@ -48,7 +48,20 @@ class StoreCategory extends BaseModel
         $count = self::systemPage($where, true)->count();
         return compact('count', 'data');
     }
+    
+    public static function getAllCatList(){
+        $data=($data=self::setWhereList("1")->select()) && count($data) ? $data->toArray():[];
+        $count=self::setWhereList("1")->count();
+        return compact('data','count');
+    
+    }
 
+    public static function setWhereList($where=[]){
+        $model=new self;
+        $model = $model->where('pid','>',0);
+        return $model->field(['*'])->order('id desc');
+    }
+    
     /**
      * @param $where
      * @return array

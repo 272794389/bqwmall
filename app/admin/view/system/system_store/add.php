@@ -14,17 +14,31 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>门店设置</h5>
+                    <h5>商户设置设置</h5>
                 </div>
                 <div id="store-attr" class="mp-form" v-cloak="">
                     <i-Form :label-width="80" style="width: 100%">
                         <template>
-                            <Alert type="warning">除门店简介外其他选项都是必填项</Alert>
+                            <Alert type="warning">除商户简介外其他选项都是必填项</Alert>
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
-                                        <span>门店名称：</span>
-                                        <i-Input placeholder="门店名称" v-model="form.name" style="width: 80%" type="text"></i-Input>
+                                        <span>商户名称：</span>
+                                        <i-Input placeholder="商户名称" v-model="form.mer_name" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <span>所属分类：</span>
+                                <i-select style="width: 80%" v-model="form.cat_id">
+                                    <i-option v-for="cat in catList" :value="cat.id" >{{cat.cate_name}}</i-option>
+                                </i-select>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>门店：</span>
+                                        <i-Input placeholder="门店" v-model="form.name" style="width: 80%" type="text"></i-Input>
                                     </i-Col>
                                 </Row>
                             </Form-Item>
@@ -39,8 +53,24 @@
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
-                                        <span>门店手机号：</span>
-                                        <i-Input placeholder="门店手机号" v-model="form.phone" style="width: 80%" type="text"></i-Input>
+                                        <span>门店电话：</span>
+                                        <i-Input placeholder="门店电话" v-model="form.phone" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>联系人：</span>
+                                        <i-Input placeholder="联系人" v-model="form.link_name" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>联系电话：</span>
+                                        <i-Input placeholder="联系电话" v-model="form.link_phone" style="width: 80%" type="text"></i-Input>
                                     </i-Col>
                                 </Row>
                             </Form-Item>
@@ -59,6 +89,31 @@
                                         <i-Input placeholder="详细地址" v-model="form.detailed_address" style="width: 80%" type="text"></i-Input>
                                     </i-Col>
                                 </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>分成比例%：</span>
+                                        <i-Input placeholder="分成比例%" v-model="form.sett_rate" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>购物积分支付比例%：</span>
+                                        <i-Input placeholder="购物积分支付比例%" v-model="form.give_rate" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <span>商家类别：</span>
+                                <i-select style="width: 80%" v-model="form.belong_t">
+                                    <i-option value="0" >商品中心</i-option>
+                                    <i-option value="1" >网店</i-option>
+                                    <i-option value="2" >周边的店</i-option>
+                                    <i-option value="3" >服务中心</i-option>
+                                </i-select>
                             </Form-Item>
 <!--                            <Form-Item>-->
 <!--                                <Row>-->
@@ -131,6 +186,7 @@
 <script src="{__PLUG_PATH}city.js"></script>
 <script>
     var storeData={:json_encode($store)};
+    var catList={:json_encode($catList)};
     mpFrame.start(function(Vue) {
         $.each(city,function (key,item) {
             city[key].value = item.label;
@@ -150,12 +206,20 @@
                 return {
                     id:storeData.id || 0,
                     addresData:city,
+                    catList:catList,
                     form:{
+                    	mer_name:storeData.mer_name || '',
                         name:storeData.name || '',
+                        cat_id:storeData.cat_id || 0,
                         introduction:storeData.introduction || '',
                         phone:storeData.phone || '',
+                        link_name:storeData.link_name || '',
+                        link_phone:storeData.link_phone || '',
+                        sett_rate:storeData.sett_rate || 0,
+                        give_rate:storeData.give_rate || 0,
                         address:storeData.address || [],
                         image:storeData.image || '',
+                        belong_t:storeData.belong_t || 0,
                         detailed_address:storeData.detailed_address || '',
                         latlng:storeData.latlng || '',
                         valid_time:storeData.valid_time || [],
@@ -210,8 +274,9 @@
                 submit:function () {
                     var that = this;
                     if(!that.form.name) return  $eb.message('error','请填写门店行名称');
+                    if(!that.form.cat_id) return  $eb.message('error','请选择商家所属分类');
                     if(!that.form.phone) return  $eb.message('error','请输入手机号码');
-                    if(!that.isPhone(that.form.phone)) return  $eb.message('error','请输入正确的手机号码');
+                    if(!that.isPhone(that.form.link_phone)) return  $eb.message('error','请输入正确的手机号码');
                     if(!that.form.address) return  $eb.message('error','请选择门店地址');
                     if(!that.form.detailed_address) return  $eb.message('error','请填写门店详细地址');
                     if(!that.form.image) return  $eb.message('error','请选择门店logo');

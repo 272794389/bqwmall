@@ -59,6 +59,18 @@
                     <script type="text/html" id="address">
                         {{d.address}} {{d.detailed_address}}
                     </script>
+                    <script type="text/html" id="belong_t">
+                            {{# if(d.belong_t==0){ }}
+                                                                           商品中心
+                            {{# }else if(d.belong_t==1){ }}
+                                                                           网店
+                            {{# }else if(d.belong_t==2){ }}
+                                                                          周边的店
+                            {{# }else{ }}
+                                                                            服务中心
+                            {{# } }}
+                    </script>
+                    
                     <script type="text/html" id="checkboxstatus">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
                                lay-text='通过|待审核' {{ d.status== 1 ? 'checked' : '' }}>
@@ -89,16 +101,19 @@
         return [
             {field: 'id', title: 'ID', sort: true, event: 'id', width: '4%'},
             {field: 'image', title: '商家图片', templet: '#headimgurl', width: '6%'},
-            {field: 'mer_name', title: '商家名称', width: '10%'},
+            {field: 'mer_name', title: '商家名称', width: '6%'},
             {field: 'link_name', title: '商家联系人', width: '6%'},
-            {field: 'link_phone', title: '商家电话', width: '10%'},
-            {field: 'name', title: '门店名称', width: '10%'},
-            {field: 'phone', title: '门店电话', width: '8%'},
-            {field: 'address', title: '地址', templet: '#address'},
+            {field: 'link_phone', title: '商家电话', width: '8%'},
+            {field: 'name', title: '门店名称', width: '8%'},
+            {field: 'phone', title: '门店电话', width: '6%'},
+            {field: 'address', title: '地址', templet: '#address',width: '12%'},
+            {field: 'belong_t', title: '商户类型', templet: '#belong_t', width: '6%'},
+            {field: 'sett_rate', title: '分成比例%', width: '6%'},
+            {field: 'give_rate', title: '购物积分支付比例%', width: '6%'},
             {field: 'day_time', title: '营业时间', width: '10%'},
             // {field: 'valid_time', title: '核销有效日期', width: '11%'},
-            {field: 'status', title: '状态', templet: "#checkboxstatus", width: '8%'},
-            {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '14%'},
+            {field: 'status', title: '状态', templet: "#checkboxstatus", width: '6%'},
+            {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '10%'},
         ];
     });
     //查询条件

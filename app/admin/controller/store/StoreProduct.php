@@ -22,7 +22,7 @@ use crmeb\services\{
 use crmeb\traits\CurdControllerTrait;
 use think\facade\Route as Url;
 use app\admin\model\system\{
-    SystemAttachment, ShippingTemplates
+    SystemAttachment, ShippingTemplates,SystemStore
 };
 
 
@@ -176,6 +176,8 @@ class StoreProduct extends AuthController
             $menus[] = ['value' => $menu['id'], 'label' => $menu['html'] . $menu['cate_name'], 'disabled' => $menu['pid'] == 0 ? 0 : 1];//,'disabled'=>$menu['pid']== 0];
         }
         $data['tempList'] = ShippingTemplates::order('sort', 'desc')->field(['id', 'name'])->select()->toArray();
+        $data['storeList'] = SystemStore::order('add_time', 'desc')->field(['id', 'name'])->select()->toArray();
+        
         $data['cateList'] = $menus;
         $data['productInfo'] = [];
         if ($id) {
@@ -197,7 +199,7 @@ class StoreProduct extends AuthController
                 }
                 $productInfo['items'] = $result['attr'];
                 $productInfo['attrs'] = $result['value'];
-                $productInfo['attr'] = ['pic' => '', 'price' => 0, 'cost' => 0, 'ot_price' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
+                $productInfo['attr'] = ['pic' => '', 'price' => 0, 'cost' => 0, 'ot_price' => 0,'give_point' => 0,'pay_point' => 0,'sett_rate' => 0,'pay_amount' => 0,'pay_paypoint' => 0,'pay_repeatpoint' => 0,'give_rate' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
             } else {
                 $result = StoreProductAttrResult::getResult($id);
                 $single = isset($result['value'][0]) ? $result['value'][0] : [];
@@ -208,6 +210,13 @@ class StoreProduct extends AuthController
                     'price' => $single['price'] ?? 0,
                     'cost' => $single['cost'] ?? 0,
                     'ot_price' => $single['ot_price'] ?? 0,
+                    'give_point' => $single['give_point'] ?? 0,
+                    'pay_point' => $single['pay_point'] ?? 0,
+                    'sett_rate' => $single['sett_rate'] ?? 0,
+                    'pay_amount' => $single['pay_amount'] ?? 0,
+                    'pay_paypoint' => $single['pay_paypoint'] ?? 0,
+                    'pay_repeatpoint' => $single['pay_repeatpoint'] ?? 0,
+                    'give_rate' => $single['give_rate'] ?? 0,
                     'stock' => $single['stock'] ?? 0,
                     'bar_code' => $single['bar_code'] ?? '',
                     'weight' => $single['weight'] ?? 0,
@@ -257,8 +266,12 @@ class StoreProduct extends AuthController
             ['sales', 0],
             ['ficti', 100],
             ['give_integral', 0],
+            ['plat_rate', 0],
             ['is_show', 0],
             ['temp_id', 0],
+            ['store_id', -1],
+            ['belong_t', 0],
+            ['is_self', 0],
             ['is_hot', 0],
             ['is_benefit', 0],
             ['is_best', 0],
@@ -287,6 +300,15 @@ class StoreProduct extends AuthController
         $data['price'] = min(array_column($detail, 'price'));
         $data['ot_price'] = min(array_column($detail, 'ot_price'));
         $data['cost'] = min(array_column($detail, 'cost'));
+        
+        $data['give_point'] = min(array_column($detail, 'give_point'));
+        $data['pay_point'] = min(array_column($detail, 'pay_point'));
+        $data['sett_rate'] = min(array_column($detail, 'sett_rate'));
+        $data['pay_amount'] = min(array_column($detail, 'pay_amount'));
+        $data['pay_paypoint'] = min(array_column($detail, 'pay_paypoint'));
+        $data['pay_repeatpoint'] = min(array_column($detail, 'pay_repeatpoint'));
+        $data['give_rate'] = min(array_column($detail, 'give_rate'));
+
         $attr = $data['items'];
         unset($data['items'], $data['video'], $data['attrs']);
         if (count($data['cate_id']) < 1) return Json::fail('请选择产品分类');
@@ -524,12 +546,21 @@ class StoreProduct extends AuthController
             sort($item['detail'], SORT_STRING);
             $suk = implode(',', $item['detail']);
             if ($id) {
-                $sukValue = StoreProductAttrValue::where('product_id', $id)->where('type', 0)->where('suk', $suk)->column('bar_code,cost,price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two', 'suk');
+                $sukValue = StoreProductAttrValue::where('product_id', $id)->where('type', 0)->where('suk', $suk)->column('bar_code,cost,price,give_point,pay_point,sett_rate,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two', 'suk');
                 if (!count($sukValue)) {
                     $sukValue[$suk]['pic'] = '';
                     $sukValue[$suk]['price'] = 0;
                     $sukValue[$suk]['cost'] = 0;
                     $sukValue[$suk]['ot_price'] = 0;
+                    
+                    $sukValue[$suk]['give_point'] = 0;
+                    $sukValue[$suk]['pay_point'] = 0;
+                    $sukValue[$suk]['sett_rate'] = 0;
+                    $sukValue[$suk]['pay_amount'] = 0;
+                    $sukValue[$suk]['pay_paypoint'] = 0;
+                    $sukValue[$suk]['pay_repeatpoint'] = 0;
+                    $sukValue[$suk]['give_rate'] = 0;
+                    
                     $sukValue[$suk]['stock'] = 0;
                     $sukValue[$suk]['bar_code'] = '';
                     $sukValue[$suk]['weight'] = 0;
@@ -542,6 +573,13 @@ class StoreProduct extends AuthController
                 $sukValue[$suk]['price'] = 0;
                 $sukValue[$suk]['cost'] = 0;
                 $sukValue[$suk]['ot_price'] = 0;
+                $sukValue[$suk]['give_point'] = 0;
+                $sukValue[$suk]['pay_point'] = 0;
+                $sukValue[$suk]['sett_rate'] = 0;
+                $sukValue[$suk]['pay_amount'] = 0;
+                $sukValue[$suk]['pay_paypoint'] = 0;
+                $sukValue[$suk]['pay_repeatpoint'] = 0;
+                $sukValue[$suk]['give_rate'] = 0;
                 $sukValue[$suk]['stock'] = 0;
                 $sukValue[$suk]['bar_code'] = '';
                 $sukValue[$suk]['weight'] = 0;
@@ -563,6 +601,15 @@ class StoreProduct extends AuthController
             $valueNew[$count]['price'] = $sukValue[$suk]['price'] ? floatval($sukValue[$suk]['price']) : 0;
             $valueNew[$count]['cost'] = $sukValue[$suk]['cost'] ? floatval($sukValue[$suk]['cost']) : 0;
             $valueNew[$count]['ot_price'] = isset($sukValue[$suk]['ot_price']) ? floatval($sukValue[$suk]['ot_price']) : 0;
+            
+            $valueNew[$count]['give_point'] = isset($sukValue[$suk]['give_point']) ? floatval($sukValue[$suk]['give_point']) : 0;
+            $valueNew[$count]['pay_point'] = isset($sukValue[$suk]['pay_point']) ? floatval($sukValue[$suk]['pay_point']) : 0;
+            $valueNew[$count]['sett_rate'] = isset($sukValue[$suk]['sett_rate']) ? floatval($sukValue[$suk]['sett_rate']) : 0;
+            $valueNew[$count]['pay_amount'] = isset($sukValue[$suk]['pay_amount']) ? floatval($sukValue[$suk]['pay_amount']) : 0;
+            $valueNew[$count]['pay_paypoint'] = isset($sukValue[$suk]['pay_paypoint']) ? floatval($sukValue[$suk]['pay_paypoint']) : 0;
+            $valueNew[$count]['pay_repeatpoint'] = isset($sukValue[$suk]['pay_repeatpoint']) ? floatval($sukValue[$suk]['pay_repeatpoint']) : 0;
+            $valueNew[$count]['give_rate'] = isset($sukValue[$suk]['give_rate']) ? floatval($sukValue[$suk]['give_rate']) : 0;
+           
             $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
             $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
             $valueNew[$count]['weight'] = $sukValue[$suk]['weight'] ?? 0;
@@ -575,6 +622,13 @@ class StoreProduct extends AuthController
         $header[] = ['title' => '售价', 'slot' => 'price', 'align' => 'center', 'minWidth' => 120];
         $header[] = ['title' => '成本价', 'slot' => 'cost', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '原价', 'slot' => 'ot_price', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '赠购物积分', 'slot' => 'give_point', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '赠消费积分', 'slot' => 'pay_point', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '分成比例', 'slot' => 'sett_rate', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '支付现金', 'slot' => 'pay_amount', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '支付消费积分', 'slot' => 'pay_paypoint', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '支付重消积分', 'slot' => 'pay_repeatpoint', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '支付购物积分比例', 'slot' => 'give_rate', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '库存', 'slot' => 'stock', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '产品编号', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '重量(KG)', 'slot' => 'weight', 'align' => 'center', 'minWidth' => 140];

@@ -101,6 +101,29 @@
                         <p>分类:{{d.cate_name}}</p>
                         {{# } }}
                     </script>
+                    
+                    <!--商品类型-->
+                    <script type="text/html" id="belong_t">
+                        {{# if(d.belong_t==0){ }}
+                          <p>商品中心</p>
+                        {{# }else if(d.belong_t==1){ }}
+                          <p>网店商品</p>
+                        {{# }else if(d.belong_t==2){ }}
+                          <p>周边的套餐</p>
+                        {{# }else{ }}
+                          <p>服务中心</p>
+                        {{# } }}
+                    </script>
+                    
+                    <!--是否自营-->
+                    <script type="text/html" id="is_self">
+                        {{# if(d.is_self==0){ }}
+                          <p>非自营</p>
+                        {{# }else{ }}
+                          <p>自营</p>
+                        {{# } }}
+                    </script>
+                    
                     <!--操作-->
                     <script type="text/html" id="act">
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
@@ -147,7 +170,10 @@
                     {field: 'id', title: 'ID', sort: true,event:'id',width:'6%'},
                     {field: 'image', title: '商品图片',templet:'#image',width:'10%'},
                     {field: 'store_name', title: '商品名称',templet:'#store_name'},
-                    {field: 'ficti', title: '虚拟销量',edit:'ficti',width:'8%'},
+                    {field: 'ficti', title: '虚拟销量',edit:'ficti',width:'6%'},
+                    {field: 'belong_t', title: '商品类型',templet:"#belong_t",width:'6%'},
+                    {field: 'is_self', title: '是否自营',templet:"#is_self",width:'6%'},
+                    {field: 'plat_rate', title: '平台预留',width:'6%'},
                     {field: 'stock', title: '库存',width:'8%'},
                     {field: 'sort', title: '排序',edit:'sort',width:'6%'},
                     {field: 'sales', title: '销量',sort: true,event:'sales',width:'8%'},

@@ -189,6 +189,20 @@
                                             </div>
                                         </div>
                                     </div>
+                                     <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                    <div class="grid-demo grid-demo-bg1">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">选择商家<i class="red">*</i></label>
+                                            <div class="layui-input-block">
+                                                <select name="store_id" lay-filter="store_id" lay-search>
+                                                    <option value="0">请选择</option>
+                                                    <option :value="item.id" v-for="item in storeList" :selected=" item.id == formData.store_id ? true : false ">{{item.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                     </div>
+                                    </div>
+                                    
                                     <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
@@ -272,6 +286,40 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="layui-row layui-col-space15">
+                                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                            <div class="grid-demo grid-demo-bg1">
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">商品类型</label>
+                                                    <div class="layui-input-block">
+                                                        <input type="radio" name="belong_t" lay-filter="belong_t" value="0" title="商品中心"
+                                                               :checked="formData.belong_t == 0 ? true : false">
+                                                        <input type="radio" name="belong_t" lay-filter="belong_t" value="1" title="网店"
+                                                               :checked="formData.belong_t == 1 ? true : false">
+                                                        <input type="radio" name="belong_t" lay-filter="belong_t" value="2" title="周边的套餐"
+                                                               :checked="formData.belong_t == 2 ? true : false">
+                                                        <input type="radio" name="belong_t" lay-filter="belong_t" value="3" title="服务中心"
+                                                               :checked="formData.belong_t == 3 ? true : false">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row layui-col-space15">
+                                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                            <div class="grid-demo grid-demo-bg1">
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">是否自营</label>
+                                                    <div class="layui-input-block">
+                                                        <input type="radio" name="is_self" lay-filter="is_self" value="0" title="否"
+                                                               :checked="formData.is_self == 0 ? true : false">
+                                                        <input type="radio" name="is_self" lay-filter="is_self" value="1" title="是"
+                                                               :checked="formData.is_self == 1 ? true : false">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
@@ -297,9 +345,16 @@
                                                         <thead>
                                                         <tr>
                                                             <th>图片<i class="red">*</i></th>
+                                                            <th>原价<i class="red">*</i></th>
                                                             <th>售价<i class="red">*</i></th>
                                                             <th>成本价</th>
-                                                            <th>原价<i class="red">*</i></th>
+                                                            <th>赠购物积分</th>
+                                                            <th>赠消费积分</th>
+                                                            <th>分成比例</th>
+                                                            <th>支付现金</th>
+                                                            <th>支付消费积分</th>
+                                                            <th>支付重消积分</th>
+                                                            <th>支付购物积分比例</th>
                                                             <th>库存<i class="red">*</i></th>
                                                             <th>产品编号</th>
                                                             <th>重量(KG)</th>
@@ -319,20 +374,20 @@
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td><input type="text" v-model="formData.attr.price"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.cost"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.ot_price"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.stock"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.bar_code"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.weight"
-                                                                       class="layui-input"></td>
-                                                            <td><input type="text" v-model="formData.attr.volume"
-                                                                       class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.ot_price" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.price"  class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.cost" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.give_point" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.pay_point" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.sett_rate" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.pay_amount" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.pay_paypoint" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.pay_repeatpoint" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.give_rate" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.stock" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.bar_code" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.weight" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.volume" class="layui-input"></td>
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -428,6 +483,13 @@
                                                                 <th>售价<i class="red">*</i></th>
                                                                 <th>成本价</th>
                                                                 <th>原价<i class="red">*</i></th>
+                                                                <th>赠购物积分</th>
+                                                                <th>赠消费积分</th>
+                                                                <th>分成比例</th>
+                                                                <th>支付现金</th>
+                                                                <th>支付消费积分</th>
+                                                                <th>支付重消积分</th>
+                                                                <th>支付购物积分比例</th>
                                                                 <th>库存<i class="red">*</i></th>
                                                                 <th>产品编号</th>
                                                                 <th>重量(KG)</th>
@@ -448,28 +510,20 @@
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td><input type="text" v-model="batchAttr.price"
-                                                                           class="layui-input"></td>
-                                                                <td><input type="text" v-model="batchAttr.cost"
-                                                                           class="layui-input"></td>
-                                                                <td><input type="text" v-model="batchAttr.ot_price"
-                                                                           class="layui-input"></td>
-                                                                <td>
-                                                                    <input type="text" v-model="batchAttr.stock"
-                                                                           class="layui-input">
-                                                                </td>
-                                                                <td>
-                                                                    <input type="text" v-model="batchAttr.bar_code"
-                                                                           class="layui-input">
-                                                                </td>
-                                                                <td>
-                                                                    <input type="text" v-model="batchAttr.weight"
-                                                                           class="layui-input">
-                                                                </td>
-                                                                <td>
-                                                                    <input type="text" v-model="batchAttr.volume"
-                                                                           class="layui-input">
-                                                                </td>
+                                                                <td><input type="text" v-model="batchAttr.price" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.cost" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.ot_price" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.give_point" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.pay_point" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.sett_rate" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.pay_amount" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.pay_paypoint" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.pay_repeatpoint" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.give_rate" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.stock" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.bar_code" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.weight" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.volume" class="layui-input"> </td>
                                                                 <td>
                                                                     <button class="layui-btn layui-btn-sm" type="button"
                                                                             @click="batchAdd">添加
@@ -510,26 +564,20 @@
                                                                         </div>
                                                                     </div>
                                                                 </td>
-                                                                <td><input type="number" v-model="item.price"
-                                                                           class="layui-input"></td>
-                                                                <td><input type="number" v-model="item.cost"
-                                                                           class="layui-input"></td>
-                                                                <td><input type="number" v-model="item.ot_price"
-                                                                           class="layui-input"></td>
-                                                                <td><input type="number" v-model="item.stock"
-                                                                           class="layui-input"></td>
-                                                                <td>
-                                                                    <input type="text" v-model="item.bar_code"
-                                                                           class="layui-input">
-                                                                </td>
-                                                                <td>
-                                                                    <input type="number" v-model="item.weight"
-                                                                           class="layui-input">
-                                                                </td>
-                                                                <td>
-                                                                    <input type="number" v-model="item.volume"
-                                                                           class="layui-input">
-                                                                </td>
+                                                                <td><input type="number" v-model="item.price" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.cost" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.ot_price" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.give_point" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.pay_point" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.sett_rate" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.pay_amount" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.pay_paypoint" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.pay_repeatpoint" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.give_rate" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.stock" class="layui-input"></td>
+                                                                <td><input type="text" v-model="item.bar_code" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.weight" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.volume" class="layui-input"></td>
                                                                 <td>
                                                                     <button class="layui-btn layui-btn-sm" type="button"
                                                                             @click="deleteAttrs(index)">删除
@@ -593,10 +641,10 @@
                                     <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label">积分</label>
+                                                <label class="layui-form-label">平台预留比例</label>
                                                 <div class="layui-input-block">
-                                                    <input type="number" name="give_integral" lay-verify="title"
-                                                           autocomplete="off" placeholder="请输入积分" class="layui-input" v-model="formData.give_integral">
+                                                    <input type="number" name="plat_rate" lay-verify="title"
+                                                           autocomplete="off" placeholder="请输入比例%" class="layui-input" v-model="formData.plat_rate">
                                                 </div>
                                             </div>
                                         </div>
@@ -868,12 +916,15 @@
             cateList: [],
             //运费模板
             tempList: [],
+            //商家列表
+            storeList: [],
             upload:{
                 videoIng:false
             },
             formData: {
                 cate_id: [],
                 temp_id: 0,
+                store_id: 0,
                 commission:0,
                 store_name: '',
                 keyword: '',
@@ -890,6 +941,13 @@
                     price: 0,
                     cost: 0,
                     ot_price: 0,
+                    give_point: 0,
+                    pay_point: 0,
+                    sett_rate: 0,
+                    pay_amount: 0,
+                    pay_paypoint: 0,
+                    pay_repeatpoint: 0,
+                    give_rate: 0,
                     stock: 0,
                     bar_code: '',
                     weight: 0,
@@ -901,8 +959,11 @@
                 description: '',
                 ficti: 0,
                 give_integral: 0,
+                plat_rate: 0,
                 sort: 0,
                 is_show: 1,
+                belong_t: 0,
+                is_self: 0,
                 is_hot: 0,
                 is_benefit: 0,
                 is_best: 0,
@@ -926,6 +987,13 @@
                 price: 0,
                 cost: 0,
                 ot_price: 0,
+                give_point: 0,
+                pay_point: 0,
+                sett_rate: 0,
+                pay_amount: 0,
+                pay_paypoint: 0,
+                pay_repeatpoint: 0,
+                give_rate: 0,
                 stock: 0,
                 bar_code: '',
                 weight: 0,
@@ -945,7 +1013,7 @@
             activity:{'秒杀':'#1E9FFF','砍价':'#189688','拼团':'#FEB900'},
             attr: [],//临时属性
             newRule: false,//是否添加新规则
-            radioRule: ['is_sub','is_show', 'is_hot', 'is_benefit', 'is_new','is_good' ,'is_best', 'spec_type'],//radio 当选规则
+            radioRule: ['is_sub','is_show','belong_t','is_self', 'is_hot', 'is_benefit', 'is_new','is_good' ,'is_best', 'spec_type'],//radio 当选规则
             rule: { //多图选择规则
                 slider_image: {
                     maxLength: 5
@@ -1037,6 +1105,13 @@
                     price: 0,
                     cost: 0,
                     ot_price: 0,
+                    give_point: 0,
+                    pay_point: 0,
+                    sett_rate: 0,
+                    pay_amount: 0,
+                    pay_paypoint: 0,
+                    pay_repeatpoint: 0,
+                    give_rate: 0,
                     stock: 0,
                     bar_code: '',
                     weight: 0,
@@ -1061,6 +1136,28 @@
                     if (that.batchAttr.ot_price > 0){
                         item.ot_price = that.batchAttr.ot_price;
                     }
+                    if (that.batchAttr.give_point > 0){
+                        item.give_point = that.batchAttr.give_point;
+                    }
+                    if (that.batchAttr.pay_point > 0){
+                        item.pay_point = that.batchAttr.pay_point;
+                    }
+                    if (that.batchAttr.sett_rate > 0){
+                        item.sett_rate = that.batchAttr.sett_rate;
+                    }
+                    if (that.batchAttr.pay_amount > 0){
+                        item.pay_amount = that.batchAttr.pay_amount;
+                    }
+                    if (that.batchAttr.pay_paypoint > 0){
+                        item.pay_paypoint = that.batchAttr.pay_paypoint;
+                    }
+                    if (that.batchAttr.pay_repeatpoint > 0){
+                        item.pay_repeatpoint = that.batchAttr.pay_repeatpoint;
+                    }
+                    if (that.batchAttr.give_rate > 0){
+                        item.give_rate = that.batchAttr.give_rate;
+                    }
+                    
                     if (that.batchAttr.stock > 0){
                         item.stock = that.batchAttr.stock;
                     }
@@ -1085,6 +1182,7 @@
                 that.requestGet(that.U({c:"store.StoreProduct",a:'get_product_info',q:{id:that.id}})).then(function (res) {
                     that.$set(that,'cateList',res.data.cateList);
                     that.$set(that,'tempList',res.data.tempList);
+                    that.$set(that,'storeList',res.data.storeList);
                     var productInfo = res.data.productInfo || {};
                     if(productInfo.id && that.id){
                         that.$set(that,'formData',productInfo);
@@ -1343,6 +1441,9 @@
                         that.form.on('select(temp_id)', function (data) {
                             that.$set(that.formData, 'temp_id', data.value);
                         });
+                        that.form.on('select(store_id)', function (data) {
+                            that.$set(that.formData, 'store_id', data.value);
+                        });
                         that.form.on('select(rule_index)', function (data) {
                             that.ruleIndex = data.value;
                         });
@@ -1427,6 +1528,9 @@
                 if (!that.formData.temp_id) {
                     return that.showMsg('请选择运费模板');
                 }
+                if (!that.formData.store_id) {
+                    return that.showMsg('请选择运商家');
+                }
                 if (!that.formData.store_name) {
                     return that.showMsg('请填写商品名称');
                 }
@@ -1458,6 +1562,14 @@
                         price:that.formData.attr.price,
                         cost:that.formData.attr.cost,
                         ot_price:that.formData.attr.ot_price,
+                        
+                        give_point:that.formData.attr.give_point,
+                        pay_point:that.formData.attr.pay_point,
+                        sett_rate:that.formData.attr.sett_rate,
+                        pay_amount:that.formData.attr.pay_amount,
+                        pay_paypoint:that.formData.attr.pay_paypoint,
+                        pay_repeatpoint:that.formData.attr.pay_repeatpoint,
+                        give_rate:that.formData.attr.give_rate,
                         stock:that.formData.attr.stock,
                         bar_code:that.formData.attr.bar_code,
                         volume:that.formData.attr.volume,

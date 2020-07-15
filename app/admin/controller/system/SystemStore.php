@@ -7,6 +7,7 @@ use crmeb\services\JsonService;
 use crmeb\services\JsonService as Json;
 use app\admin\model\system\SystemStore as SystemStoreModel;
 use crmeb\services\UtilService;
+use app\admin\model\store\StoreCategory as StroreCateModel;
 
 /**
  * 门店管理控制器
@@ -43,6 +44,8 @@ class SystemStore extends AuthController
         $hide = SystemStoreModel::where('status', 0)->count();//隐藏的门店
         $recycle = SystemStoreModel::where('is_del', 1)->count();//删除的门店
         if ($type == null) $type = 1;
+        
+        
         $this->assign(compact('type', 'show', 'hide', 'recycle'));
         return $this->fetch();
     }
@@ -54,8 +57,9 @@ class SystemStore extends AuthController
      */
     public function add($id = 0)
     {
+        $catList = StroreCateModel::getAllCatList()['data'];
         $store = SystemStoreModel::getStoreDispose($id);
-        $this->assign(compact('store'));
+        $this->assign(compact('store', 'catList'));
         return $this->fetch();
     }
 
@@ -135,10 +139,17 @@ class SystemStore extends AuthController
     public function save($id = 0)
     {
         $data = UtilService::postMore([
+            ['mer_name', ''],
             ['name', ''],
+            ['cat_id', 0],
             ['introduction', ''],
             ['image', ''],
             ['phone', ''],
+            ['link_name', ''],
+            ['link_phone', ''],
+            ['sett_rate',0],
+            ['give_rate', 0],
+            ['belong_t', 2],
             ['address', ''],
             ['detailed_address', ''],
             ['latlng', ''],
