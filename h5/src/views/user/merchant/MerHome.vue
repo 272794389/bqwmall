@@ -34,6 +34,13 @@
         <span class="iconfont icon-dingdan"></span>
         <div>订单管理</div>
       </router-link>
+      <router-link
+        class="item acea-row row-center-wrapper row-column"
+        :to="'/merchant/ermapay'"
+      >
+        <span class="iconfont icon-erweima"></span>
+        <div>收款码</div>
+      </router-link>
      <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"

@@ -169,6 +169,7 @@ Route::group(function () {
     Route::get('merchant/data', 'admin.MerchantController/data')->name('productDataRoutine');// 商家主页
     Route::get('merchant/plist', 'admin.MerchantController/plist')->name('rechargeRoutine');// 商家主页
     Route::post('merchant/cancel', 'admin.MerchantController/cancel')->name('productCancel'); //上下架商品
+    Route::get('merchant/maurl', 'admin.MerchantController/maurl')->name('ermaurlRoutine');// 商家主页
     
     
     //会员等级类

@@ -18,6 +18,10 @@ export function getMerHome(data) {
     return request.get("/merchant/home", data, { login: true });
 }
 
+export function getErMaUrl(data) {
+    return request.get("/merchant/maurl", data, { login: true });
+}
+
 export function getServiceList(data) {
     return request.get("/merchant/service", data || {});
 }

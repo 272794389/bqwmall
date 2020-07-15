@@ -72,6 +72,16 @@ export default [
     component: () => import("@views/user/merchant/MerApply.vue")
   },
   {
+	    path: "/merchant/ermapay",
+	    name: "ErmaPay",
+	    meta: {
+	      title: "收款二维码",
+	      keepAlive: true,
+	      auth: true
+	    },
+	    component: () => import("@views/user/merchant/MerMa.vue")
+},
+  {
     path: "/merchant/home",
     name: "MerchantHome",
     meta: {

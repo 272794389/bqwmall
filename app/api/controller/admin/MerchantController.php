@@ -112,7 +112,58 @@ class MerchantController
         ]);
     }
 
-
+    /**
+     * 获取商家二维码
+     * @param Request $request
+     * @return mixed
+     */
+    
+    public function maurl(Request $request){
+        $uid = $request->uid();
+        $merList=  SystemStore::getUserMer($uid);
+       
+        $store_id =0;
+    
+        $erma_url='';
+        if ($merList){
+            $merList = $merList->toArray();
+            $store_id = $merList['id'];
+            $erma_url= $merList['erma_url'];
+        }
+        
+        if(!$store_id) return $this->failed('数据不存在');
+       
+        $ermaImg = '';
+        if(!$erma_url){
+            //$siteUrl = sysConfig('site_url');
+            $siteUrl = "http://www.dshqfsc.com";
+            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/order/detail/".$store_id;//二维码链接
+            $name = date("Y-m-d")."-order-sale-".time().".jpg";
+            $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+            if(!$imageInfo) return app('json')->fail('二维码生成失败');
+            if (!$imageInfo) return app('json')->fail('二维码生成失败');
+            $data =[];
+            //计算二维码图片地址
+            $arr = array();
+            $arr = explode("//",$siteUrl);
+            $farr = explode(".",$arr[1]);
+            $ermaImg = 'img';
+            if($farr[0]!='www'){
+                $ermaImg = $farr[0]."-".$ermaImg;
+            }
+            // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
+            $data['erma_url']="img-bqw.dshqfsc.com/".$name;
+            $ermaImg = $data['erma_url'];
+            SystemStore::edit($data,$store_id);
+        }
+       
+        // status 0 未申请  1已申请未审核通过 2 已申请已审核通过
+        return app('json')->successful([
+           
+            'ermaImg' =>$ermaImg,
+        ]);
+    }
+    
     /**
      * 客服列表
      * @param Request $request

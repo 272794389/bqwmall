@@ -29,6 +29,21 @@ if (!function_exists('exception')) {
     }
 }
 
+if (!function_exists('sysConfig')) {
+    /**
+     * 获取系统单个配置
+     * @param string $name
+     * @return string | null
+     */
+    function sysConfig(string $name)
+    {
+        if (empty($name))
+            return null;
+
+            return app('sysConfig')->get($name);
+    }
+}
+
 if (!function_exists('sys_config')) {
     /**
      * 获取系统单个配置
