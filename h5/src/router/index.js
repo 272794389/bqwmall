@@ -49,6 +49,29 @@ const router = new Router({
       component: Category
     },
     {
+        path: "/gcategory/:id",
+        name: "GoodsClass",
+        meta: {
+          title: "产品分类",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: Category
+    },
+    {
+        path: "/spcategory/:pid?",
+        name: "ShopClass",
+        meta: {
+          title: "商家分类",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/ShopClass.vue")
+    },
+    
+    {
       path: "/collection",
       name: "GoodsCollection",
       meta: {

@@ -18,6 +18,7 @@ use crmeb\services\CacheService;
 use crmeb\services\UtilService;
 use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
+use app\models\article\Article;
 use crmeb\services\upload\Upload;
 
 /**
@@ -37,8 +38,6 @@ class PublicController
     public function index(Request $request)
     {
         $banner = sys_data('routine_home_banner') ?: [];//TODO 首页banner图
-        $menus = sys_data('routine_home_menus') ?: [];//TODO 首页按钮
-        $roll = sys_data('routine_home_roll_news') ?: [];//TODO 首页滚动新闻
         $activity = sys_data('routine_home_activity', 3) ?: [];//TODO 首页活动区域图片
         $site_name = sys_config('site_name');
         $routine_index_page = sys_data('routine_index_page');
@@ -52,18 +51,21 @@ class PublicController
         $fastNumber = sys_config('fast_number', 0);//TODO 快速选择分类个数
         $bastNumber = sys_config('bast_number', 0);//TODO 精品推荐个数
         $firstNumber = sys_config('first_number', 0);//TODO 首发新品个数
-        $info['fastList'] = StoreCategory::byIndexList((int)$fastNumber, false);//TODO 快速选择分类个数
-        $info['bastList'] = StoreProduct::getBestProduct('id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name', (int)$bastNumber, $request->uid(), false);//TODO 精品推荐个数
-        $info['firstList'] = StoreProduct::getNewProduct('id,image,store_name,cate_id,price,unit_name,IFNULL(sales,0) + IFNULL(ficti,0) as sales', (int)$firstNumber, $request->uid(), false);//TODO 首发新品个数
-        $info['bastBanner'] = sys_data('routine_home_bast_banner') ?? [];//TODO 首页精品推荐图片
-        $benefit = StoreProduct::getBenefitProduct('id,image,store_name,cate_id,price,ot_price,stock,unit_name', 3);//TODO 首页促销单品
-        $lovely = sys_data('routine_home_new_banner') ?: [];//TODO 首发新品顶部图
-        $likeInfo = StoreProduct::getHotProduct('id,image,store_name,cate_id,price,ot_price,unit_name', 3);//TODO 热门榜单 猜你喜欢
+        $info['fastList'] = StoreCategory::getIndexList(0, 8,false);//TODO 分类个数
+        $info['sfastList'] = StoreCategory::getIndexList(8, 8,false);//TODO 分类个数
+        $info['tfastList'] = StoreCategory::getIndexList(16, 8,false);//TODO 分类个数
+        $info['ffastList'] = StoreCategory::getIndexList(24, 8,false);//TODO 分类个数
+        
+        $info['bastList'] = StoreProduct::getProductListByBelong((int)$bastNumber, $request->uid(),0, false);//TODO 商品中心产品列表
+        $info['netGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),1, false);//TODO 网店商品列表
+        $info['nearGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),2, false);//TODO 吃喝玩乐商品列表
+
         $couponList = StoreCouponIssue::getIssueCouponList($request->uid(), 3);
         $subscribe = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
         $newGoodsBananr = sys_config('new_goods_bananr');
         $tengxun_map_key = sys_config('tengxun_map_key');
-        return app('json')->successful(compact('banner', 'menus', 'roll', 'info', 'activity', 'lovely', 'benefit', 'likeInfo', 'logoUrl', 'couponList', 'site_name', 'subscribe', 'newGoodsBananr', 'tengxun_map_key'));
+        $article = Article::getArticleNotice(1);
+        return app('json')->successful(compact('banner', 'info', 'activity',  'logoUrl', 'couponList', 'site_name', 'subscribe', 'newGoodsBananr', 'tengxun_map_key','article'));
     }
 
     /**

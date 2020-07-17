@@ -40,6 +40,7 @@ class StoreProductController
             ['priceOrder', ''],
             ['salesOrder', ''],
             ['news', 0],
+            ['condition', 1],
             ['page', 0],
             ['limit', 0],
             ['type', 0]

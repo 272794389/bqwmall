@@ -14,6 +14,20 @@
       </div>
     </form>
     <div class="nav acea-row row-middle">
+      <div class="condition" @click="set_where(4)" :class="condition==1 ? 'font-color-red' : ''">
+                 周边
+      </div>
+      <div class="condition" @click="set_where(5)" :class="condition==2 ? 'font-color-red' : ''">
+                 消费积分兑换
+      </div>
+      <div class="condition" @click="set_where(6)" :class="condition==3 ? 'font-color-red' : ''">
+                        重消积分兑换
+      </div>
+      <div  class="condition" @click="set_where(7)" :class="condition==4 ? 'font-color-red' : ''">
+                          现金支付
+      </div>
+    </div>
+    <div class="nav acea-row row-middle" style="margin-top:0.82rem;">
       <div
         class="item"
         :class="title ? 'font-color-red' : ''"
@@ -33,19 +47,12 @@
         <img src="@assets/images/up.png" v-if="stock === 1" />
         <img src="@assets/images/down.png" v-if="stock === 2" />
       </div>
-      <!-- down -->
-      <div
-        class="item"
-        :class="nows ? 'font-color-red' : ''"
-        @click="set_where(3)"
-      >
-        新品
-      </div>
     </div>
     <div
       class="list acea-row row-between-wrapper"
       :class="Switch === true ? '' : 'on'"
       ref="container"
+      style="margin-top:2.54rem;"
     >
       <div
         @click="goDetail(item)"
@@ -57,41 +64,28 @@
       >
         <div class="pictrue" :class="Switch === true ? '' : 'on'">
           <img :src="item.image" :class="Switch === true ? '' : 'on'" />
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '1'"
-            >秒杀</span
-          >
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '2'"
-            >砍价</span
-          >
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '3'"
-            >拼团</span
-          >
         </div>
         <div class="text" :class="Switch === true ? '' : 'on'">
-          <div class="name line1">{{ item.store_name }}</div>
-          <div
-            class="money font-color-red"
-            :class="Switch === true ? '' : 'on'"
-          >
-            ￥<span class="num">{{ item.price }}</span>
+          <div class="name pline1">{{ item.store_name }}</div>
+          <div class="money font-color-red" :class="Switch === true ? '' : 'on'">
+                                      ￥<span class="num">{{ item.price }}</span>
+               <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
           </div>
-          <div
-            class="vip acea-row row-between-wrapper"
-            :class="Switch === true ? '' : 'on'"
-          >
-            <div class="vip-money" v-if="item.vip_price && item.vip_price > 0">
-              ￥{{ item.vip_price }}<img src="@assets/images/vip.png" />
-            </div>
-            <div>已售{{ item.sales }}件</div>
+          <div class="vip acea-row row-between-wrapper" :class="Switch === true ? '' : 'on'">
+             <div v-if="item.belong_t == 0">
+	            <div class="vip" v-if="item.pay_paypoint > 0"  style="width:3.3rem;">
+	               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;" />{{ item.pay_paypoint || 0}}积分+￥{{ item.pay_amount || 0}}
+	            </div>
+	            <div class="vip" v-if="item.pay_repeatpoint > 0" style="width:3.3rem;">
+	               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;"/>{{ item.pay_repeatpoint || 0}}个重消积分+￥{{ item.pay_amount || 0}}
+	            </div>
+	            <div class="vip" v-if="item.pay_repeatpoint ==0&&item.pay_paypoint==0"  style="width:3.3rem;">
+	               <img src="@assets/images/fu.png" class="image" style="width:0.35rem;"/>￥{{ item.pay_amount || 0}}
+	            </div>
+	         </div>
+             <div class="vip-money" v-else>
+                 <img src="@assets/images/give.png" style="width: 0.35rem;"/>￥{{ item.pay_point }}消费积分
+             </div>
           </div>
         </div>
       </div>
@@ -146,7 +140,8 @@ export default {
       loadend: false,
       price: 0,
       stock: 0,
-      nows: false
+      nows: false,
+      condition: 0
     };
   },
   watch: {
@@ -165,6 +160,7 @@ export default {
         this.where.sid = id;
         this.title = title && id ? title : "";
         this.nows = false;
+        this.condition = 0;
         this.$set(this, "productList", []);
         this.price = 0;
         this.stock = 0;
@@ -248,6 +244,18 @@ export default {
         case 3:
           that.nows = !that.nows;
           break;
+        case 4:
+          that.condition = 1;
+          break;
+        case 5:
+          that.condition = 2;
+          break;
+        case 6:
+          that.condition = 3;
+          break;  
+        case 7:
+          that.condition = 4;
+          break;  
         default:
           break;
       }
@@ -273,6 +281,7 @@ export default {
       } else if (that.stock === 2) {
         that.where.salesOrder = "desc";
       }
+      that.where.condition = that.condition;
       that.where.news = that.nows ? "1" : "0";
     },
     switchTap: function() {

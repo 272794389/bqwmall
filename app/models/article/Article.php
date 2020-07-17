@@ -39,7 +39,22 @@ class Article extends BaseModel
         return explode(',', $value) ?: [];
     }
 
-
+    /**
+     * TODO 获取最新公告
+     * @param int $id
+     * @return array|null|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getArticleNotice($cid = 0)
+    {
+        if (!$cid) return [];
+        $list = self::where('status', 1)->where('hide', 0)->where('cid', $cid)->order('id desc')->limit(0,1)->find();
+        if ($list) {
+            return $list;
+        } else return [];
+    }
     /**
      * TODO 获取一条新闻
      * @param int $id

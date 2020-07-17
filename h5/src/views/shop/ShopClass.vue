@@ -4,7 +4,7 @@
       <div class="header acea-row row-center-wrapper" ref="header">
         <div class="acea-row row-between-wrapper input">
           <span class="iconfont icon-sousuo"></span>
-          <input type="text" placeholder="搜索商品信息" v-model="search" />
+          <input type="text" placeholder="搜索商家信息" v-model="search" />
         </div>
       </div>
     </form>
@@ -32,7 +32,7 @@
             v-for="(child, index) in item.children"
             :key="index"
             :to="{
-              path: '/goods_list',
+              path: '/store_list',
               query: { id: child.id, title: child.cate_name }
             }"
           >
@@ -51,7 +51,7 @@ import { getCategory } from "@api/store";
 import { trim } from "../../utils";
 
 export default {
-  name: "GoodsClass",
+  name: "ShopClass",
   components: {},
   props: {},
   data: function() {
@@ -98,7 +98,7 @@ export default {
       var val = trim(this.search);
       if (val) {
         this.$router.push({
-          path: "/goods_list",
+          path: "/store_list",
           query: { s: val }
         });
         setTimeout(() => (this.search = ""), 500);

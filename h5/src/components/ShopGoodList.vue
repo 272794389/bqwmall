@@ -8,21 +8,6 @@
     >
       <div class="pictrue">
         <img :src="item.image" class="image" />
-        <span
-          class="pictrue_log pictrue_log_class"
-          v-if="item.activity && item.activity.type === '1'"
-          >秒杀</span
-        >
-        <span
-          class="pictrue_log pictrue_log_class"
-          v-if="item.activity && item.activity.type === '2'"
-          >砍价</span
-        >
-        <span
-          class="pictrue_log pictrue_log_class"
-          v-if="item.activity && item.activity.type === '3'"
-          >拼团</span
-        >
         <!--<img-->
         <!--src="@assets/images/one.png"-->
         <!--class="numPic"-->
@@ -44,13 +29,18 @@
           <div class="pline1">{{ item.store_name }}</div>
           <div class="money font-color-red">
             ￥<span class="num">{{ item.price }}</span>
+           <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
           </div>
           <div class="vip-money acea-row row-middle">
-            <div class="vip" v-if="item.vip_price && item.vip_price > 0">
-              ￥{{ item.vip_price || 0
-              }}<img src="@assets/images/vip.png" class="image" />
+            <div class="vip" v-if="item.pay_paypoint > 0">
+               <img src="@assets/images/fu.png" class="image" />{{ item.pay_paypoint || 0}}个消费积分+￥{{ item.pay_amount || 0}}
             </div>
-            <span class="num">已售{{ item.sales }}{{ item.unit_name }}</span>
+            <div class="vip" v-if="item.pay_repeatpoint > 0">
+               <img src="@assets/images/fu.png" class="image" />{{ item.pay_repeatpoint || 0}}个重消积分+￥{{ item.pay_amount || 0}}
+            </div>
+            <div class="vip" v-if="item.pay_repeatpoint ==0&&item.pay_paypoint==0">
+               <img src="@assets/images/fu.png" class="image" />￥{{ item.pay_amount || 0}}
+            </div>
           </div>
         </div>
       </div>

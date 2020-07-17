@@ -10,6 +10,20 @@ export function isWeixin() {
   return navigator.userAgent.toLowerCase().indexOf("micromessenger") !== -1;
 }
 
+export function cdnZipImg(src) {
+	  const isCDN = /shop-img.dshqfsc.com/
+	  const isCDN2 = /img-883.dshqfsc.com/
+
+	  if (isCDN.test(src) || isCDN2.test(src)) {
+	    if (isSupportWebp()){
+	      src += '?imageMogr2/format/webp/blur/1x0/quality/75|imageslim'
+	    }else {
+	      src += '?imageMogr2/format/jpg/blur/1x0/quality/75|imageslim'
+	    }
+	  }
+	  return src;
+	}
+
 export function parseQuery() {
   const res = {};
 

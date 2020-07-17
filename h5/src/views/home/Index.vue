@@ -28,240 +28,186 @@
         <div class="swiper-pagination paginationBanner" slot="pagination"></div>
       </swiper>
     </div>
+    <!--分类菜单导航-->
     <div class="nav acea-row">
-      <router-link
-        :to="item.wap_url ? item.wap_url : ''"
-        class="item"
-        v-for="(item, index) in menus"
-        :key="index"
-      >
-        <div class="pictrue"><img :src="item.pic" /></div>
-        <div>{{ item.name }}</div>
+     <swiper :options="dswiperOption" v-if="info.fastList.length > 0" style="padding-bottom:0.5rem;">
+        <swiper-slide>
+		      <router-link tag="a" target="_blank"
+		        :to="'/gcategory/'+item.id"
+		        class="item"
+		        v-for="(item, index) in info.fastList"
+		        :key="index"
+		      >
+		        <div class="pictrue"><img :src="cdnZipImg(item.pic)" /></div>
+		        <div>{{ item.cate_name }}</div>
+		      </router-link>
+		   </swiper-slide>
+		   <swiper-slide v-if="info.sfastList.length > 0">
+		      <router-link tag="a" target="_blank" 
+		        :to="'/gcategory/'+item.id"
+		        class="item"
+		        v-for="(item, index) in info.sfastList"
+		        :key="index"
+		      >
+		        <div class="pictrue"><img :src="cdnZipImg(item.pic)" /></div>
+		        <div>{{ item.cate_name }}</div>
+		      </router-link>
+		   </swiper-slide>
+           <swiper-slide v-if="info.tfastList.length > 0">
+		      <router-link tag="a" target="_blank" 
+		        :to="'/gcategory/'+item.id"
+		        class="item"
+		        v-for="(item, index) in info.tfastList"
+		        :key="index"
+		      >
+		        <div class="pictrue"><img :src="cdnZipImg(item.pic)" /></div>
+		        <div>{{ item.cate_name }}</div>
+		      </router-link>
+		   </swiper-slide>
+           <swiper-slide v-if="info.ffastList.length > 0">
+		      <router-link tag="a" target="_blank" 
+		        :to="'/gcategory/'+item.id"
+		        class="item"
+		        v-for="(item, index) in info.ffastList"
+		        :key="index"
+		      >
+		        <div class="pictrue"><img  :src="cdnZipImg(item.pic)"/></div>
+		        <div>{{ item.cate_name }}</div>
+		      </router-link>
+		   </swiper-slide>
+		   <div class="swiper-pagination dpaginationBanner" style="margin-top:1.3rem;" slot="pagination"></div>
+       </swiper>
+    </div>
+    <div class="ad_tong" v-if="article.title">
+        <marquee direction="left" class="marqstyle">
+        <router-link :to="'/news_detail/' + article.id" class="acea-row row-middle"
+          >{{ article.title }}</router-link></marquee>
+    </div>
+    <div class="specialArea acea-row row-between-wrapper">
+      <router-link :to="''" class="assemble" style="background: rgb(9,197,15);">
+        <div class="sp">
+	          <div class="name">商品中心</div>
+	          <div class="infor">各种实用实惠的商品</div>
+	        </div>
       </router-link>
-    </div>
-    <div class="news acea-row row-between-wrapper">
-      <div class="pictrue"><img src="@assets/images/news.png" /></div>
-      <div class="swiper-no-swiping new-banner">
-        <swiper
-          class="swiper-wrapper"
-          :options="swiperRoll"
-          v-if="roll.length > 0"
-        >
-          <swiper-slide
-            class="swiper-slide"
-            v-for="(item, index) in roll"
-            :key="index"
-          >
-            <router-link
-              :to="item.wap_url ? item.wap_url : ''"
-              class="acea-row row-between-wrapper"
-            >
-              <div class="text acea-row row-between-wrapper">
-                <div class="label" v-if="item.show === '是'">最新</div>
-                <div class="newsTitle line1">{{ item.info }}</div>
-              </div>
-              <div class="iconfont icon-xiangyou"></div>
-            </router-link>
-          </swiper-slide>
-        </swiper>
-      </div>
-    </div>
-    <div
-      class="specialArea acea-row row-between-wrapper"
-      v-if="activityOne.wap_link !== undefined || activity.length"
-    >
-      <router-link
-        :to="activityOne.wap_link ? activityOne.wap_link : ''"
-        v-if="activityOne.wap_link !== undefined"
-        class="assemble"
-      >
-        <img :src="activityOne.pic" />
-        <div class="text">
-          <div class="name">{{ activityOne.title }}</div>
-          <div class="infor">{{ activityOne.info }}</div>
+      <router-link :to="''" class="assemble" style="background: rgb(44,176,126);">
+        <div class="sp">
+	        <div class="text">
+	          <div class="name">周边的店</div>
+	          <div class="infor">本地吃喝玩乐购商家</div>
+	        </div>
         </div>
       </router-link>
-      <div class="list acea-row row-column-between">
-        <router-link
-          :to="item.wap_link ? item.wap_link : ''"
-          class="item"
-          v-for="(item, index) in activity"
-          :key="index"
-        >
-          <img :src="item.pic" />
-          <div class="text">
-            <div class="name">{{ item.title }}</div>
-            <div class="infor">{{ item.info }}</div>
-          </div>
-        </router-link>
-      </div>
+      <router-link :to="''"  class="assemble" style="background: rgb(23,162,229);" >
+          <div class="name">网店	</div>
+          <div class="infor">商家产品优惠套餐</div>
+      </router-link>
     </div>
-    <div class="wrapper" v-if="info.fastList.length > 0">
+    <div class="wrapper" v-if="info.bastList.length > 0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">快速选择</div>
-          <div class="line1">{{ info.fastInfo }}</div>
-        </div>
-        <router-link :to="'/category'" class="more"
-          >更多<span class="iconfont icon-jiantou"></span
-        ></router-link>
-      </div>
-      <div class="scroll-product">
-        <swiper class="swiper-wrapper" :options="swiperScroll">
-          <swiper-slide
-            v-for="(item, index) in info.fastList"
-            :key="index"
-            class="swiper-slide"
-          >
-            <router-link
-              :to="{
-                path: '/goods_list',
-                query: { id: item.id, title: item.cate_name }
-              }"
-            >
-              <div class="img-box">
-                <img :src="item.pic" />
-              </div>
-              <div class="pro-info line1">{{ item.cate_name }}</div>
-            </router-link>
-          </swiper-slide>
-        </swiper>
-      </div>
-    </div>
-    <div
-      class="wrapper"
-      v-if="info.bastList.length > 0 || info.bastBanner.length > 0"
-    >
-      <div class="title acea-row row-between-wrapper">
-        <div class="text">
-          <div class="name line1">精品推荐</div>
-          <div class="line1">{{ info.bastInfo }}</div>
+          <div class="name line1">商品中心推荐</div>
+          <div class="line1" style="color: #f00;">支持消费积分、重消积分兑换</div>
         </div>
         <router-link :to="{ path: '/hot_new_goods/' + 1 }" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
-      <div class="slider-banner boutique">
-        <swiper class="swiper-wrapper" :options="swiperBoutique">
-          <swiper-slide
-            class="swiper-slide"
-            v-for="(item, index) in info.bastBanner"
-            :key="index"
-          >
-            <router-link :to="item.wap_link ? item.wap_link : ''"
-              ><img :src="item.img"
-            /></router-link>
-          </swiper-slide>
-        </swiper>
-        <div class="swiper-pagination paginationBoutique"></div>
-      </div>
-      <Good-list :good-list="info.bastList" :is-sort="false"></Good-list>
+      <ShopGood-list :good-list="info.bastList" :is-sort="false"></ShopGood-list>
     </div>
-    <div class="hotList" v-if="likeInfo.length > 0">
-      <div class="hot-bg">
-        <div class="title acea-row row-between-wrapper">
-          <div class="text line1">
-            <span class="label">热门榜单</span>根据销量、搜索、好评等综合得出
-          </div>
-          <router-link :to="{ path: '/hot_new_goods/' + 2 }" class="more">
-            更多<span class="iconfont icon-jiantou"></span>
-          </router-link>
-        </div>
-      </div>
-      <div class="list acea-row row-middle">
-        <router-link
-          :to="{ path: '/detail/' + item.id }"
-          class="item"
-          v-for="(item, index) in likeInfo"
-          :key="index"
-        >
-          <div class="pictrue">
-            <img :src="item.image" />
-            <img
-              src="@assets/images/one.png"
-              class="numPic"
-              v-if="index === 0"
-            />
-            <img
-              src="@assets/images/two.png"
-              class="numPic"
-              v-else-if="index === 1"
-            />
-            <img
-              src="@assets/images/three.png"
-              class="numPic"
-              v-else-if="index === 2"
-            />
-          </div>
-          <div class="name line1">{{ item.store_name }}</div>
-          <div class="money font-color-red">
-            ￥<span class="num">{{ item.price }}</span>
-          </div>
-        </router-link>
-      </div>
-    </div>
-    <div v-if="newGoodsBananr">
-      <div class="adver">
-        <img :src="newGoodsBananr" />
-      </div>
-    </div>
-    <div class="wrapper" v-if="info.firstList.length > 0">
+    
+    <div class="wrapper" v-if="info.netGoodList">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">
-            首发新品<span class="new font-color-red">NEW~</span>
-          </div>
-          <div class="line1">{{ info.firstInfo }}</div>
-        </div>
-        <router-link :to="{ path: '/hot_new_goods/' + 3 }" class="more"
-          >更多<span class="iconfont icon-jiantou"></span
-        ></router-link>
-      </div>
-      <div class="newProducts">
-        <swiper class="swiper-wrapper" :options="swiperProducts">
-          <swiper-slide
-            class="swiper-slide"
-            v-for="(item, index) in info.firstList"
-            :key="index"
-          >
-            <div @click="goDetail(item)">
-              <div class="img-box">
-                <img :src="item.image" />
-                <span
-                  class="pictrue_log_medium pictrue_log_class"
-                  v-if="item.activity && item.activity.type === '1'"
-                  >秒杀</span
-                >
-                <span
-                  class="pictrue_log_medium pictrue_log_class"
-                  v-if="item.activity && item.activity.type === '2'"
-                  >砍价</span
-                >
-                <span
-                  class="pictrue_log_medium pictrue_log_class"
-                  v-if="item.activity && item.activity.type === '3'"
-                  >拼团</span
-                >
-              </div>
-              <div class="pro-info line1">{{ item.store_name }}</div>
-              <div class="money font-color-red">￥{{ item.price }}</div>
-            </div>
-          </swiper-slide>
-        </swiper>
-      </div>
-    </div>
-    <div class="wrapper" v-if="benefit.length > 0">
-      <div class="title acea-row row-between-wrapper">
-        <div class="text">
-          <div class="name line1">促销单品</div>
-          <div class="line1">{{ info.salesInfo }}</div>
+          <div class="name line1">网店商品推荐</div>
+          <div class="line1" style="color: #f00;">现金支付赠送消费积分，可用抵扣券抵扣</div>
         </div>
         <router-link :to="'/promotion'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
+      <div class="productList" ref="container">
+	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+			      <div @click="goDetail(item)" v-for="(item, index) in info.netGoodList" :key="index" class="item" :title="item.store_name">
+				        <div class="pictrue">
+				          <img :src="item.image"/> 
+				        </div>
+				        <div class="text">
+				          <div class="name pline1">{{ item.store_name }}</div>
+				          <div class="money font-color-red">
+				                                   ￥<span class="num">{{ item.price }}</span>
+				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+				          </div>
+				          <div class="vip acea-row row-between-wrapper">
+				            <div class="vip-money">
+				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
+				            </div>
+				          </div>
+				        </div>
+			      </div>
+			</div>
+	    </div>
     </div>
-    <Promotion-good :benefit="benefit"></Promotion-good>
+    
+    <div class="wrapper">
+      <div class="title acea-row row-between-wrapper">
+        <div class="text">
+          <div class="name line1">周边的店推荐</div>
+          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+        </div>
+        <router-link :to="'/shop/storeList/'" class="more"
+          >更多<span class="iconfont icon-jiantou"></span
+        ></router-link>
+      </div>
+      <div class="goodList">
+		    <div class="item acea-row row-between-wrapper shangjia" @click="goShop(item)" v-for="(item, index) in storeList" :key="index">
+		      <div class="pictrue" style="width:2.0rem;">
+		         <img :src="item.image" class="image">
+		      </div>
+		      <div class="shop_box" style="height:2.0rem">
+		        <div class="text">
+		          <div class="pline2">{{ item.name }}</div>
+		          <div class="shoptip">ktv&nbsp;|&nbsp;{{ item.range }}km,，已消费{{ item.sales }}笔</div>
+		          <div class="shoptip shopaddress">{{ item.address }}{{ ", " + item.detailed_address }}</div>
+		          <div class="shoptip">购物积分支付比例：{{ item.give_rate }}%</div>
+		        </div>
+		      </div>
+		    </div>
+	 </div>
+    </div>
+   
+    <div class="wrapper" v-if="info.nearGoodList">
+	      <div class="title acea-row row-between-wrapper" style="border-top:none;">
+	        <div class="text">
+	          <div class="name line1">吃喝玩乐推荐</div>
+	          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+	        </div>
+	        <router-link :to="{ path: '/hot_new_goods/' + 1 }" class="more"
+	          >更多<span class="iconfont icon-jiantou"></span
+	        ></router-link>
+	      </div>
+	      <div class="productList" ref="container">
+	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+			      <div @click="goDetail(item)" v-for="(item, index) in info.nearGoodList" :key="index" class="item" :title="item.store_name">
+				        <div class="pictrue">
+				          <img :src="item.image"/> 
+				        </div>
+				        <div class="text">
+				          <div class="name pline1">{{ item.store_name }}</div>
+				          <div class="money font-color-red">
+				                                   ￥<span class="num">{{ item.price }}</span>
+				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+				          </div>
+				          <div class="vip acea-row row-between-wrapper">
+				            <div class="vip-money">
+				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
+				            </div>
+				          </div>
+				        </div>
+			      </div>
+			</div>
+	    </div>
+    </div>
     <Coupon-window
       :coupon-list="couponList"
       v-if="showCoupon"
@@ -290,13 +236,15 @@
 <script>
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
+import { storeListApi } from "@api/store";
 import GoodList from "@components/GoodList";
+import ShopGoodList from "@components/ShopGoodList";
 import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
 import { getHomeData, getShare, follow } from "@api/public";
 import cookie from "@utils/store/cookie";
 import { openShareAll, wxShowLocation } from "@libs/wechat";
-import { isWeixin } from "@utils/index";
+import { isWeixin, cdnZipImg } from "@utils/index";
 import { mapGetters } from "vuex";
 const HAS_COUPON_WINDOW = "has_coupon_window";
 const LONGITUDE = "user_longitude";
@@ -309,6 +257,7 @@ export default {
     swiper,
     swiperSlide,
     GoodList,
+    ShopGoodList,
     PromotionGood,
     CouponWindow
   },
@@ -325,19 +274,14 @@ export default {
       showCoupon: false,
       logoUrl: "",
       banner: [],
-      menus: [],
-      roll: [],
-      activity: [],
-      activityOne: {},
+      article: {},
+      storeList: [],
       info: {
         fastList: [],
-        bastBanner: [],
-        firstList: [],
-        bastList: []
+        bastList: [],
+        netGoodList: [],
+        nearGoodList: []
       },
-      likeInfo: [],
-      lovely: [],
-      benefit: [],
       couponList: [],
       swiperOption: {
         pagination: {
@@ -358,6 +302,17 @@ export default {
             vm.goUrl(realIndex);
           }
         }
+      },
+      dswiperOption: {
+        pagination: {
+          el: ".dpaginationBanner",
+          clickable: true
+        },
+        autoplay:false,
+        loop: true,
+        speed: 1000,
+        observer: true,
+        observeParents: true
       },
       swiperRoll: {
         direction: "vertical",
@@ -413,21 +368,11 @@ export default {
       that.logoUrl = res.data.logoUrl;
       that.newGoodsBananr = res.data.newGoodsBananr;
       that.$set(that, "banner", res.data.banner);
-      that.$set(that, "menus", res.data.menus);
-      that.$set(that, "roll", res.data.roll);
       that.$set(that, "activity", res.data.activity);
-      if (res.data.activity.length) {
-        var activityOne = res.data.activity.shift();
-        that.$set(that, "activityOne", activityOne);
-      }
+      that.$set(that, "article", res.data.article);
+     
       that.$set(that, "info", res.data.info);
-      that.$set(that, "likeInfo", res.data.likeInfo);
-      that.$set(
-        that,
-        "lovely",
-        res.data.lovely.length ? res.data.lovely[0] : {}
-      );
-      that.$set(that, "benefit", res.data.benefit);
+  
       that.$set(that, "couponList", res.data.couponList);
       if (that.isLogin) {
         that.subscribe = res.data.subscribe;
@@ -441,14 +386,16 @@ export default {
       }
       if (res.data.site_name) document.title = res.data.site_name;
       that.setOpenShare();
-      this.showCoupon =
-        !cookie.has(HAS_COUPON_WINDOW) &&
-        res.data.couponList.some(coupon => coupon.is_use);
+      this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
       if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)) this.getWXLocation();
     });
+    if (cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
+      this.getList();
+    }
   },
   methods: {
     // 轮播图跳转
+    cdnZipImg,
     goUrl(index) {
       let url = this.banner[index].wap_url;
       let newStr = url.indexOf("http") === 0;
@@ -511,6 +458,22 @@ export default {
         );
       }
     },
+     // 获取门店列表数据
+    getList: function() {
+      let data = {
+        latitude: cookie.get(LATITUDE) || "", //纬度
+        longitude: cookie.get(LONGITUDE) || "", //经度
+        page: 1,
+        limit: 10
+      };
+      storeListApi(data)
+        .then(res => {
+          this.storeList.push.apply(this.storeList, res.data.list);
+        })
+        .catch(err => {
+          this.$dialog.error(err.msg);
+        });
+    },
     closeFollow() {
       this.followHid = false;
     },
@@ -550,14 +513,24 @@ export default {
 };
 </script>
 <style scoped>
-[v-cloak] {
-  display: none;
-}
-.index {
-  background-color: #fff;
-}
 
 .index .follow {
   z-index: 100000;
+}
+.marqstyle{
+     margin-left:0.3rem;line-height:0.7rem;
+}
+.marqstyle a{color:#fff;}
+.swiper-pagination-bullet-active{
+    opacity: 1;
+    background: #FFBA00;
+}
+.swiper-pagination-bullet {
+    width: 18px;
+    height: 5px;
+    display: inline-block;
+    border-radius: 0%; 
+    background: #666;
+    opacity: .2;
 }
 </style>

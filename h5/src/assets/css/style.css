@@ -22,7 +22,7 @@ body{font-size:0.28rem;background-color:#f5f5f5;transition: background-color .3s
 .goodList .item .underline{padding:0.3rem 0.3rem 0.3rem 0;border-bottom:1px solid #f5f5f5;}
 .goodList .item:nth-last-child(1) .underline{border-bottom:0;}
 .goodList .item .text{font-size:0.3rem;color:#222;width:4.89rem;text-align: left;}
-.goodList .item .text .money{font-size:0.26rem;font-weight:bold;margin-top:0.5rem;}
+.goodList .item .text .money{font-size:0.26rem;font-weight:bold;margin-top:0.1rem;}
 .goodList .item .text .money .num{font-size:0.34rem;}
 .goodList .item .text .vip-money{font-size:0.24rem;color:#282828;font-weight:bold;margin-top:0.1rem;}
 .goodList .item .text .vip-money .vip{margin-right:0.22rem;}
@@ -240,7 +240,7 @@ body{font-size:0.28rem;background-color:#f5f5f5;transition: background-color .3s
     background-color:#fff;opacity:0.6;}
 .index .banner .swiper-pagination-bullet-active{opacity:1;}
 .index .nav{padding-top:0.26rem;}
-.index .nav .item{width:25%;text-align:center;font-size:0.26rem;margin-bottom:0.35rem;}
+.index .nav .item{width:25%;text-align:center;font-size:0.26rem;margin-bottom:0.35rem;float:left;}
 .index .nav .item .pictrue{width:0.9rem;height:0.9rem;margin:0 auto 0.15rem auto;}
 .index .nav .item .pictrue img{width:100%;height:100%;border-radius:50%;}
 .index .news{height:0.77rem;border-top:1px solid #f4f4f4;padding:0 0.3rem;box-shadow:0 0.1rem 0.3rem #f5f5f5;
@@ -255,11 +255,9 @@ body{font-size:0.28rem;background-color:#f5f5f5;transition: background-color .3s
 .index .news .new-banner .text .newsTitle{width:3.97rem;font-size:0.24rem;color:#666;}
 .index .news .new-banner .iconfont{font-size:0.28rem;color:#888;}
 .index .specialArea{padding:0.3rem;}
-.index .specialArea .assemble{width:2.6rem;height:2.6rem;position:relative;}
-.index .specialArea .assemble img{width:100%;height:100%;border-radius:0.05rem;}
-.index .specialArea .assemble .text{position:absolute;top:0.37rem;left:0.22rem;}
-.index .specialArea .name{font-size:0.3rem;color:#fff;}
-.index .specialArea .infor{font-size:0.22rem;color:rgba(255, 255, 255, 0.8);margin-top:0.05rem;}
+.index .specialArea .assemble{width: 31%;background: rgb(9,197,15);box-shadow: 2px 2px 1px 1px rgb(232, 232, 232);}
+.index .specialArea .name{font-size:0.4rem;color:#fff;margin-top:0.1rem;text-align: center;}
+.index .specialArea .infor{font-size:0.22rem;color:rgba(255, 255, 255, 0.8);margin-top:0.1rem;text-align: center;margin-bottom: 0.15rem;}	
 .index .specialArea .list{height:2.6rem;width:4.16rem;}
 .index .specialArea .item{width:100%;height:1.24rem;position:relative;}
 .index .specialArea .item img{width:100%;height:100%;}
@@ -1663,6 +1661,33 @@ border-radius:0.3rem;color:#fff;line-height:0.5rem;text-align:center;bottom:0.17
 .malogo span{float:left;line-height:1rem;font-size: 0.4rem;}
 .erma_tip{width:100%;height: 1rem;text-align: center;line-height: 1rem;font-size: 0.25rem;}
 
+.ad_tong{
+	background: url(../images/notice.png) 0.1rem no-repeat;
+    padding-left: .2rem;
+	width:6.9rem;
+	margin-left: .3rem;
+	height:0.6rem;
+	background-color:#58d1b2;
+	background-size:0.4rem;
+	color:#fff;
+	margin-top:0.3rem;
+	border-radius: 0.1rem;
+}
+.pline1 {
+    text-overflow: ellipsis;
+    width: 100%;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.pline2{text-overflow: ellipsis;width: 100%;font-size:0.35rem; -webkit-line-clamp: 1;height:0.5rem;color:#282828;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;}
+.shou{font-size: .22rem;color: #aaa;font-weight: 400;margin-left: 0.2rem;}
+.shoptip{font-size: .25rem; color: #333;font-weight: 400;line-height: 0.4rem;}
+.shop_box{height: 1.8rem;margin-top: 0.1rem;}
+.shangjia{ padding-top: 0.2rem;padding-bottom: 0.1rem;border-bottom: 1px solid #eee;}
+.productList .nav .condition{margin-left:0.5rem;}
+.shopaddress{text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;-webkit-line-clamp: 1;}
 
 
 

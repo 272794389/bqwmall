@@ -162,6 +162,7 @@ class StoreProduct extends BaseModel
         $priceOrder = $data['priceOrder'];
         $salesOrder = $data['salesOrder'];
         $news = $data['news'];
+        $condition=$data['condition'];
         $page = $data['page'];
         $limit = $data['limit'];
         $type = $data['type']; // 某些模板需要购物车数量 1 = 需要查询，0 = 不需要
@@ -179,13 +180,23 @@ class StoreProduct extends BaseModel
         }
         if (!empty($keyword)) $model->where('keyword|store_name', 'LIKE', htmlspecialchars("%$keyword%"));
         if ($news != 0) $model->where('is_new', 1);
+        
+        if($condition==1){//周边
+            $model->where('belong_t', 2);
+        }else if($condition==2){//消费积分兑换
+            $model->where('pay_paypoint', '>',0);
+        }else if($condition==3){//重消积分兑换
+            $model->where('pay_repeatpoint', '>',0);
+        }else if($condition==4){//网店商品
+            $model->where('belong_t', 2);
+        }
         $baseOrder = '';
         if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
 //        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//虚拟销量
         if ($baseOrder) $baseOrder .= ', ';
         $model->order($baseOrder . 'sort DESC, add_time DESC');
-        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,stock')->select()->each(function ($item) use ($uid, $type) {
+        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,stock,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point,belong_t')->select()->each(function ($item) use ($uid, $type) {
             if ($type) {
                 $item['is_att'] = StoreProductAttrValueModel::where('product_id', $item['id'])->count() ? true : false;
                 if ($uid) $item['cart_num'] = StoreCart::where('is_pay', 0)->where('is_del', 0)->where('is_new', 0)->where('type', 'product')->where('product_id', $item['id'])->where('uid', $uid)->value('cart_num');
@@ -307,6 +318,24 @@ class StoreProduct extends BaseModel
         return $list;
     }
 
+    
+    public static function getProductListByBelong($limit = 0, $uid = 0,$belong_t=0, bool $bool = true)
+    {
+        if (!$limit && !$bool) return [];
+        $model = self::where('is_del', 0)
+            ->where('stock', '>', 0)->where('is_show', 1)->where('belong_t',$belong_t)->field("id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point")
+            ->order('sales DESC, id DESC');
+        if ($limit) $model->limit($limit);
+        $list = $model->select();
+        $list = count($list) ? $list->toArray() : [];
+        if (!empty($list)) {
+            foreach ($list as $k => $v) {
+                $list[$k]['activity'] = self::activity($v['id']);
+            }
+        }
+        return self::setLevelPrice($list, $uid);
+    }
+    
     /**
      * 精品产品
      * @param string $field
@@ -317,8 +346,8 @@ class StoreProduct extends BaseModel
     {
         if (!$limit && !$bool) return [];
         $model = self::where('is_best', 1)->where('is_del', 0)->where('mer_id', 0)
-            ->where('stock', '>', 0)->where('is_show', 1)->field($field)
-            ->order('sort DESC, id DESC');
+        ->where('stock', '>', 0)->where('is_show', 1)->field($field)
+        ->order('sort DESC, id DESC');
         if ($limit) $model->limit($limit);
         $list = $model->select();
         $list = count($list) ? $list->toArray() : [];

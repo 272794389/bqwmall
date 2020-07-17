@@ -64,6 +64,12 @@ class StoreCategory extends BaseModel
             return $parentCategory;
         }
     }
+    
+    public static function getIndexList($limits = 0,$limite = 8,bool $bool = true, $field = 'id,cate_name,pid,pic')
+    {
+        if(!$limite && !$bool) return [];
+        return self::where('pid', 0)->where('is_show', 1)->field($field)->order('sort DESC,id desc ')->limit($limits,$limite)->select();
+    }
 
     /**
      * TODO  获取首页展示的二级分类  排序默认降序
