@@ -78,6 +78,7 @@ class StoreProduct extends BaseModel
         }
         return $list;
     }
+    
 
     public static function validWhere()
     {

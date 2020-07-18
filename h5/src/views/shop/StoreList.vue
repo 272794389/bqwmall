@@ -1,17 +1,64 @@
 <template>
   <div>
-    <div class="storeBox" ref="container">
+    <div class="storeBox productList" ref="container" style="margin-top:2.6rem;">
+     <form @submit.prevent="submitForm">
+      <div class="search bg-color-red acea-row row-between-wrapper">
+        <div class="input acea-row row-between-wrapper">
+          <span class="iconfont icon-sousuo"></span>
+          <input placeholder="搜索商家信息" v-model="where.keyword" />
+        </div>
+      </div>
+    </form>
+    <div class="nav acea-row row-middle">
+      <div class="condition" @click="set_where(4)" :class="condition==1 ? 'font-color-red' : ''">
+                 全城
+      </div>
+      <div class="condition" @click="set_where(5)" :class="condition==2 ? 'font-color-red' : ''">
+        1km
+      </div>
+      <div class="condition" @click="set_where(6)" :class="condition==3 ? 'font-color-red' : ''">
+        5km
+      </div>
+      <div  class="condition" @click="set_where(7)" :class="condition==4 ? 'font-color-red' : ''">
+        10km
+      </div>
+      <div  class="condition" @click="set_where(8)" :class="condition==5 ? 'font-color-red' : ''">
+        20km
+      </div>
+    </div>
+    <div class="nav acea-row row-middle" style="margin-top:0.82rem;">
+      <div
+        class="item"
+        :class="title ? 'font-color-red' : ''"
+        @click="set_where(0)"
+      >
+        {{ title ? title : "默认" }}
+      </div>
+      <div class="item" @click="set_where(2)">
+                  消费笔数
+        <img src="@assets/images/horn.png" v-if="stock === 0" />
+        <img src="@assets/images/up.png" v-if="stock === 1" />
+        <img src="@assets/images/down.png" v-if="stock === 2" />
+      </div>
+    </div>
+    
       <div
         class="storeBox-box"
         v-for="(item, index) in storeList"
         :key="index"
-        @click.stop="checked(item)"
+        @click="goDetail(item)"
       >
         <div class="store-img"><img :src="item.image" lazy-load="true" /></div>
-        <div class="store-cent-left">
+        <div class="store-cent-left" style="width:5">
           <div class="store-name">{{ item.name }}</div>
           <div class="store-address line1">
             {{ item.address }}{{ ", " + item.detailed_address }}
+          </div>
+          <div class="store-address line1">
+                               已消费{{ item.sales }}笔<span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
+          </div>
+          <div class="store-address line1">
+                               购物积分支付比例{{ item.give_rate }}%
           </div>
         </div>
         <div class="row-right">
@@ -22,7 +69,7 @@
           </div>
           <div class="store-distance" @click.stop="showMaoLocation(item)">
             <span class="addressTxt" v-if="item.range"
-              >距离{{ item.range }}千米</span
+              >距{{ item.range }}KM</span
             >
             <span class="addressTxt" v-else>查看地图</span>
             <span class="iconfont icon-youjian"></span>
@@ -83,17 +130,46 @@ export default {
   components: { Loading },
   computed: mapGetters(["goName"]),
   data() {
+   const { s = "", id = 0, title = "" } = this.$route.query;
     return {
-      page: 1,
-      limit: 20,
+      where: {
+        page: 1,
+        limit: 8,
+        latitude:"",
+        longitude:"",
+        keyword: s,
+        sid: id, //二级分类id
+        salesOrder: ""
+      },
+      title: title && id ? title : "",
       loaded: false,
+      stock: 0,
       loading: false,
       storeList: [],
       mapShow: false,
       system_store: {},
       mapKey: cookie.get(MAPKEY),
-      locationShow: false
+      locationShow: false,
+      condition: 1
     };
+  },
+  watch: {
+    $route(to) {
+      if (to.name !== "storeList") return;
+      const { s = "", id = 0, title = "" } = to.query;
+
+      if (s !== this.where.keyword || id !== this.where.sid) {
+        this.where.keyword = s;
+        this.loaded = false;
+        this.loading = false;
+        this.where.page = 1;
+        this.where.sid = id;
+        this.title = title && id ? title : "";
+        this.condition = 1;
+        this.$set(this, "storeList", []);
+        this.getList();
+      }
+    }
   },
   mounted() {
     if (cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
@@ -177,6 +253,9 @@ export default {
         this.mapShow = true;
       }
     },
+    goDetail(item) {
+        this.$router.push({ path: "/sdetail/" + item.id });
+    },
     // 选中门店
     checked(e) {
       if (this.goName === "orders") {
@@ -188,23 +267,72 @@ export default {
     getList: function() {
       if (this.loading || this.loaded) return;
       this.loading = true;
+      this.setWhere();
+      let q = this.where;
+      /*
       let data = {
         latitude: cookie.get(LATITUDE) || "", //纬度
         longitude: cookie.get(LONGITUDE) || "", //经度
         page: this.page,
         limit: this.limit
-      };
-      storeListApi(data)
-        .then(res => {
+      };*/
+      storeListApi(q).then(res => {
           this.loading = false;
-          this.loaded = res.data.list.length < this.limit;
+          this.loaded = res.data.list.length < this.where.limit;
           this.storeList.push.apply(this.storeList, res.data.list);
-          this.page = this.page + 1;
-        })
-        .catch(err => {
+          this.where.page = this.where.page + 1;
+        }).catch(err => {
           this.$dialog.error(err.msg);
         });
-    }
+    },
+    //点击事件处理
+    set_where: function(index) {
+      let that = this;
+      switch (index) {
+        case 0:
+          return that.$router.push({ path: "/spcategory" });
+        case 2:
+          if (that.stock === 0) that.stock = 1;
+          else if (that.stock === 1) that.stock = 2;
+          else if (that.stock === 2) that.stock = 0;
+          break;
+        case 4:
+          that.condition = 1;
+          break;
+        case 5:
+          that.condition = 2;
+          break;
+        case 6:
+          that.condition = 3;
+          break;
+        case 7:
+          that.condition = 4;
+          break;
+        case 8:
+          that.condition = 5;
+          break;
+        default:
+          break;
+      }
+      that.$set(that, "storeList", []);
+      that.where.page = 1;
+      that.loaded = false;
+      that.getList();
+    },
+    //设置where条件
+    setWhere: function() {
+      let that = this;
+      if (that.stock === 0) {
+        that.where.salesOrder = "";
+      } else if (that.stock === 1) {
+        that.where.salesOrder = "asc";
+      } else if (that.stock === 2) {
+        that.where.salesOrder = "desc";
+      }
+      that.where.latitude = cookie.get(LATITUDE) || "";
+      that.where.longitude = cookie.get(LONGITUDE) || "";
+      that.where.condition = that.condition;
+    },
   }
 };
 </script>
@@ -237,11 +365,11 @@ export default {
   width: 80%;
 }
 .store-cent-left {
-  width: 45%;
+  width: 50%;
 }
 .store-img {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 0.06rem;
   margin-right: 0.22rem;
 }
@@ -252,8 +380,8 @@ export default {
 .store-name {
   color: #282828;
   font-size: 0.3rem;
-  margin-bottom: 0.22rem;
   font-weight: 800;
+  text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;-webkit-line-clamp: 1;
 }
 .store-address {
   color: #666666;
@@ -281,6 +409,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  width: 33.5%;
+  width: 28%;
 }
 </style>

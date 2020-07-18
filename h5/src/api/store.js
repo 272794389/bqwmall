@@ -15,6 +15,13 @@ export function getProductDetail(id) {
 }
 
 /*
+ * 商品详情
+ * */
+export function getStoreDetail(id) {
+  return request.get("/store/sdetail/" + id, {}, { login: false });
+}
+
+/*
  * 商品分销二维码
  * */
 export function getProductCode(id) {

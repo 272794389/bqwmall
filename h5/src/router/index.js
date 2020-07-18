@@ -159,14 +159,23 @@ const router = new Router({
       component: () => import("@views/shop/GoodsCon.vue")
     },
     {
-      path: "/shop/storeList/:gonames?",
-      name: "StoreList",
-      meta: {
-        title: "门店列表",
-        keepAlive: false
+        path: "/sdetail/:id",
+        name: "ShopCon",
+        meta: {
+          title: "商家详情",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/ShopCon.vue")
       },
-      component: () => import("@views/shop/StoreList.vue")
-    },
+    {
+        path: "/store_list",
+        name: "StoreList",
+        meta: {
+          title: "门店列表",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/StoreList.vue")
+      },
     {
       path: "/cart",
       name: "ShoppingCart",

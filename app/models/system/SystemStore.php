@@ -134,18 +134,42 @@ class SystemStore extends BaseModel
         $field = "(round(6367000 * 2 * asin(sqrt(pow(sin(((latitude * pi()) / 180 - ({$latitude} * pi()) / 180) / 2), 2) + cos(({$latitude} * pi()) / 180) * cos((latitude * pi()) / 180) * pow(sin(((longitude * pi()) / 180 - ({$longitude} * pi()) / 180) / 2), 2))))) AS distance";
         return $field;
     }
+    
+    public static function getDistance($latitude, $longitude,$distance){
+        $field = "round(sqrt((pow((($latitude - latitude) * 111000), 2)) + (pow((($longitude - longitude) * 111000), 2)))/1000,1)<$distance ";
+        return $field;
+    }
 
     /**
      * 门店列表
      * @return mixed
      */
-    public static function lst($latitude, $longitude, $page, $limit)
+    public static function lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition)
     {
         $model = new self();
         $model = $model->where('is_del', 0);
         $model = $model->where('is_show',1);
+        if($sid>0){
+            $model = $model->where('cat_id',$sid);
+        }
+        if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        $baseOrder = '';
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+        
         if ($latitude && $longitude) {
-            $model = $model->field(['*', self::distanceSql($latitude, $longitude)])->order('distance asc');
+            if($condition==1){//默认50km
+                $model = $model->where(self::getDistance($latitude, $longitude,50.1));
+            }else if($condition==2){
+                $model = $model->where(self::getDistance($latitude, $longitude,1.1));
+            }else if($condition==3){
+                $model = $model->where(self::getDistance($latitude, $longitude,5.1));
+            }else if($condition==4){
+                $model = $model->where(self::getDistance($latitude, $longitude,10.1));
+            }else if($condition==5){
+                $model = $model->where(self::getDistance($latitude, $longitude,20.1));
+            }
+           // $model = $model->where(self::getDistance($latitude, $longitude));
+            $model = $model->field(['*', self::distanceSql($latitude, $longitude)])->order($baseOrder . 'distance asc');
         }
         $list = $model->page((int)$page, (int)$limit)
             ->select()
@@ -158,8 +182,6 @@ class SystemStore extends BaseModel
                 //转换单位
                 $value['range'] = bcdiv($value['distance'], 1000, 1);
             }
-//            $distanceKey = array_column($list, 'distance');
-//            array_multisort($distanceKey, SORT_ASC, $list);
         }
         return $list;
     }

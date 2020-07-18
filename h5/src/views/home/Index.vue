@@ -155,7 +155,7 @@
           <div class="name line1">周边的店推荐</div>
           <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
         </div>
-        <router-link :to="'/shop/storeList/'" class="more"
+        <router-link :to="'/spcategory/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>

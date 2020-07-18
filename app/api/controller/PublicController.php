@@ -257,13 +257,18 @@ class PublicController
      */
     public function store_list(Request $request)
     {
-        list($latitude, $longitude, $page, $limit) = UtilService::getMore([
+        list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition) = UtilService::getMore([
             ['latitude', ''],
             ['longitude', ''],
             ['page', 1],
-            ['limit', 10]
+            ['limit', 10],
+            ['sid', 0],
+            ['cid', 0],
+            ['keyword', ''],
+            ['salesOrder', ''],
+            ['condition', 1]
         ], $request, true);
-        $list = SystemStore::lst($latitude, $longitude, $page, $limit);
+        $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
         if (!$list) $list = [];
         $data['list'] = $list;
         $data['tengxun_map_key'] = sys_config('tengxun_map_key');
@@ -299,6 +304,14 @@ class PublicController
             return $data;
         }, 0);
         return app('json')->successful($list);
+    }
+    
+    public function store_detail(Request $request, $id, $type = 0){
+        if (!$id || !($storeInfo = SystemStore::getStoreDispose($id))) return app('json')->fail('商户不存在或已下架');
+        $data['storeInfo'] = $storeInfo;
+        $data['mapKey'] = sys_config('tengxun_map_key');
+        $data['good_list'] = StoreProduct::getGoodList(18, '*');
+        return app('json')->successful($data);
     }
 
 }

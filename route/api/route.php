@@ -245,7 +245,9 @@ Route::group(function () {
     Route::get('store_list', 'PublicController/store_list')->name('storeList');
     //获取城市列表
     Route::get('city_list', 'PublicController/city_list')->name('cityList');
-
+   // Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情
+    //门店详情
+    Route::get('/store/sdetail/:id/[:type]', 'PublicController/store_detail')->name('storedetail');
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, false);
 
