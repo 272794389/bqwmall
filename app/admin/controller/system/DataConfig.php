@@ -74,7 +74,8 @@ class DataConfig extends AuthController
             ['inspect_pro', -1],
             ['inspect_city', 0],
             ['inspect_district', 0],
-            ['withdraw_fee', 0]
+            ['withdraw_fee', 0],
+            ['plat_rate', 0]
         ]);
             DataConfigModel::edit($data, $id);
             return Json::success('修改成功!');

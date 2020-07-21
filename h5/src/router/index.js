@@ -166,7 +166,25 @@ const router = new Router({
           keepAlive: false
         },
         component: () => import("@views/shop/ShopCon.vue")
-      },
+    },
+    {
+        path: "/shoppay/:id",
+        name: "ShopPay",
+        meta: {
+          title: "商家消费",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/ShopPay.vue")
+    },
+    {
+        path: "/shopset/:id",
+        name: "ShopSet",
+        meta: {
+          title: "订单结算",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/ShopSet.vue")
+    },
     {
         path: "/store_list",
         name: "StoreList",

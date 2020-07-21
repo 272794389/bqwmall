@@ -142,3 +142,20 @@ export function postOrderComment(data) {
 export function storeListApi(data) {
   return request.get("store_list", data, { login: false });
 }
+
+/*
+ * 商家消费
+ * */
+export function shopPay(data) {
+  return request.post("shoppay", data);
+}
+
+
+export function getOrder(id) {
+	  return request.get("get_order/"+id, {}, { login: false });
+	}
+
+
+export function payOrder(data) {
+	  return request.post("pay_order", data || {});
+	}

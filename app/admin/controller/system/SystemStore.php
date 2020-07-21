@@ -149,6 +149,7 @@ class SystemStore extends AuthController
             ['link_phone', ''],
             ['sett_rate',0],
             ['give_rate', 0],
+            ['pay_rate', 0],
             ['belong_t', 2],
             ['address', ''],
             ['detailed_address', ''],

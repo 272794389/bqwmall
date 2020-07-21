@@ -98,6 +98,14 @@
                                     </i-Col>
                                 </Row>
                             </Form-Item>
+                             <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>赠消费积分比例%：</span>
+                                        <i-Input placeholder="赠送消费积分比例%" v-model="form.pay_rate" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
@@ -217,6 +225,7 @@
                         link_phone:storeData.link_phone || '',
                         sett_rate:storeData.sett_rate || 0,
                         give_rate:storeData.give_rate || 0,
+                        pay_rate:storeData.pay_rate || 0,
                         address:storeData.address || [],
                         image:storeData.image || '',
                         belong_t:storeData.belong_t || 0,

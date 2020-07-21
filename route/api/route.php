@@ -248,6 +248,11 @@ Route::group(function () {
    // Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情
     //门店详情
     Route::get('/store/sdetail/:id/[:type]', 'PublicController/store_detail')->name('storedetail');
+    Route::post('shoppay', 'PublicController/shoppay')->name('shoppay');// 商家消费
+    //消费订单详情
+    Route::get('get_order/:id', 'PublicController/get_order')->name('get_order');
+    
+    Route::post('pay_order', 'PublicController/pay_order')->name('pay_order'); //订单创建
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\http\middleware\AuthTokenMiddleware::class, false);
 

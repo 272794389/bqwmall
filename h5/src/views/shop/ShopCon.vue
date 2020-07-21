@@ -1,16 +1,13 @@
 <template>
-  <div:class="[posterImageStatus ? 'noscroll product-con' : 'product-con'] storeBox"
-    ref="box"
-    @scroll.native="onScroll"
-  >
-    
+<div>
+  <div class="product-con storeBox"  ref="box" @scroll.native="onScroll">
     <div class="superior" id="title2">
       <div class="storeBox-box" style="background: #fff;padding: 0.2rem;margin-top:0.5rem;">
         <div class="store-img"><img :src="storeInfo.image" lazy-load="true" /></div>
         <div class="store-cent-left" style="width:5">
           <div class="store-name">{{ storeInfo.name }}</div>
           <div class="store-address line1">
-            {{ storeInfo.address }}{{ ", " + storeInfo.detailed_address }}
+            {{ storeInfo._detailed_address }}
           </div>
           <div class="store-address line1">
                                已消费{{ storeInfo.sales }}笔
@@ -29,13 +26,12 @@
             ></a>
           </div>
           <div class="store-distance" @click.stop="showMaoLocation(storeInfo)">
-           <!-- <span class="addressTxt" v-if="item.range">距{{ storeInfo.range }}KM</span>-->
-            <span class="addressTxt" v-else>查看地图</span>
+            <span class="addressTxt">查看地图</span>
             <span class="iconfont icon-youjian"></span>
           </div>
         </div>
      </div>
-     <div class="pay_btn" @click="goPay(item)">点击向商家付款</div>
+     <div class="pay_btn" @click="goPay(storeInfo)">点击向商家付款</div>
      <div class="productList">
      <div v-if="goodList.length > 0">
       <div class="title acea-row row-center-wrapper" style="line-height:0.8rem;">
@@ -55,7 +51,7 @@
 	        </div>
 	        <div class="text" :class="Switch === true ? '' : 'on'">
 	          <div class="name pline1">{{ item.store_name }}</div>
-	          <div class="money font-color-red" :class="Switch === true ? '' : 'on'">
+	          <div class="money font-color-red">
 	                                      ￥<span class="num">{{ item.price }}</span>
 	               <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
 	          </div>
@@ -79,13 +75,25 @@
 	      </div>
 	      </div>
     </div>
-    <Product-window v-on:changeFun="changeFun" :attr="attr"></Product-window>
-    <div
-      class="mask"
-      @touchmove.prevent
-      @click="listenerActionClose"
-      v-show="posters"
-    ></div>
+  </div>
+ </div>
+ <div>
+      <iframe
+        v-if="locationShow && !isWeixin"
+        ref="geoPage"
+        width="0"
+        height="0"
+        frameborder="0"
+        style="display:none;"
+        scrolling="no"
+        :src="
+          'https://apis.map.qq.com/tools/geolocation?key=' +
+            mapKey +
+            '&referer=myapp'
+        "
+      >
+      </iframe>
+    </div>
     <div class="geoPage" v-if="mapShow">
       <iframe
         width="100%"
@@ -103,8 +111,7 @@
       >
       </iframe>
     </div>
-  </div>
-  </div>
+ </div>
 </template>
 <script>
 import { swiper, swiperSlide } from "vue-awesome-swiper";
@@ -132,6 +139,7 @@ import cookie from "@utils/store/cookie";
 let NAME = "GoodsCon";
 const LONGITUDE = "user_longitude";
 const LATITUDE = "user_latitude";
+const MAPKEY = "mapKey";
 export default {
   name: NAME,
   components: {
@@ -144,7 +152,7 @@ export default {
       shareInfoStatus: false,
       weixinStatus: false,
       mapShow: false,
-      mapKey: "",
+      mapKey: cookie.get(MAPKEY),
       id: 0,
       storeInfo: {},
       goodList: [],
@@ -165,6 +173,9 @@ export default {
     // window.scroll(0, 0);
   },
   mounted: function() {
+   if (!cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
+      this.selfLocation();
+    }
     document.addEventListener("scroll", this.onScroll, false);
     this.id = this.$route.params.id;
     this.productCon();
@@ -177,7 +188,84 @@ export default {
       opacity = opacity > 1 ? 1 : opacity;
       this.opacity = opacity;
     },
-    
+    goPay(item) {
+        this.$router.push({ path: "/shoppay/" + item.id });
+    },
+    selfLocation() {
+      if (isWeixin()) {
+        wxShowLocation()
+          .then(res => {
+            cookie.set(LATITUDE, res.latitude);
+            cookie.set(LONGITUDE, res.longitude);
+            this.getList();
+          })
+          .catch(() => {
+            cookie.remove(LATITUDE);
+            cookie.remove(LONGITUDE);
+            this.getList();
+          });
+      } else {
+        if (!cookie.get(MAPKEY))
+          return this.$dialog.error(
+            "暂无法使用查看地图，请配置您的腾讯地图key"
+          );
+        let loc;
+        let _this = this;
+        if (cookie.get(MAPKEY)) _this.locationShow = true;
+        //监听定位组件的message事件
+        window.addEventListener(
+          "message",
+          function(event) {
+            loc = event.data; // 接收位置信息 LONGITUDE
+            console.log("location", loc);
+            if (loc && loc.module == "geolocation") {
+              cookie.set(LATITUDE, loc.lat);
+              cookie.set(LONGITUDE, loc.lng);
+              _this.getList();
+            } else {
+              cookie.remove(LATITUDE);
+              cookie.remove(LONGITUDE);
+              _this.getList();
+              //定位组件在定位失败后，也会触发message, event.data为null
+              console.log("定位失败");
+            }
+          },
+          false
+        );
+        // this.$refs.geoPage.contentWindow.postMessage("getLocation", "*");
+      }
+    },
+    showMaoLocation(e) {
+      this.system_store = e;
+      if (isWeixin()) {
+        let config = {
+          latitude: parseFloat(this.system_store.latitude),
+          longitude: parseFloat(this.system_store.longitude),
+          name: this.system_store.name,
+          address:
+            this.system_store.address + this.system_store.detailed_address
+        };
+        wechatEvevt("openLocation", config)
+          .then(res => {
+            console.log(res);
+          })
+          .catch(res => {
+            if (res.is_ready) {
+              res.wx.openLocation(config);
+            }
+          });
+      } else {
+        if (!cookie.get(MAPKEY))
+          return this.$dialog.error(
+            "暂无法使用查看地图，请配置您的腾讯地图key"
+          );
+        this.mapShow = true;
+      }
+    },
+    // 商品详情跳转
+    goDetail(item) {
+        this.$router.push({ path: "/detail/" + item.id });
+    },
     onScroll: debounce(function() {
       if (this.lock) {
         return;
@@ -225,21 +313,12 @@ export default {
       }
     },
    
-    //产品详情接口；
+    //商家详情接口；
     productCon: function() {
       let that = this;
       getStoreDetail(that.id)
         .then(res => {
           that.$set(that, "storeInfo", res.data.storeInfo);
-          /*
-          let good_list = res.data.good_list || [];
-          let goodArray = [];
-          let count = Math.ceil(good_list.length / 6);
-          for (let i = 0; i < count; i++) {
-            var list = good_list.slice(i * 6, i * 6 + 6);
-            if (list.length) goodArray.push({ list: list });
-          }
-          */
           that.$set(that, "goodList", res.data.good_list || []);
          that.mapKey = res.data.mapKey;
         })
@@ -288,6 +367,13 @@ export default {
 };
 </script>
 <style scoped>
+.geoPage {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  z-index: 10000;
+}
 .storeBox {
   width: 100%;
   background-color: #fff;

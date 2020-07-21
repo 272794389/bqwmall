@@ -20,6 +20,8 @@ use crmeb\services\workerman\ChannelService;
 use think\facade\Cache;
 use app\models\article\Article;
 use crmeb\services\upload\Upload;
+use app\models\store\StorePayOrder;
+
 
 /**
  * 公共类
@@ -310,8 +312,86 @@ class PublicController
         if (!$id || !($storeInfo = SystemStore::getStoreDispose($id))) return app('json')->fail('商户不存在或已下架');
         $data['storeInfo'] = $storeInfo;
         $data['mapKey'] = sys_config('tengxun_map_key');
-        $data['good_list'] = StoreProduct::getGoodList(18, '*');
+        $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');
         return app('json')->successful($data);
+    }
+    
+    public function shoppay(Request $request){
+        list($amount, $store_id) = UtilService::postMore([
+            ['amount', 0],
+            ['store_id', 0]
+        ], $request, true);
+        $uid = $request->uid();
+        if ($amount<0.1)
+            return app('json')->fail('消费金额不能小于0');
+        if ($store_id<0)
+            return app('json')->fail('请选择消费商家');
+        if(!$uid){
+            return app('json')->fail('请先登录');
+        }
+        $order = StorePayOrder::addOrder($uid,$store_id,$amount);//创建消费订单
+        if ($order)
+            return app('json')->success('操作成功', ['order_id' => $order['id']]);
+        else
+        return app('json')->fail('订单创建失败'); 
+    }
+    
+    public function get_order(Request $request, $id){
+        if (!$id || !($orderinfo = StorePayOrder::getPayOrder($request->uid(),$id))) return app('json')->fail('订单不存在');
+        $data['orderinfo'] = $orderinfo;
+        return app('json')->successful($data);
+    }
+    
+    public function pay_order(Request $request){
+        $uid = $request->uid();
+        list($order_id, $payType, $formId,$from) = UtilService::postMore([['order_id', 0],'payType', ['formId', ''],['from', 'weixin'] ], $request, true);
+        if (!$order_id || !($orderinfo = StorePayOrder::getPayOrder($uid,$order_id))) return app('json')->fail('订单不存在');
+        $orderId = $orderinfo['order_id'];
+        switch ($payType) {
+            case "weixin":
+                $orderInfo = $orderinfo->toArray();
+                if ($orderInfo['paid']) return app('json')->fail('支付已支付!');
+                //支付金额为0
+                if (bcsub((float)$orderInfo['pay_amount'], 0, 2) <= 0) {
+                    //创建订单jspay支付
+                    $payPriceStatus = StorePayOrder::jsPayPrice($orderId, $uid, $formId);
+                    if ($payPriceStatus)//0元支付成功
+                        return app('json')->status('success', '微信支付成功', $info);
+                        else
+                            return app('json')->status('pay_error', StorePayOrder::getErrorInfo());
+                } else {
+                    try {
+                        if ($from == 'routine') {
+                            $jsConfig = StorePayOrder::jsPay($orderinfo); //创建订单jspay
+                        } else if ($from == 'weixinh5') {
+                            $jsConfig = StorePayOrder::h5Pay($orderinfo);
+                        } else {
+                            $jsConfig = StorePayOrder::wxPay($orderinfo);
+                        }
+                    } catch (\Exception $e) {
+                        return app('json')->status('pay_error', $e->getMessage(), $info);
+                    }
+                    $info['jsConfig'] = $jsConfig;
+                    if ($from == 'weixinh5') {
+                        return app('json')->status('wechat_h5_pay', '订单创建成功', $info);
+                    } else {
+                        return app('json')->status('wechat_pay', '订单创建成功', $info);
+                    }
+                }
+                break;
+             case 'yue':
+                    if (StorePayOrder::yuePay($orderId, $request->uid(), $formId))
+                        return app('json')->status('success', '余额支付成功', "");
+                        else {
+                            $errorinfo = StorePayOrder::getErrorInfo();
+                            if (is_array($errorinfo))
+                                return app('json')->status($errorinfo['status'], $errorinfo['msg'], "");
+                                else
+                                    return app('json')->status('pay_error', $errorinfo);
+                        }
+                        break;
+        }
+        
     }
 
 }

@@ -137,7 +137,7 @@ class MerchantController
         if(!$erma_url){
             //$siteUrl = sysConfig('site_url');
             $siteUrl = "http://www.dshqfsc.com";
-            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/order/detail/".$store_id;//二维码链接
+            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/sdetail/".$store_id;//二维码链接
             $name = date("Y-m-d")."-order-sale-".time().".jpg";
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(!$imageInfo) return app('json')->fail('二维码生成失败');

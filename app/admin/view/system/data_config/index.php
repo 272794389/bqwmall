@@ -295,6 +295,17 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                                        <div class="grid-demo grid-demo-bg1">
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label" style="width:180px;">平台预留比例%</label>
+                                                <div class="layui-input-block">
+                                                    <input style="width: 40%" type="text" name="plat_rate" lay-verify="title" autocomplete="off"
+                                                           placeholder="请输入值" class="layui-input" v-model="formData.plat_rate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -335,7 +346,8 @@
             	inspect_pro: 0,
             	inspect_city: 0,
             	inspect_district: 0,
-            	withdraw_fee: 0
+            	withdraw_fee: 0,
+            	plat_rate: 0
             },
             
             form: null,//layui.form
