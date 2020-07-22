@@ -155,7 +155,8 @@ class StoreCart extends BaseModel
 
     public static function getUserProductCartList($uid,$cartIds='',$status=0)
     {
-        $productInfoField = 'id,image,price,ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_sub,temp_id';
+        
+        $productInfoField = 'id,image,price,ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_sub,temp_id,belong_t,give_point,pay_point,pay_amount,pay_paypoint,pay_repeatpoint,give_rate';
         $seckillInfoField = 'id,image,price,ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,is_show,is_del,is_postage,cost,temp_id,weight,volume,start_time,stop_time,time_id';
         $bargainInfoField = 'id,image,min_price as price,price as ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,status as is_show,is_del,is_postage,cost,temp_id,weight,volume';
         $combinationInfoField = 'id,image,price,postage,sales,stock,title as store_name,is_show,is_del,is_postage,cost,temp_id,weight,volume';
@@ -222,7 +223,6 @@ class StoreCart extends BaseModel
                     }
 
                 }
-
                 if($cart['product_attr_unique']){
                     $attrInfo = StoreProductAttr::uniqueByAttrInfo($cart['product_attr_unique']);
                     //商品没有对应的属性
@@ -234,9 +234,18 @@ class StoreCart extends BaseModel
                             $cart['truePrice'] = $attrInfo['price'];
                             $cart['vip_truePrice'] = 0;
                         }else {
+                            $cart['belong_t'] = $cart['productInfo']['belong_t'];
+                            $cart['give_point'] = $attrInfo['give_point'];
+                            $cart['pay_point'] = $attrInfo['pay_point'];
+                            $cart['pay_amount'] = $attrInfo['pay_amount'];
+                            $cart['pay_paypoint'] = $attrInfo['pay_paypoint'];
+                            $cart['pay_repeatpoint'] = $attrInfo['pay_repeatpoint'];
+                            $cart['give_rate'] = $attrInfo['give_rate'];
                             $cart['truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'],$uid,true);
                             $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'], $uid);
                         }
+                        
+                        
                         $cart['trueStock'] = $attrInfo['stock'];
                         $cart['costPrice'] = $attrInfo['cost'];
                         $cart['productInfo']['image'] = empty($attrInfo['image']) ? $cart['productInfo']['image'] : $attrInfo['image'];
@@ -252,6 +261,13 @@ class StoreCart extends BaseModel
                         $cart['productInfo']['attrInfo']['weight'] = $product['weight'];
                         $cart['productInfo']['attrInfo']['volume'] = $product['volume'];
                     }else {
+                        $cart['belong_t'] = $cart['productInfo']['belong_t'];
+                        $cart['give_point'] = $cart['productInfo']['give_point'];
+                        $cart['pay_point'] = $cart['productInfo']['pay_point'];
+                        $cart['pay_amount'] = $cart['productInfo']['pay_amount'];
+                        $cart['pay_paypoint'] = $cart['productInfo']['pay_paypoint'];
+                        $cart['pay_repeatpoint'] = $cart['productInfo']['pay_repeatpoint'];
+                        $cart['give_rate'] = $cart['productInfo']['give_rate'];
                         $cart['truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'],$uid,true);
                         $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($cart['productInfo']['price'], $uid);
                     }

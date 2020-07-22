@@ -167,10 +167,10 @@ class StoreProductController
             }
         } else $data['replyChance'] = 0;
         $data['mer_id'] = $storeInfo['mer_id'];
-        $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];
+        $data['system_store'] = ($res = SystemStore::getStoreDispose($storeInfo['store_id'])) ? $res : [];
         $data['good_list'] = StoreProduct::getGoodList(18, 'image,store_name,price,id,ot_price');
         $data['mapKey'] = sys_config('tengxun_map_key');
-        $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
+        $data['store_self_mention'] = (int)sysConfig('store_self_mention') ?? 0;//门店自提是否开启
         $data['activity'] = StoreProduct::activity($data['storeInfo']['id'],false);
         return app('json')->successful($data);
     }

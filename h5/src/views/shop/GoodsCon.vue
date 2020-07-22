@@ -28,15 +28,7 @@
         <div class="share acea-row row-between row-bottom">
           <div class="money font-color-red">
             ￥<span class="num">{{ storeInfo.price }}</span
-            ><span
-              class="vip-money"
-              v-if="storeInfo.vip_price && storeInfo.vip_price > 0"
-              >￥{{ storeInfo.vip_price }}</span
-            ><img
-              src="@assets/images/vip.png"
-              class="image"
-              v-if="storeInfo.vip_price && storeInfo.vip_price > 0"
-            />
+            >
           </div>
           <div
             class="iconfont icon-fenxiang"
@@ -44,6 +36,28 @@
           ></div>
         </div>
         <div class="introduce">{{ storeInfo.store_name }}</div>
+        <div class="label acea-row row-between-wrapper" v-if="storeInfo.belong_t == 0">
+           <div class="vip" v-if="storeInfo.pay_paypoint > 0">
+               <img src="@assets/images/fu.png" class="image" />{{ storeInfo.pay_paypoint || 0}}个消费积分+￥{{ storeInfo.pay_amount || 0}}
+            </div>
+            <div class="vip" v-if="storeInfo.pay_repeatpoint > 0">
+               <img src="@assets/images/fu.png" class="image" />{{ storeInfo.pay_repeatpoint || 0}}个重消积分+￥{{ storeInfo.pay_amount || 0}}
+            </div>
+            <div class="vip" v-if="storeInfo.pay_repeatpoint ==0&&storeInfo.pay_paypoint==0">
+               <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.pay_amount || 0}}
+            </div>
+            <div class="vip" v-if="storeInfo.give_point > 0">
+                 <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ storeInfo.give_point }}购物积分
+            </div>
+        </div>
+        <div class="label acea-row row-between-wrapper" v-if="storeInfo.belong_t == 1||storeInfo.belong_t == 2">
+           <div class="vip" v-if="storeInfo.pay_point > 0">
+                <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
+            </div>
+            <div class="vip" v-if="storeInfo.give_rate > 0">
+                                        购物积分支付比例：{{ storeInfo.give_rate || 0}}%
+            </div>
+        </div>
         <div class="label acea-row row-between-wrapper">
           <div>原价:￥{{ storeInfo.ot_price }}</div>
           <div>库存:{{ storeInfo.stock }}{{ storeInfo.unit_name }}</div>
@@ -124,45 +138,33 @@
         </div>
         <div class="iconfont icon-jiantou"></div>
       </div>
-      <!--<div-->
-      <!--class="store-info"-->
-      <!--v-if="system_store.id !== undefined && storeSelfMention"-->
-      <!--&gt;-->
-      <!--<div-->
-      <!--class="acea-row row-between-wrapper store-box"-->
-      <!--@click="showStoreList"-->
-      <!--&gt;-->
-      <!--<div class="title">门店信息</div>-->
-      <!--<div class="iconfont icon-jiantou"></div>-->
-      <!--</div>-->
-      <!--<div class="info acea-row row-between-wrapper">-->
-      <!--<div class="pictrue"><img :src="storeItems.image" /></div>-->
-      <!--<div class="text">-->
-      <!--<div class="name line1">-->
-      <!--{{ storeItems.name }}-->
-      <!--</div>-->
-      <!--<div class="address acea-row row-middle" @click="showChang">-->
-      <!--<span class="addressTxt line1 address_tit"-->
-      <!--&gt;{{ storeItems.address-->
-      <!--}}{{ ", " + storeItems.detailed_address }}</span-->
-      <!--&gt;<span class="iconfont icon-youjian"></span>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div class="addressBox">-->
-      <!--<a-->
-      <!--class="iconfont icon-dadianhua01 font-color-red phone"-->
-      <!--:href="'tel:' + storeItems.phone"-->
-      <!--&gt;</a>-->
-      <!--<div-->
-      <!--class="addressTxt corlor-red"-->
-      <!--@click="showChang"-->
-      <!--v-if="storeItems.range"-->
-      <!--&gt;-->
-      <!--距离{{ storeItems.range }}千米-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
+      
+      
+      
+      <div class="store-info" v-if="system_store.id !== undefined && storeSelfMention">
+      <div class="title" style="padding-left:0.3rem;">商家信息</div>
+         
+      <div class="info acea-row row-between-wrapper">
+      <div class="pictrue"><img :src="storeItems.image" /></div>
+      <div class="text">
+      <div class="name line1">
+      {{ storeItems.name }}
+      </div>
+      <div class="address acea-row row-middle" @click="showChang">
+      <span class="addressTxt line1 address_tit">{{ system_store._detailed_address}}
+      </span><span class="iconfont icon-youjian"></span>
+      </div>
+      </div>
+      <div class="addressBox">
+      <a class="iconfont icon-dadianhua01 font-color-red phone" :href="'tel:' + system_store.phone"></a>
+      <div class="addressTxt corlor-red" @click="showChang" v-if="system_store.range">
+                         距离{{ system_store.range }}千米 
+      </div> 
+      </div>
+      </div>
+      </div> 
+      
+      
     </div>
     <div class="userEvaluation" id="title1">
       <div class="title acea-row row-between-wrapper">
@@ -967,6 +969,8 @@ export default {
 .mask {
   z-index: 888 !important;
 }
+.vip{font-size:0.24rem;color: #282828;font-weight:700;}
+.vip img{width:0.46rem;height:0.21rem;margin-left:0.05rem;}
 .activity_pin {
   width: auto;
   height: 0.44rem;

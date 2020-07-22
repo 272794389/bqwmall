@@ -72,12 +72,17 @@ class StoreOrder extends BaseModel
      * @param $cartInfo
      * @return array
      */
-    public static function getOrderPriceGroup($cartInfo, $addr)
+    public static function getOrderPriceGroup($cartInfo, $addr,$uid)
     {
         $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮
         $totalPrice = self::getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
         $costPrice = self::getOrderSumPrice($cartInfo, 'costPrice');//获取订单成本价
         $vipPrice = self::getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
+        
+        //计算需支付的总现金、总购物积分、消费积分、重消积分，赠送总的消费积分、购物积分
+        //$priceGroup = self::getOrderSumAmount($cartInfo,$uid);
+        
+        
         //如果满额包邮等于0
         if (!$storeFreePostage) {
             $storePostage = 0;
@@ -148,6 +153,111 @@ class StoreOrder extends BaseModel
             if ($storeFreePostage <= $totalPrice) $storePostage = 0;//如果总价大于等于满额包邮 邮费等于0
         }
         return compact('storePostage', 'storeFreePostage', 'totalPrice', 'costPrice', 'vipPrice');
+    }
+    
+    /**获取某个字段总金额
+     * @param $cartInfo
+     * @param $key 键名
+     * @return int|string
+     */
+    public static function getOrderSumAmount($cartInfo,$uid)
+    {
+        
+        $userInfo = User::getUserInfo($uid);
+        
+        //客户账户余额情况
+        $ugive_point = $userInfo['give_point'];
+        $upay_point = $userInfo['pay_point'];
+        $repeat_point = $userInfo['repeat_point'];
+        
+        //统计支付及赠送
+        $give_point = 0;//赠送购物积分
+        $pay_point = 0;//赠送消费积分
+        $pay_amount = 0;//支付现金总额
+        $pay_paypoint = 0;//支付消费积分总额
+        $pay_repeatpoint = 0;//支付重消积分总额
+        $give_rate = 0;//支付购物积分
+        foreach ($cartInfo as $cart) {
+            //判断商品类型
+            if($cart['belong_t']==0){//商品中心商品结算
+                if($cart['pay_repeatpoint']>0){//重复消费积分支付
+                    if($repeat_point>0&&($repeat_point>$cart['pay_repeatpoint']||$repeat_point==$cart['pay_repeatpoint'])){
+                        for($i=0;i<$cart['cart_num'];$i++){
+                            if(!$repeat_point<$cart['pay_repeatpoint']){//重复消费积分支付
+                                $pay_repeatpoint = bcadd($pay_repeatpoint, $cart['pay_repeatpoint'], 2);
+                                $repeat_point = bcsub($repeat_point,$cart['pay_repeatpoint'],2);
+                                $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
+                            }else{//现金支付
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                if($cart['give_point']>0){//判断是否赠送购物积分
+                                    $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                }
+                            } 
+                        }
+                    }else{//现金支付
+                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                        if($cart['give_point']>0){//判断是否赠送购物积分
+                            $give_point = bcadd($give_point, $cart['give_point'], 2);
+                        }
+                    } 
+                }else if($cart['pay_paypoint']>0){//消费积分支付
+                    if($upay_point>0&&($upay_point>$cart['pay_paypoint']||$upay_point==$cart['pay_paypoint'])){
+                        for($i=0;i<$cart['cart_num'];$i++){
+                            if(!$upay_point<$cart['pay_paypoint']){//消费积分支付
+                                $pay_paypoint = bcadd($pay_paypoint, $cart['pay_paypoint'], 2);
+                                $upay_point = bcsub($upay_point,$cart['pay_paypoint'],2);
+                                $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
+                            }else{//现金支付
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                if($cart['give_point']>0){//判断是否赠送购物积分
+                                    $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                }
+                            }
+                        }
+                    }else{//现金支付
+                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                        if($cart['give_point']>0){//判断是否赠送购物积分
+                            $give_point = bcadd($give_point, $cart['give_point'], 2);
+                        }
+                    } 
+                }else{//纯现金支付
+                    $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['pay_amount'], 2), 2); 
+                    if($cart['give_point']>0){//判断是否赠送购物积分
+                        $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
+                    }
+                }
+            }else if($cart['belong_t']==1||$cart['belong_t']==2){//网店及周边的套餐商品结算
+                if($cart['give_rate']>0){//购物积分支付
+                    if($ugive_point>0&&($ugive_point>$cart['give_rate']||$ugive_point==$cart['give_rate'])){
+                        for($i=0;i<$cart['cart_num'];$i++){
+                            if(!$ugive_point<$cart['give_rate']){//购物积分支付
+                                $give_rate = bcadd($give_rate, $cart['give_rate'], 2);
+                                $ugive_point = bcsub($ugive_point,$cart['give_rate'],2);
+                                $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
+                            }else{//现金支付
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                if($cart['pay_point']>0){//判断是否赠送消费积分
+                                    $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                                }
+                            }
+                        }
+                    }else{//现金支付
+                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                        if($cart['pay_point']>0){//判断是否赠送购物积分
+                            $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                        }
+                    }
+                    
+                }else{//纯现金支付
+                    $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['pay_amount'], 2), 2);
+                    if($cart['pay_point']>0){//判断是否赠送购物积分
+                        $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
+                    }  
+                }
+            }
+        }
+        
+        return compact('give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate');
     }
 
 

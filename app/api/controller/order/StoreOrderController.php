@@ -55,7 +55,7 @@ class StoreOrderController
         if (!$cartGroup['valid']) return app('json')->fail('请提交购买的商品');
         $cartInfo = $cartGroup['valid'];
         $addr = UserAddress::where('uid', $uid)->where('is_default', 1)->find();
-        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr);
+        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid);
         if ($priceGroup === false) {
             return app('json')->fail(StoreOrder::getErrorInfo('运费模板不存在'));
         }
