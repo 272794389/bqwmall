@@ -55,5 +55,10 @@ class StoreOrderCartInfo extends BaseModel
         }
         return $goodsName;
     }
+    
+    public static function getProductListByOid($oid){
+        $cartInfo = self::where('oid',$oid)->select();
+        return empty($cartInfo) ?[]:$cartInfo->toArray();
+    }
 
 }

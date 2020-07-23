@@ -75,6 +75,7 @@
           <span class="iconfont icon-jiantou"></span>
         </div>
       </div>
+      <!--
       <div class="item acea-row row-between-wrapper" v-if="deduction === false">
         <div>积分抵扣</div>
         <div class="discount">
@@ -94,6 +95,7 @@
           </div>
         </div>
       </div>
+      -->
       <div
         class="item acea-row row-between-wrapper"
         v-if="
@@ -108,6 +110,7 @@
         会员优惠
         <div class="discount">-￥{{ orderGroupInfo.priceGroup.vipPrice }}</div>
       </div>
+      <!--
       <div class="item acea-row row-between-wrapper" v-if="shipping_type === 0">
         <div>快递费用</div>
         <div class="discount">
@@ -118,6 +121,7 @@
           }}
         </div>
       </div>
+      -->
       <div v-else>
         <div class="item acea-row row-between-wrapper">
           <div>联系人</div>
@@ -225,6 +229,41 @@
       >
         <div>商品总价：</div>
         <div class="money">￥{{ orderPrice.total_price }}</div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="orderPrice.give_rate !== undefined"
+      >
+        <div>购物积分抵扣：</div>
+        <div class="money">￥{{ orderPrice.give_rate }}</div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="orderPrice.pay_paypoint !== undefined"
+      >
+        <div>消费积分抵扣：</div>
+        <div class="money">￥{{ orderPrice.pay_paypoint }}</div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="orderPrice.pay_repeatpoint !== undefined"
+      >
+        <div>重消积分抵扣：</div>
+        <div class="money">￥{{ orderPrice.pay_repeatpoint }}</div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="orderPrice.give_point !== undefined"
+      >
+        <div>赠送购物积分：</div>
+        <div class="money">￥{{ orderPrice.give_point }}</div>
+      </div>
+      <div
+        class="item acea-row row-between-wrapper"
+        v-if="orderPrice.pay_point !== undefined"
+      >
+        <div>赠送消费积分：</div>
+        <div class="money">￥{{ orderPrice.pay_point }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"

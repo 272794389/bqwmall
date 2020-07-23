@@ -272,6 +272,7 @@ class StoreProduct extends AuthController
             ['store_id', -1],
             ['belong_t', 0],
             ['is_self', 0],
+            ['hex_t', 0],
             ['is_hot', 0],
             ['is_benefit', 0],
             ['is_best', 0],

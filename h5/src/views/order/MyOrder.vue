@@ -152,7 +152,7 @@
             </div>
           </template>
           <template v-if="order._status._type === 0">
-            <div class="bnt bg-color-red" @click="paymentTap(order)">
+            <div class="bnt bg-color-red" @click="$router.push({ path: '/order/detail/' + order.order_id })">
               立即付款
             </div>
           </template>

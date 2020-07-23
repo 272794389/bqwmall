@@ -24,11 +24,11 @@
         @click="$router.push({ path: '/user/data' })"
       ></span>
     </div>
-    <div class="wrapper">
+    <div class="wrapper1">
       <div class="nav acea-row row-middle">
         <router-link :to="{ path: '/user/account' }" class="item">
-          <div>我的余额</div>
           <div class="num">{{ userInfo.now_money || 0 }}</div>
+          <div>货款</div>
         </router-link>
         <!--<router-link-->
         <!--:to="'/user/user_promotion'"-->
@@ -40,25 +40,33 @@
           class="item"
           v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"
         >
-          <div>当前佣金</div>
           <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
+          <div>购物积分</div>
         </div>
 
         <!--</router-link>-->
         <router-link :to="'/user/integral'" class="item" v-else>
-          <div>当前积分</div>
           <div class="num">{{ userInfo.integral || 0 }}</div>
+          <div>当前佣金</div>
         </router-link>
         <router-link :to="'/user/user_coupon'" class="item">
-          <div>优惠券</div>
           <div class="num">{{ userInfo.couponCount || 0 }}</div>
+          <div>消费积分</div>
+        </router-link>
+        <router-link :to="'/user/user_coupon'" class="item">
+          <div class="num">{{ userInfo.couponCount || 0 }}</div>
+          <div>重消积分</div>
+        </router-link>
+        <router-link :to="'/user/user_coupon'" class="item">
+          <div class="num">{{ userInfo.couponCount || 0 }}</div>
+          <div>红包</div>
         </router-link>
       </div>
       <div class="myOrder">
         <div class="title acea-row row-between-wrapper">
-          <div>我的订单</div>
+          <div>全部订单</div>
           <router-link :to="'/order/list/'" class="allOrder">
-            全部订单<span class="iconfont icon-jiantou"></span>
+            查看全部订单<span class="iconfont icon-jiantou"></span>
           </router-link>
         </div>
         <div class="orderState acea-row row-middle">
@@ -104,61 +112,24 @@
                 >{{ orderStatusNum.evaluated_count }}</span
               >
             </div>
-            <div>待评价</div>
+            <div>已完成</div>
           </router-link>
-          <router-link :to="'/order/refund_list'" class="item">
-            <div class="pictrue">
-              <img src="@assets/images/sh.png" />
-              <span
-                class="order-status-num"
-                v-if="orderStatusNum.refund_count > 0"
-                >{{ orderStatusNum.refund_count }}</span
-              >
-            </div>
-            <div>售后/退款</div>
-          </router-link>
-        </div>
-      </div>
-      <div class="myService">
-        <div class="title acea-row row-middle">我的服务</div>
-        <div class="serviceList acea-row row-middle">
-          <template v-for="(item, index) in MyMenus">
-            <div
-              class="item"
-              :key="index"
-              @click="goPages(index)"
-              v-if="item.wap_url"
-            >
-              <div class="pictrue">
-                <img :src="item.pic" />
-              </div>
-              <div>{{ item.name }}</div>
-            </div>
-          </template>
-          <!--<div-->
-          <!--class="item"-->
-          <!--@click="changeswitch(true)"-->
-          <!--v-if="userInfo.phone && isWeixin"-->
-          <!--&gt;-->
-          <!--<div class="pictrue"><img src="@assets/images/switch.png" /></div>-->
-          <!--<div>账号切换</div>-->
-          <!--</div>-->
         </div>
       </div>
     </div>
-    <img src="@assets/images/support.png" class="support" />
-    <div class="footer-line-height"></div>
-    <SwitchWindow
-      v-on:changeswitch="changeswitch"
-      :switchActive="switchActive"
-      :login_type="userInfo.login_type"
-    ></SwitchWindow>
-    <GeneralWindow
-      :generalActive="generalActive"
-      @closeGeneralWindow="closeGeneralWindow"
-      :generalContent="generalContent"
-    ></GeneralWindow>
+    <div class="myOrder1">
+     <div v-for="(item, index) in MyMenus">
+	  <div  class="title" :key="index" @click="goPages(index)">
+		  <div class="title1-1"><img :src="item.pic" /></div>
+		  <div class="title1-2">{{ item.name }}</div>
+		  <div class="title1-3"><span class="iconfont icon-jiantou"></span></div>
+	  </div>
+	  </div>
+	<div class="foot">
+	  <div class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</div>
+	</div>		  
   </div>
+	  
 </template>
 
 <script>
@@ -178,7 +149,6 @@ export default {
   data: function() {
     return {
       userInfo: {},
-      MyMenus: [],
       orderStatusNum: {},
       switchActive: false,
       isWeixin: false,

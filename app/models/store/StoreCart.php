@@ -277,6 +277,7 @@ class StoreCart extends BaseModel
                 }
             }
         }
+        //echo $valid;exit;
         foreach ($valid as $k=>$cart){
             if($cart['trueStock'] < $cart['cart_num']){
                 $cart['cart_num'] = $cart['trueStock'];

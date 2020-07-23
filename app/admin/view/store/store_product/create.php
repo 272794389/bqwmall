@@ -287,7 +287,7 @@
                                         </div>
                                     </div>
                                     <div class="layui-row layui-col-space15">
-                                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4" style="width:50%;">
                                             <div class="grid-demo grid-demo-bg1">
                                                 <div class="layui-form-item">
                                                     <label class="layui-form-label">商品类型</label>
@@ -300,6 +300,21 @@
                                                                :checked="formData.belong_t == 2 ? true : false">
                                                         <input type="radio" name="belong_t" lay-filter="belong_t" value="3" title="服务中心"
                                                                :checked="formData.belong_t == 3 ? true : false">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-row layui-col-space15">
+                                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
+                                            <div class="grid-demo grid-demo-bg1">
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">取件方式</label>
+                                                    <div class="layui-input-block">
+                                                        <input type="radio" name="hex_t" lay-filter="hex_t" value="0" title="邮寄"
+                                                               :checked="formData.hex_t == 0 ? true : false">
+                                                        <input type="radio" name="hex_t" lay-filter="hex_t" value="1" title="到店核销"
+                                                               :checked="formData.hex_t == 1 ? true : false">
                                                     </div>
                                                 </div>
                                             </div>
@@ -964,6 +979,7 @@
                 is_show: 1,
                 belong_t: 0,
                 is_self: 0,
+                hex_t: 0,
                 is_hot: 0,
                 is_benefit: 0,
                 is_best: 0,
@@ -1013,7 +1029,7 @@
             activity:{'秒杀':'#1E9FFF','砍价':'#189688','拼团':'#FEB900'},
             attr: [],//临时属性
             newRule: false,//是否添加新规则
-            radioRule: ['is_sub','is_show','belong_t','is_self', 'is_hot', 'is_benefit', 'is_new','is_good' ,'is_best', 'spec_type'],//radio 当选规则
+            radioRule: ['is_sub','is_show','belong_t','is_self','hex_t', 'is_hot', 'is_benefit', 'is_new','is_good' ,'is_best', 'spec_type'],//radio 当选规则
             rule: { //多图选择规则
                 slider_image: {
                     maxLength: 5

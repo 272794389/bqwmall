@@ -750,6 +750,37 @@ border-radius:2rem;top:-0.1rem;right:0;height:0.3rem;line-height:0.3rem;padding:
     height:3.5rem;overflow:auto;}
 .member-center .growthValue .pictrue .iconfont{position:absolute;font-size:0.65rem;color:#fff;top:7.75rem;left:50%;
     transform:translateX(-50%);-webkit-transform:translateX(-50%);-ms-transform:translateX(-50%);-moz-transform:translateX(-50%);-o-transform:translateX(-50%);}
+
+/*个人中心  新增css*/
+.user .wrapper1 .nav{background-color:#fff;height:1rem;}
+.user .wrapper1 .nav .item{flex:1;-webkit-flex:1;-o-flex:1;-ms-flex:1;text-align:center;font-size:0.22rem;color:#666;position:relative;}
+.user .wrapper1 .nav .item~.item:after{position:absolute;content:'';left:0;width:1px;height:0.7rem;background-color:#eee;
+top:50%;margin-top:-0.35rem;}
+.user .wrapper1 .nav1 .item .num{margin-top:0.1rem;font-size:0.3rem;color:#8b8888;}
+.user .wrapper1 .myOrder{background-color:#fff;margin-top:0.15rem;}
+.user .wrapper1 .myOrder .title,.user .wrapper .myService .title{height:0.88rem;padding:0 0.3rem;border-bottom:1px solid #e5e5e5;
+    font-size:0.3rem;color:#282828;}
+.user .wrapper1 .myOrder .title .allOrder{font-size:0.26rem;color:#666;}
+.user .wrapper1 .myOrder .title .allOrder .iconfont{font-size:0.25rem;margin-left:0.07rem;}
+.user .wrapper1 .myOrder .orderState{height:1.6rem;}
+.user .wrapper1 .myOrder .orderState .item{font-size:0.26rem;color:#454545;flex:1;-webkit-flex:1;-o-flex:1;-ms-flex:1;text-align:center;}
+.user .wrapper1 .myOrder .orderState .item .pictrue{width:0.49rem;height:0.42rem;margin:0 auto 0.18rem auto;}
+.user .wrapper1 .myOrder .orderState .item .pictrue img{width:100%;height:100%;}
+.user .support{width:2.19rem;height:0.74rem;margin:0.54rem auto;display:block;}
+.user .myOrder1{margin-top:0.15rem;background:#fff;float: left;width: 100%;}
+.user .myOrder1 .title{width:98%;height: 0.8rem;border-bottom: 1px solid #e5e5e5;padding-top: 0.08rem;margin:auto;}
+.user .myOrder1 .title1{width:96%;margin:2%;display:block;float:left;font-size:0.26rem;}
+.user .myOrder1 .title1-1{width:8%;float:left;}
+.user .myOrder1 .title1-1 img{width:0.35rem;height:0.35rem;}
+.user .myOrder1 .title1-2{width:42%;float:left;color:#333;}
+.user .myOrder1 .title1-3{width:50%;float:left;color:#999;text-align: right;}
+.user .myOrder1 .title1 .title1-3 .iconfont{font-size:0.25rem;margin-left:0.07rem;}
+.user .foot{background-color: #F8F8F8;text-align: center; width: 100%;overflow: hidden;padding-bottom: 1.2rem;padding-top: 0.3rem;}
+.user .foot .foot1{width: 75%; margin: 0 auto;background: none;}
+.user .foot .foot1 .foot2{border-right: 1px solid #dcdcdc;font-size: 0.25rem; padding-left: 0.2rem; padding-right: 0.2rem;}
+.user .foot .foot1 .foot2:last-child{border-right: 0 none;}
+.user .foot .foot3{text-align: center;line-height: 0.5rem;color: #a2a2a2;font-size: 0.2rem;padding-top: 0.1rem;}
+
 /*积分详情*/
 .integral-details .header{background-image:url('../images/integralbg.jpg');background-repeat:no-repeat;
     background-size:100% 100%;width:100%;height:4.6rem;font-size:0.72rem;color:#fff;padding:0.31rem 0 0.45rem 0;

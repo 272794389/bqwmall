@@ -286,6 +286,18 @@
         <div>支付金额：</div>
         <div class="conter">￥{{ orderInfo.total_price }}</div>
       </div>
+      <div class="item acea-row row-between" v-if="orderInfo.pay_paypoint > 0">
+        <div>消费积分抵扣：</div>
+        <div class="conter" style="width: 3rem;">-￥{{ orderInfo.pay_paypoint }}</div>
+      </div>
+      <div class="item acea-row row-between" v-if="orderInfo.pay_repeatpoint > 0">
+        <div>重消积分抵扣：</div>
+        <div class="conter" style="width: 3rem;">-￥{{ orderInfo.pay_repeatpoint }}</div>
+      </div>
+      <div class="item acea-row row-between" v-if="orderInfo.give_rate > 0">
+        <div>购物积分抵扣：</div>
+        <div class="conter" style="width: 3rem;">-￥{{ orderInfo.give_rate }}</div>
+      </div>
       <div class="item acea-row row-between" v-if="orderInfo.coupon_price > 0">
         <div>优惠券抵扣：</div>
         <div class="conter">-￥{{ orderInfo.coupon_price }}</div>
@@ -294,10 +306,12 @@
         <div>积分抵扣：</div>
         <div class="conter">-￥{{ orderInfo.deduction_price }}</div>
       </div>
+      <!--
       <div class="item acea-row row-between" v-if="orderInfo.pay_postage > 0">
         <div>运费：</div>
         <div class="conter">￥{{ orderInfo.pay_postage }}</div>
       </div>
+      -->
       <div class="actualPay acea-row row-right">
         实付款：<span class="money font-color-red"
           >￥{{ orderInfo.pay_price }}</span

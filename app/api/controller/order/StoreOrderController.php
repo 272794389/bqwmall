@@ -406,6 +406,35 @@ class StoreOrderController
             if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
             $order['code'] = $url;
         }
+        $userInfo = User::get($order['uid']);
+        
+        if($order['pay_paypoint']>0||$order['pay_repeatpoint']>0||$order['give_rate']>0){
+            //判断账户中抵扣积分是否还充足
+            $userInfo = User::get($order['uid']);
+            //客户账户余额情况
+            $ugive_point = $userInfo['give_point'];
+            $upay_point = $userInfo['pay_point'];
+            $repeat_point = $userInfo['repeat_point'];
+            if($order['pay_paypoint']>0&&$upay_point<$order['pay_paypoint']){//判断消费积分是否充足
+                $amount = bcsub($order['pay_paypoint'],$upay_point,2);
+                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
+                $order['pay_paypoint'] = $upay_point;
+            }
+            if($order['pay_repeatpoint']>0&&$repeat_point<$order['pay_repeatpoint']){//判断重消积分是否充足
+                $amount = bcsub($order['pay_repeatpoint'],$repeat_point,2);
+                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
+                $order['pay_repeatpoint'] = $repeat_point;
+            }
+            
+            if($order['give_rate']>0&&$ugive_point<$order['give_rate']){//判断购物积分是否充足
+                $amount = bcsub($order['give_rate'],$ugive_point,2);
+                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
+                $order['give_rate'] = $ugive_point;
+            }
+            if(!StoreOrder::updatePay($order['order_id'],$order['pay_price'],$order['pay_paypoint'],$order['pay_repeatpoint'],$order['give_rate'])){
+               return app('json')->fail('订单不存在');
+            }
+        }
         $order['mapKey'] = sys_config('tengxun_map_key');
         return app('json')->successful('ok', StoreOrder::tidyOrder($order, true, true));
     }

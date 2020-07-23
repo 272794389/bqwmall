@@ -91,6 +91,12 @@ class StoreProduct extends BaseModel
         return $list;
     }
     
+    // 批量获取商品
+    public static function getListByIds($ids = []){
+        $rs =self::where('id','in',$ids)->select();
+        return empty($rs) ?[]:$rs->toArray();
+    
+    }
 
     public static function validWhere()
     {
