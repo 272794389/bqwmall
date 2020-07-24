@@ -55,7 +55,7 @@ class StoreOrderController
         if (!$cartGroup['valid']) return app('json')->fail('请提交购买的商品');
         $cartInfo = $cartGroup['valid'];
         $addr = UserAddress::where('uid', $uid)->where('is_default', 1)->find();
-        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid);
+        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,1);
         if ($priceGroup === false) {
             return app('json')->fail(StoreOrder::getErrorInfo('运费模板不存在'));
         }
@@ -118,10 +118,11 @@ class StoreOrderController
         $uid = $request->uid();
         if (StoreOrder::be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
-        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $shipping_type) = UtilService::postMore([
+        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $shipping_type,$cartIds) = UtilService::postMore([
             'addressId', 'couponId', ['payType', 'yue'], ['useIntegral', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['formId', ''], ['bargainId', ''],
-            ['shipping_type', 1],
+            ['shipping_type', 1],['cartIds', ''],
         ], $request, true);
+        if(!$cartIds) return app('json')->fail('参数错误!');
         $payType = strtolower($payType);
         if ($bargainId) {
             $bargainUserTableId = StoreBargainUser::getBargainUserTableId($bargainId, $uid);//TODO 获取用户参与砍价表编号
@@ -138,7 +139,25 @@ class StoreOrderController
             if (StoreOrder::getIsOrderPink($pinkId, $request->uid()))
                 return app('json')->status('ORDER_EXIST', '订单生成失败，你已经参加该团了，请先支付订单', ['orderId' => StoreOrder::getStoreIdPink($pinkId, $request->uid())]);
         }
+        
+        //清除订单缓存
+        StoreOrder::clearCacheOrderInfo($request->uid(), $key);
+        $cartGroup = StoreCart::getUserProductCartList($uid, $cartIds, 1);
+        if (count($cartGroup['invalid'])) return app('json')->fail($cartGroup['invalid'][0]['productInfo']['store_name'] . '已失效!');
+        if (!$cartGroup['valid']) return app('json')->fail('请提交购买的商品');
+        $cartInfo = $cartGroup['valid'];
+        $addr = UserAddress::where('uid', $uid)->where('is_default', 1)->find();
+        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral);
+        if ($priceGroup === false) {
+            return app('json')->fail(StoreOrder::getErrorInfo('运费模板不存在'));
+        }
+        $other = [
+            'offlinePostage' => sys_config('offline_postage'),
+            'integralRatio' => sys_config('integral_ratio')
+        ];
+        $key = StoreOrder::cacheOrderInfo($uid, $cartInfo, $priceGroup, $other);
         $priceGroup = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, true, 0, $shipping_type);
+        $priceGroup['key']=$key;
         if ($priceGroup)
             return app('json')->status('NONE', 'ok', $priceGroup);
         else
@@ -375,6 +394,7 @@ class StoreOrderController
     {
         if (!strlen(trim($uni))) return app('json')->fail('参数错误');
         $order = StoreOrder::getUserOrderDetail($request->uid(), $uni);
+        $orderInfo = $order;
         if (!$order) return app('json')->fail('订单不存在');
         $order = $order->toArray();
         //是否开启门店自提
@@ -406,33 +426,26 @@ class StoreOrderController
             if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
             $order['code'] = $url;
         }
-        $userInfo = User::get($order['uid']);
-        
         if($order['pay_paypoint']>0||$order['pay_repeatpoint']>0||$order['give_rate']>0){
-            //判断账户中抵扣积分是否还充足
-            $userInfo = User::get($order['uid']);
-            //客户账户余额情况
-            $ugive_point = $userInfo['give_point'];
-            $upay_point = $userInfo['pay_point'];
-            $repeat_point = $userInfo['repeat_point'];
-            if($order['pay_paypoint']>0&&$upay_point<$order['pay_paypoint']){//判断消费积分是否充足
-                $amount = bcsub($order['pay_paypoint'],$upay_point,2);
-                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
-                $order['pay_paypoint'] = $upay_point;
-            }
-            if($order['pay_repeatpoint']>0&&$repeat_point<$order['pay_repeatpoint']){//判断重消积分是否充足
-                $amount = bcsub($order['pay_repeatpoint'],$repeat_point,2);
-                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
-                $order['pay_repeatpoint'] = $repeat_point;
-            }
+            $cart_id = StoreOrder::where('id',$order['id'])->value('cart_id');
+            $result = array();
+            preg_match_all("/(?:\[)(.*)(?:\])/i",$cart_id, $result);
+            $cart_id = $result[1][0];
+            $cartGroup = StoreCart::getReProductCartList($order['uid'], $cart_id, 1);
+            $cartInfo = $cartGroup['valid'];
+            $addr = UserAddress::where('uid', $order['uid'])->where('is_default', 1)->find();
+            $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$order['uid'],$order['point_pay']);
+            //修改订单情况
             
-            if($order['give_rate']>0&&$ugive_point<$order['give_rate']){//判断购物积分是否充足
-                $amount = bcsub($order['give_rate'],$ugive_point,2);
-                $order['pay_price'] =  bcadd($order['pay_price'], $amount, 2);
-                $order['give_rate'] = $ugive_point;
-            }
-            if(!StoreOrder::updatePay($order['order_id'],$order['pay_price'],$order['pay_paypoint'],$order['pay_repeatpoint'],$order['give_rate'])){
-               return app('json')->fail('订单不存在');
+            
+            $order['pay_price'] = $priceGroup['pay_amount'];
+            $order['give_point'] = $priceGroup['give_point'];
+            $order['pay_point'] = $priceGroup['pay_point'];
+            $order['pay_paypoint'] = $priceGroup['pay_paypoint'];
+            $order['pay_repeatpoint'] = $priceGroup['pay_repeatpoint'];
+            $order['give_rate'] = $priceGroup['give_rate'];
+            if(!StoreOrder::updatePay($order['order_id'],$order['pay_price'],$order['pay_paypoint'],$order['pay_repeatpoint'],$order['give_rate'],$order['give_point'],$order['pay_point'])){
+                return app('json')->fail('订单不存在');
             }
         }
         $order['mapKey'] = sys_config('tengxun_map_key');

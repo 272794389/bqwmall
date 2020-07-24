@@ -72,7 +72,7 @@ class StoreOrder extends BaseModel
      * @param $cartInfo
      * @return array
      */
-    public static function getOrderPriceGroup($cartInfo, $addr,$uid)
+    public static function getOrderPriceGroup($cartInfo, $addr,$uid,$point_pay)
     {
         $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮
         $totalPrice = self::getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
@@ -80,7 +80,7 @@ class StoreOrder extends BaseModel
         $vipPrice = self::getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
         
         //计算需支付的总现金、总购物积分、消费积分、重消积分，赠送总的消费积分、购物积分
-        $priceGroup = self::getOrderSumAmount($cartInfo,$uid);
+        $priceGroup = self::getOrderSumAmount($cartInfo,$uid,$point_pay);
         $give_point = $priceGroup['give_point'];//赠送购物积分
         $pay_point = $priceGroup['pay_point'];//赠送消费积分
         $pay_amount = $priceGroup['pay_amount'];//支付现金总额
@@ -166,7 +166,7 @@ class StoreOrder extends BaseModel
      * @param $key 键名
      * @return int|string
      */
-    public static function getOrderSumAmount($cartInfo,$uid)
+    public static function getOrderSumAmount($cartInfo,$uid,$point_pay)
     {
         $userInfo = User::getUserInfo($uid);
         //客户账户余额情况
@@ -188,6 +188,7 @@ class StoreOrder extends BaseModel
             $sett_rate = 0;
             //判断商品类型
             if($cart['belong_t']==0){//商品中心商品结算
+              if($point_pay==1){//积分支付
                 if($cart['pay_repeatpoint']>0){//重复消费积分支付
                     if($repeat_point>0&&($repeat_point>$cart['pay_repeatpoint']||$repeat_point==$cart['pay_repeatpoint'])){
                         for($i=0;$i<$cart['cart_num'];$i++){
@@ -241,7 +242,15 @@ class StoreOrder extends BaseModel
                     }
                     $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                 }
+              }else{
+                  $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                  if($cart['give_point']>0){//判断是否赠送购物积分
+                      $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
+                  }
+                  $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+              }
             }else if($cart['belong_t']==1||$cart['belong_t']==2){//网店及周边的套餐商品结算
+              if($point_pay==1){//积分支付
                 if($cart['give_rate']>0){//购物积分支付
                     if($ugive_point>0&&($ugive_point>$cart['give_rate']||$ugive_point==$cart['give_rate'])){
                         for($i=0;$i<$cart['cart_num'];$i++){
@@ -273,6 +282,13 @@ class StoreOrder extends BaseModel
                     }  
                     $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                 }
+              }else{
+                  $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                  if($cart['pay_point']>0){//判断是否赠送购物积分
+                      $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
+                  }
+                  $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+              }
             }
             
             $huokuan = bcmul($cart['cart_num'], $cart['truePrice'], 2)*(100-$cart['sett_rate'])/100;
@@ -428,7 +444,7 @@ class StoreOrder extends BaseModel
             if ($payType == 'offline' && sys_config('offline_postage') == 1) {
                 $payPostage = 0;
             } else {
-                $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid)['storePostage'];
+                $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral)['storePostage'];
             }
             if ($shipping_type === 1) {
                 if (!$test && !$addressId) return self::setErrorInfo('请选择收货地址!', true);
@@ -579,6 +595,7 @@ class StoreOrder extends BaseModel
                 'is_channel' => $isChannel,
                 'add_time' => time(),
                 'unique' => $key,
+                'point_pay' => $useIntegral,
                 'shipping_type' => $shipping_type,
             ];
             if ($shipping_type === 2) {
@@ -704,13 +721,15 @@ class StoreOrder extends BaseModel
     }
     
     
-    public static function updatePay($order_id, $pay_price, $pay_paypoint,$pay_repeatpoint,$give_rate)
+    public static function updatePay($order_id, $pay_price, $pay_paypoint,$pay_repeatpoint,$give_rate,$give_point,$pay_point)
     {
         $orderInfo = self::where('order_id', $order_id)->find();
         $orderInfo->pay_price = $pay_price;
         $orderInfo->pay_paypoint = $pay_paypoint;
         $orderInfo->pay_repeatpoint = $pay_repeatpoint;
         $orderInfo->give_rate = $give_rate;
+        $orderInfo->give_point = $give_point;
+        $orderInfo->pay_point = $pay_point;
         return $orderInfo->save();
     }
 
@@ -865,39 +884,45 @@ class StoreOrder extends BaseModel
         }
     
         $productList = StoreProduct::getListByIds($productIds);
+        //获取平台费率参数
+        $feeRate = DataConfig::where('id', 1)->find();
         // 单个商品订单不拆分
         if (count($cartIds) <= 1){
             $cart = $productMap[$productIds[0]];
             $product = $productList[0];
-    
-            $num = $cart['cartInfo']['cart_num'];
-            $huokuan = 0;
-            if ($product['sett_rate'] > 0){
-                $huokuan = $num * $product['price']*(100-$product['sett_rate'])/100;
-            }
-            
+            $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
             $storeInfo = SystemStore::where('id',$product['store_id'])->find();
             
             //给商家结算货款
             $res = true;
-            if($huokuan>0&&$storeInfo['user_id']>0){
-                $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $huokuan, 'uid');
+            if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
+                $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $carinfo['huokuan'], 'uid');
                 if($res){
-                    $res = StorePayLog::expend($storeInfo['user_id'], $order['id'], 1, 0, $huokuan, 0, 0,0,0, '商品订单结算');
+                    $res = StorePayLog::expend($storeInfo['user_id'], $order['id'], 1, 0, $carinfo['huokuan'], 0, 0,0,0, '商品订单结算');
                 }
             }
-            //计算代理商提成和总监奖励
-            $cartInfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
-            if($cartInfo['payAmount']>0){
-                
-                
-                
+            //计算商家推荐人提成
+            $uinfo = User::where('uid',$storeInfo['user_id'])->find();
+            if($carinfo['profit']>0&&$uinfo['spread_uid']&&$feeRate['shop_rec']>0){
+                $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
+                $fee = $use_amount*$feeRate['fee_rate']/100;
+                $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                $use_amount = $use_amount - $fee - $repeat_point;
+                if($res){
+                    $res = false !== User::bcInc($uinfo['spread_uid'], 'now_money', $use_amount, 'uid');
+                }
+                if($res){
+                    $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
+                }
+                if($res){
+                    $res = StorePayLog::expend($uinfo['spread_uid'], $id, 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
+                }
+            }
+            if($order['hex_t']==1){
+                $verify_code = self::getStoreCode();//生成订单核销码
+                self::where('id', $id)->update(['verify_code' => $verify_code,]);//订单改为支付
             }
             
-            
-            
-            
-            return $res;
         }
     
         $storeProduct = [];
@@ -905,17 +930,17 @@ class StoreOrder extends BaseModel
         self::beginTrans();
         foreach ($productList as $product){
             $cart =  $productMap[$product['id']];
+            $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
+            $verify_code='';
+            $shipping_type=1;
             if ($product['hex_t'] == 1){
+                $verify_code = self::getStoreCode();
+                $shipping_type=2;
+            }
                 $order_index++;
                 // 单独订单
                 $total_price = $cart['cartInfo']['cart_num'] * $product['price'];
-                $pay_price = $cart['cartInfo']['cart_num']*$product['price'];
-                $vip_price=0;
-                if($is_vip>0&&$product['vip_price']>0){
-                    $total_price = $cart['cartInfo']['cart_num'] * $product['vip_price'];
-                    $pay_price = $total_price;
-                    $vip_price = $cart['cartInfo']['cart_num'] * $product['price']-$total_price;
-                }
+                $pay_price = $carinfo['payAmount'];
                 //写入订单表
                 $orderInfo = [
                     'order_id' => $order['order_id'].'_'.$order_index,
@@ -923,7 +948,6 @@ class StoreOrder extends BaseModel
                     'total_num' => $cart['cartInfo']['cart_num'],
                     'total_price' =>$total_price,
                     'pay_price' => $pay_price,
-                    'vip_price' => $vip_price,
                     'pay_postage' => 0,
                     'freight_price' =>0,
                     'total_postage' => 0,
@@ -931,13 +955,11 @@ class StoreOrder extends BaseModel
                     'store_id' => (int)$product['store_id'],
                     'add_time' => time(),
                     'cost' => $cart['cartInfo']['cart_num']*$product['cost'],
-                    'shipping_type' => 2,
-                    'belong_type' => $belong_type,
+                    'shipping_type' => $shipping_type,
                     'gain_integral' => 0,
-                    'mark' => '电台订单',
-                    'hex_type' => 1,
+                    'mark' => $order['mark'],
                     'unique'=> md5($order['unique'].'_'.$order_index),
-                    'verify_code' => self::getStoreCode(),
+                    'verify_code' => $verify_code,
     
     
                     // 公共复制部分
@@ -946,7 +968,6 @@ class StoreOrder extends BaseModel
                     'paid' =>$order['paid'],
                     'pay_time' =>$order['pay_time'],
                     'pay_type' =>$order['pay_type'],
-                    'addressId' => $order['addressId'],
                     'real_name' =>$order['real_name'],
                     'user_phone' => $order['user_phone'],
                     'user_address' =>$order['user_address'],
@@ -958,149 +979,77 @@ class StoreOrder extends BaseModel
                     self::rollback();
                     return ;
                 }
-    
-                $num = $cart['cartInfo']['cart_num'];
-                $intoPrice = 0;
-                if ($product['into_price'] > 0){
-                    $intoPrice = $num * $product['into_price'];
+                
+                //计算商家推荐人提成
+                $storeInfo = SystemStore::where('id',$product['store_id'])->find();
+                
+                //给商家结算货款
+                if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
+                    $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $carinfo['huokuan'], 'uid');
+                    if($res){
+                        $res = StorePayLog::expend($storeInfo['user_id'], $rs['id'], 1, 0, $carinfo['huokuan'], 0, 0,0,0, '商品订单结算');
+                    }
+                }
+                //计算商家推荐人提成
+                $uinfo = User::where('uid',$storeInfo['user_id'])->find();
+                if($carinfo['profit']>0&&$uinfo['spread_uid']&&$feeRate['shop_rec']>0){
+                    $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $use_amount = $use_amount - $fee - $repeat_point;
+                    if($res){
+                        $res = false !== User::bcInc($uinfo['spread_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res){
+                        $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res){
+                        $res = StorePayLog::expend($uinfo['spread_uid'], $rs['id'], 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
+                    }
+                }
+        }
+        
+        //结算推荐人奖励
+        $runamount = $order['pay_price'];
+        $use_amount = 0;
+        $fee=0;
+        $repeat_point=0;
+        //计算3代推荐奖励
+        $userInfo = User::getUserInfo($order['uid']);
+        $spread_uid = $userInfo['spread_uid'];
+        if($res&&$runamount>0&&$spread_uid>0){
+            for ($i=0; $i < 3; $i++)
+            {
+                $uinfo = User::getUserInfo($spread_uid);
+                $use_amount=0;
+                if($spread_uid>0){//存在推荐人
+                    if($i==0&&$feeRate['rec_f']>0){//第一代推荐人
+                        $use_amount = $runamount*$feeRate['rec_f']/100;
+                    }else if($i==1&&$feeRate['rec_s']>0){//第二代推荐人
+                        $use_amount = $runamount*$feeRate['rec_f']/100;
+                    }else if($i==2&&$feeRate['rec_t']>0){//第三代推荐人
+                        $use_amount = $runamount*$feeRate['rec_t']/100;
+                    }
+                    if($use_amount>0){
+                        $fee = $use_amount*$feeRate['fee_rate']/100;
+                        $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                        $use_amount = $use_amount - $fee - $repeat_point;
+                        if($res){
+                            $res = false !== User::bcInc($spread_uid, 'now_money', $use_amount, 'uid');
+                        }
+                        if($res){
+                            $res = false !== User::bcInc($spread_uid, 'repeat_point', $repeat_point, 'uid');
+                        }
+                        if($res){
+                            $res = StorePayLog::expend($spread_uid, $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '分销奖励');
+                        }
+                    }
+                    $spread_uid = $uinfo['spread_uid'];
                 }else{
-                    $intoPrice = $num * $product['price'] * $product['into_rate'] /100;
-                }
-    
-                $orderRate[] = [
-                    'oid' => $rs['id'],
-                    'product_id' =>$product['id'],
-                    'store_id' => $product['store_id'],
-                    'num' => $num,
-                    'price' => $product['price'],
-                    'add_time' => time(),
-                    'into_price' => $intoPrice,
-                    'profit' => $num*$product['price']-$intoPrice-$vip_price,
-                    'status' => 1,
-                    'total_price' => $num*$product['price'],
-                    'vip_price' => $vip_price,
-                ];
-    
-    
-                $group[] = [
-                    'oid'=>$rs['id'],
-                    'cart_id'=>$cart['cart_id'],
-                    'product_id'=>$cart['product_id'],
-                    'cart_info'=>$cart['cart_info'],
-                    'unique'=>md5($cart['cart_id'].''.$rs['id'])
-                ];
-    
-            }else{
-                $product['cartInfo'] = $cart;
-                $storeProduct[$product['store_id']][] = $product;
-            }
-        }
-    
-        foreach ($storeProduct as $key => $products){
-            $order_index++;
-            $cartId = [];
-            $totalPrice = 0;
-            $totalCost = 0;
-            $total_num = 0;
-            $disacounts=0;
-    
-            foreach ($products as $product){
-                $total_num += $product['cartInfo']['cartInfo']['cart_num'];
-                $totalPrice +=  $product['cartInfo']['cartInfo']['cart_num']*$product['price'];
-                $cartId[] = (int)$product['cartInfo']['cart_id'];
-    
-                if($product['vip_price']>0&&$is_vip>0){
-                    $disacounts += $product['cartInfo']['cartInfo']['cart_num']*($product['price']-$product['vip_price']);
+                    break;
                 }
             }
-    
-            $orderInfo = [
-                'order_id' => $order['order_id'].'_'.$order_index,
-                'cart_id' => json_encode($cartId),
-                'total_num' =>$total_num,
-                'total_price' =>$totalPrice,
-                'pay_price' => $totalPrice-$disacounts,
-                'vip_price' => $disacounts,
-                'pay_postage' => 0,
-                'freight_price' =>0,
-                'total_postage' => 0,
-                'mer_id' => 0,
-                'store_id' => (int)$key,
-                'add_time' => time(),
-                'cost' => $totalCost,
-                'shipping_type' => 1,
-                'belong_type' => $belong_type,
-                'gain_integral' => 0,
-                'mark' => '电台订单',
-                'hex_type' => 2,
-                'unique'=> md5($order['unique'].'_'.$order_index),
-    
-    
-                // 公共复制部分
-                'pid' => $order['id'],
-                'uid' => $order['uid'],
-                'paid' =>$order['paid'],
-                'pay_time' =>$order['pay_time'],
-                'pay_type' =>$order['pay_type'],
-                'addressId' => $order['addressId'],
-                'real_name' =>$order['real_name'],
-                'user_phone' => $order['user_phone'],
-                'user_address' =>$order['user_address'],
-                'status' => $order['status'],
-    
-            ];
-            $rs =  self::create($orderInfo);
-            if ($rs['id'] <1){
-                self::rollback();
-                return ;
-            }
-    
-            foreach ($products as $product){
-                $group[] = [
-                    'oid'=>$rs['id'],
-                    'cart_id'=>$product['cartInfo']['cart_id'],
-                    'product_id'=>$product['cartInfo']['product_id'],
-                    'cart_info'=>$product['cartInfo']['cart_info'],
-                    'unique'=>md5($product['cartInfo']['cart_id'].''.$rs['id'])
-                ];
-    
-                $num = $product['cartInfo']['cartInfo']['cart_num'];
-                $intoPrice = 0;
-                if ($product['into_price'] > 0){
-                    $intoPrice = $num * $product['into_price'];
-                }else{
-                    $intoPrice = $num * $product['price'] * $product['into_rate'] /100;
-                }
-                $disacounts=0;
-                if($product['vip_price']>0&&$is_vip>0){
-                    $disacounts = $num*($product['price']-$product['vip_price']);
-                }
-                $orderRate[] = [
-                    'oid' => $rs['id'],
-                    'product_id' =>$product['id'],
-                    'store_id' => $product['store_id'],
-                    'num' => $num,
-                    'price' => $product['price'],
-                    'add_time' => time(),
-                    'into_price' => $intoPrice,
-                    'profit' => $num*$product['price']-$intoPrice-$disacounts,
-                    'status' => 1,
-                    'total_price' => $num*$product['price'],
-                    'vip_price' => $disacounts,
-                ];
-            }
         }
-    
-        if (count($group) > 0){
-            StoreOrderCartInfo::setAll($group);
-        }
-    
-        if (count($orderRate)){
-    
-            StoreOrderInfo::setAll($orderRate);
-        }
-    
-    
     
         // 标记父订单
         $res = self::where('id', $order['id'])

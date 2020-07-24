@@ -75,9 +75,8 @@
           <span class="iconfont icon-jiantou"></span>
         </div>
       </div>
-      <!--
-      <div class="item acea-row row-between-wrapper" v-if="deduction === false">
-        <div>积分抵扣</div>
+      <div class="item acea-row row-between-wrapper">
+        <div>使用积分抵扣</div>
         <div class="discount">
           <div class="select-btn">
             <div class="checkbox-wrapper">
@@ -85,9 +84,9 @@
                 <input type="checkbox" v-model="useIntegral" />
                 <i class="icon"></i>
                 <span class="integral">
-                  当前积分
+                  当前可抵扣
                   <span class="num font-color-red">
-                    {{ userInfo.integral || 0 }}
+                    ￥{{ orderPrice.total_price-orderPrice.pay_price || 0 }}
                   </span>
                 </span>
               </label>
@@ -95,7 +94,6 @@
           </div>
         </div>
       </div>
-      -->
       <div
         class="item acea-row row-between-wrapper"
         v-if="
@@ -110,7 +108,6 @@
         会员优惠
         <div class="discount">-￥{{ orderGroupInfo.priceGroup.vipPrice }}</div>
       </div>
-      <!--
       <div class="item acea-row row-between-wrapper" v-if="shipping_type === 0">
         <div>快递费用</div>
         <div class="discount">
@@ -121,7 +118,6 @@
           }}
         </div>
       </div>
-      -->
       <div v-else>
         <div class="item acea-row row-between-wrapper">
           <div>联系人</div>
@@ -452,7 +448,7 @@ export default {
       },
       usableCoupon: {},
       addressLoaded: false,
-      useIntegral: false,
+      useIntegral: true,
       orderPrice: {
         pay_price: "计算中"
       },
@@ -531,7 +527,8 @@ export default {
         useIntegral: this.useIntegral ? 1 : 0,
         couponId: this.usableCoupon.id || 0,
         shipping_type: parseInt(shipping_type) + 1,
-        payType: this.active
+        payType: this.active,
+        cartIds: this.$route.params.id
       })
         .then(res => {
           const data = res.data;
@@ -541,6 +538,7 @@ export default {
             });
           } else {
             this.orderPrice = data.result;
+            this.orderGroupInfo.orderKey = data.result.key;
           }
         })
         .catch(res => {
