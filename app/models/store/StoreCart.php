@@ -156,7 +156,7 @@ class StoreCart extends BaseModel
     public static function getUserProductCartList($uid,$cartIds='',$status=0)
     {
         
-        $productInfoField = 'id,image,price,ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_sub,temp_id,belong_t,give_point,pay_point,pay_amount,pay_paypoint,pay_repeatpoint,give_rate';
+        $productInfoField = 'id,image,price,ot_price,vip_price,postage,give_integral,sales,stock,store_name,unit_name,is_show,is_del,is_postage,cost,is_sub,temp_id,belong_t,give_point,pay_point,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,plat_rate,sett_rate';
         $seckillInfoField = 'id,image,price,ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,is_show,is_del,is_postage,cost,temp_id,weight,volume,start_time,stop_time,time_id';
         $bargainInfoField = 'id,image,min_price as price,price as ot_price,postage,give_integral,sales,stock,title as store_name,unit_name,status as is_show,is_del,is_postage,cost,temp_id,weight,volume';
         $combinationInfoField = 'id,image,price,postage,sales,stock,title as store_name,is_show,is_del,is_postage,cost,temp_id,weight,volume';
@@ -202,7 +202,7 @@ class StoreCart extends BaseModel
                 $invalid[] = $cart;
             //正常商品
             }else{
-
+                $cart['plat_rate'] = $cart['productInfo']['plat_rate'];
                 if ($cart['seckill_id']) {
                     $config = SystemGroupData::get($product['time_id']);
                     if ($config) {
@@ -240,6 +240,7 @@ class StoreCart extends BaseModel
                             $cart['pay_amount'] = $attrInfo['pay_amount'];
                             $cart['pay_paypoint'] = $attrInfo['pay_paypoint'];
                             $cart['pay_repeatpoint'] = $attrInfo['pay_repeatpoint'];
+                            $cart['sett_rate'] = $attrInfo['sett_rate'];
                             $cart['give_rate'] = $attrInfo['give_rate'];
                             $cart['truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'],$uid,true);
                             $cart['vip_truePrice'] = (float)StoreProduct::setLevelPrice($attrInfo['price'], $uid);
@@ -264,6 +265,7 @@ class StoreCart extends BaseModel
                         $cart['belong_t'] = $cart['productInfo']['belong_t'];
                         $cart['give_point'] = $cart['productInfo']['give_point'];
                         $cart['pay_point'] = $cart['productInfo']['pay_point'];
+                        $cart['sett_rate'] = $cart['productInfo']['sett_rate'];
                         $cart['pay_amount'] = $cart['productInfo']['pay_amount'];
                         $cart['pay_paypoint'] = $cart['productInfo']['pay_paypoint'];
                         $cart['pay_repeatpoint'] = $cart['productInfo']['pay_repeatpoint'];

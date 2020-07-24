@@ -183,6 +183,9 @@ class StoreOrder extends BaseModel
         $give_rate = 0;//支付购物积分
         foreach ($cartInfo as $cart) {
             $payAmount=0;//支付现金部分
+            $huokuan = 0;
+            $profit = 0;
+            $sett_rate = 0;
             //判断商品类型
             if($cart['belong_t']==0){//商品中心商品结算
                 if($cart['pay_repeatpoint']>0){//重复消费积分支付
@@ -204,7 +207,7 @@ class StoreOrder extends BaseModel
                     }else{//现金支付
                         $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                         if($cart['give_point']>0){//判断是否赠送购物积分
-                            $give_point = bcadd($give_point, $cart['give_point'], 2);
+                            $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
                         }
                         $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                     } 
@@ -227,7 +230,7 @@ class StoreOrder extends BaseModel
                     }else{//现金支付
                         $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                         if($cart['give_point']>0){//判断是否赠送购物积分
-                            $give_point = bcadd($give_point, $cart['give_point'], 2);
+                            $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
                         }
                         $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                     } 
@@ -258,7 +261,7 @@ class StoreOrder extends BaseModel
                     }else{//现金支付
                         $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                         if($cart['pay_point']>0){//判断是否赠送购物积分
-                            $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                            $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
                         }
                         $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                     }
@@ -268,10 +271,18 @@ class StoreOrder extends BaseModel
                     if($cart['pay_point']>0){//判断是否赠送购物积分
                         $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
                     }  
+                    $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
                 }
             }
+            
+            $huokuan = bcmul($cart['cart_num'], $cart['truePrice'], 2)*(100-$cart['sett_rate'])/100;
+            if($payAmount>0){
+                $profit = $payAmount*$cart['sett_rate']/100*(100-$cart['plat_rate'])/100;
+            }
+            
+            //更改cart表的实际支付金额
+            StoreCart::where('id',$cart['id'])->update(['payAmount'=>$payAmount,'huokuan'=>$huokuan,'profit'=>$profit]);  
         }
-        
         return compact('give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate');
     }
 
@@ -864,15 +875,29 @@ class StoreOrder extends BaseModel
             if ($product['sett_rate'] > 0){
                 $huokuan = $num * $product['price']*(100-$product['sett_rate'])/100;
             }
-            //更改商家货款
+            
+            $storeInfo = SystemStore::where('id',$product['store_id'])->find();
+            
+            //给商家结算货款
             $res = true;
-            if($huokuan>0){
+            if($huokuan>0&&$storeInfo['user_id']>0){
+                $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $huokuan, 'uid');
+                if($res){
+                    $res = StorePayLog::expend($storeInfo['user_id'], $order['id'], 1, 0, $huokuan, 0, 0,0,0, '商品订单结算');
+                }
+            }
+            //计算代理商提成和总监奖励
+            $cartInfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
+            if($cartInfo['payAmount']>0){
+                
                 
                 
             }
             
-    
-            return ;
+            
+            
+            
+            return $res;
         }
     
         $storeProduct = [];
