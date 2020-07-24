@@ -444,6 +444,7 @@ class StoreOrder extends BaseModel
             if ($payType == 'offline' && sys_config('offline_postage') == 1) {
                 $payPostage = 0;
             } else {
+                
                 $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral)['storePostage'];
             }
             if ($shipping_type === 1) {
