@@ -515,10 +515,13 @@ export default {
         })
         .catch(() => {});
     },
+   
     addressType: function(index) {
       if (index && !this.system_store.id)
         return this.$dialog.error("暂无门店信息，您无法选择到店自提！");
-      this.shipping_type = index;
+      if (this.isHex == 1 && index!=1)
+        return this.$dialog.error("该商品只能到店自提！");
+        this.shipping_type = index;
     },
     computedPrice() {
       let shipping_type = this.shipping_type;
@@ -560,6 +563,10 @@ export default {
           this.addressInfo = res.data.addressInfo || {};
           this.system_store = res.data.system_store || {};
           this.store_self_mention = res.data.store_self_mention;
+          this.isHex = res.data.isHex;
+          if (res.data.isHex == 1){
+            this.shipping_type =1;
+          }
           this.computedPrice();
         })
         .catch(() => {

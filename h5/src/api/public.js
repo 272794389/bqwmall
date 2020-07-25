@@ -9,6 +9,13 @@ export function getHomeData() {
 }
 
 /**
+ * 同城商品
+ */
+export function goodListApi(data) {
+  return request.get("tgoods_list", data, { login: false });
+}
+
+/**
  * 文章 轮播列表
  * @returns {*}
  */

@@ -49,16 +49,39 @@ const router = new Router({
       component: Category
     },
     {
-        path: "/gcategory/:id",
-        name: "GoodsClass",
+        path: "/gcategory/:pid?",
+        name: "GoodsCenterClass",
         meta: {
-          title: "产品分类",
+          title: "商品中心分类",
           keepAlive: true,
           footer: true,
           backgroundColor: "#fff"
         },
-        component: Category
+        component: () => import("@views/shop/GoodsCenterClass.vue")
     },
+    {
+        path: "/wcategory/:pid?",
+        name: "GoodsNetClass",
+        meta: {
+          title: "网店商品分类",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/GoodsNetClass.vue")
+    },
+    {
+        path: "/tcategory/:pid?",
+        name: "GoodsTongClass",
+        meta: {
+          title: "同城商品分类",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/GoodsTongClass.vue")
+    },
+    
     {
         path: "/spcategory/:pid?",
         name: "ShopClass",
@@ -214,6 +237,33 @@ const router = new Router({
       },
       component: GoodsList
     },
+    {
+	    path: "/cgoods_list",
+	    name: "CGoodsList",
+	    meta: {
+	      title: "商品中心列表",
+	      keepAlive: true
+	    },
+	    component: () => import("@views/shop/GoodsListCenter.vue")
+    },
+   {
+      path: "/wgoods_list",
+      name: "WGoodsList",
+      meta: {
+        title: "网店商品列表",
+        keepAlive: true
+      },
+      component: () => import("@views/shop/GoodsListNet.vue")
+    },
+    {
+        path: "/tgoods_list",
+        name: "TGoodsList",
+        meta: {
+          title: "同城商品列表",
+          keepAlive: true
+        },
+        component: () => import("@views/shop/GoodsListTong.vue")
+     },
     {
       path: "/register",
       name: "Register",

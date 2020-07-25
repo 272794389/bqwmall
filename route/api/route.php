@@ -241,6 +241,8 @@ Route::group(function () {
     //获取关注微信公众号海报
     Route::get('wechat/follow','wechat.WechatController/follow')->name('Follow');
 
+    //同城商品列表
+    Route::get('tgoods_list', 'PublicController/tgoods_list')->name('tgoodsList');
     //门店列表
     Route::get('store_list', 'PublicController/store_list')->name('storeList');
     //获取城市列表

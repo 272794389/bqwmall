@@ -252,8 +252,9 @@
         <div>购物车</div>
       </router-link>
       <div class="bnt acea-row">
-        <div class="joinCart" @click="joinCart">加入购物车</div>
-        <div class="buy" @click="tapBuy">立即购买</div>
+        <div class="joinCart" @click="joinCart" v-if="storeInfo.hex_t<1">加入购物车</div>
+        <div class="buy" @click="tapBuy" v-if="storeInfo.hex_t<1">立即购买</div>
+        <div class="buy" @click="tapBuy" v-else style="width: 4.44rem;border-radius: 0.5rem 0.5rem 0.5rem;">立即购买</div>
       </div>
     </div>
     <Share-red-packets

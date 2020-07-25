@@ -84,13 +84,13 @@
           >{{ article.title }}</router-link></marquee>
     </div>
     <div class="specialArea acea-row row-between-wrapper">
-      <router-link :to="''" class="assemble" style="background: rgb(9,197,15);">
+      <router-link :to="'/cgoods_list/'" class="assemble" style="background: rgb(9,197,15);">
         <div class="sp">
 	          <div class="name">商品中心</div>
 	          <div class="infor">各种实用实惠的商品</div>
 	        </div>
       </router-link>
-      <router-link :to="''" class="assemble" style="background: rgb(44,176,126);">
+      <router-link :to="'/store_list/'" class="assemble" style="background: rgb(44,176,126);">
         <div class="sp">
 	        <div class="text">
 	          <div class="name">周边的店</div>
@@ -98,10 +98,42 @@
 	        </div>
         </div>
       </router-link>
-      <router-link :to="''"  class="assemble" style="background: rgb(23,162,229);" >
-          <div class="name">网店	</div>
+      <router-link :to="'/tgoods_list/'"  class="assemble" style="background: rgb(23,162,229);" >
+          <div class="name">本地特惠</div>
           <div class="infor">商家产品优惠套餐</div>
       </router-link>
+    </div>
+    <div class="wrapper" v-if="nearGoodList.length>0">
+	      <div class="title acea-row row-between-wrapper" style="border-top:none;">
+	        <div class="text">
+	          <div class="name line1">同城商品推荐</div>
+	          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+	        </div>
+	        <router-link :to="{ path: '/tgoods_list/'}" class="more"
+	          >更多<span class="iconfont icon-jiantou"></span
+	        ></router-link>
+	      </div>
+	      <div class="productList" ref="container">
+	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+			      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
+				        <div class="pictrue">
+				          <img :src="item.image"/> 
+				        </div>
+				        <div class="text">
+				          <div class="name pline1">{{ item.store_name }}</div>
+				          <div class="money font-color-red">
+				                                   ￥<span class="num">{{ item.price }}</span>
+				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+				          </div>
+				          <div class="vip acea-row row-between-wrapper">
+				            <div class="vip-money">
+				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
+				            </div>
+				          </div>
+				        </div>
+			      </div>
+			</div>
+	    </div>
     </div>
     <div class="wrapper" v-if="info.bastList.length > 0">
       <div class="title acea-row row-between-wrapper">
@@ -109,7 +141,7 @@
           <div class="name line1">商品中心推荐</div>
           <div class="line1" style="color: #f00;">支持消费积分、重消积分兑换</div>
         </div>
-        <router-link :to="{ path: '/hot_new_goods/' + 1 }" class="more"
+        <router-link :to="{ path: '/cgoods_list/'}" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
@@ -122,7 +154,7 @@
           <div class="name line1">网店商品推荐</div>
           <div class="line1" style="color: #f00;">现金支付赠送消费积分，可用抵扣券抵扣</div>
         </div>
-        <router-link :to="'/promotion'" class="more"
+        <router-link :to="'/wgoods_list/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
@@ -149,13 +181,13 @@
 	    </div>
     </div>
     
-    <div class="wrapper">
+    <div class="wrapper" v-if="storeList.length>0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
           <div class="name line1">周边的店推荐</div>
           <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
         </div>
-        <router-link :to="'/spcategory/'" class="more"
+        <router-link :to="'/store_list/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
@@ -175,39 +207,7 @@
 		    </div>
 	 </div>
     </div>
-   
-    <div class="wrapper" v-if="info.nearGoodList">
-	      <div class="title acea-row row-between-wrapper" style="border-top:none;">
-	        <div class="text">
-	          <div class="name line1">吃喝玩乐推荐</div>
-	          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
-	        </div>
-	        <router-link :to="{ path: '/hot_new_goods/' + 1 }" class="more"
-	          >更多<span class="iconfont icon-jiantou"></span
-	        ></router-link>
-	      </div>
-	      <div class="productList" ref="container">
-	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-			      <div @click="goDetail(item)" v-for="(item, index) in info.nearGoodList" :key="index" class="item" :title="item.store_name">
-				        <div class="pictrue">
-				          <img :src="item.image"/> 
-				        </div>
-				        <div class="text">
-				          <div class="name pline1">{{ item.store_name }}</div>
-				          <div class="money font-color-red">
-				                                   ￥<span class="num">{{ item.price }}</span>
-				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				          <div class="vip acea-row row-between-wrapper">
-				            <div class="vip-money">
-				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
-				            </div>
-				          </div>
-				        </div>
-			      </div>
-			</div>
-	    </div>
-    </div>
+    
     <Coupon-window
       :coupon-list="couponList"
       v-if="showCoupon"
@@ -241,7 +241,7 @@ import GoodList from "@components/GoodList";
 import ShopGoodList from "@components/ShopGoodList";
 import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
-import { getHomeData, getShare, follow } from "@api/public";
+import { getHomeData, getShare, follow,goodListApi } from "@api/public";
 import cookie from "@utils/store/cookie";
 import { openShareAll, wxShowLocation } from "@libs/wechat";
 import { isWeixin, cdnZipImg } from "@utils/index";
@@ -276,11 +276,11 @@ export default {
       banner: [],
       article: {},
       storeList: [],
+      nearGoodList: [],
       info: {
         fastList: [],
         bastList: [],
-        netGoodList: [],
-        nearGoodList: []
+        netGoodList: []
       },
       couponList: [],
       swiperOption: {
@@ -391,6 +391,7 @@ export default {
     });
     if (cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
       this.getList();
+      this.getNearGoodList();
     }
   },
   methods: {
@@ -429,6 +430,9 @@ export default {
       } else {
         this.$router.push({ path: "/detail/" + item.id });
       }
+    },
+    goShop(item){
+       this.$router.push({ path: "/sdetail/" + item.id });
     },
     getWXLocation() {
       if (isWeixin()) {
@@ -469,6 +473,22 @@ export default {
       storeListApi(data)
         .then(res => {
           this.storeList.push.apply(this.storeList, res.data.list);
+        })
+        .catch(err => {
+          this.$dialog.error(err.msg);
+        });
+    },
+     // 获周边的套餐列表
+    getNearGoodList: function() {
+      let data = {
+        latitude: cookie.get(LATITUDE) || "", //纬度
+        longitude: cookie.get(LONGITUDE) || "", //经度
+        page: 1,
+        limit: 10
+      };
+      goodListApi(data)
+        .then(res => {
+          this.nearGoodList.push.apply(this.nearGoodList, res.data.list);
         })
         .catch(err => {
           this.$dialog.error(err.msg);

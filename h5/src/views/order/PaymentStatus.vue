@@ -120,7 +120,7 @@ export default {
       let routes =
         route !== undefined
           ? route
-          : "/order/detail/" + this.orderInfo.order_id;
+          : "/order/list/1";
       if (this.status === 5 && route === undefined) routes = "/order/list/0";
       return this.$router.push({
         path: routes

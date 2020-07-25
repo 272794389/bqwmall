@@ -164,6 +164,13 @@ class SystemStore extends AuthController
             if (!isset($data['latlng'][0]) || !isset($data['latlng'][1])) return JsonService::fail('请选择门店位置');
             $data['latitude'] = $data['latlng'][0];
             $data['longitude'] = $data['latlng'][1];
+            
+            //根据经纬度获取商家所在城市及地区
+            $mapkey = sys_config('tengxun_map_key');
+            $crr = self::getCity($data['longitude'], $data['latitude'],$mapkey);
+            $data['city'] = $crr['result']['address_component']['city'];
+            $data['district'] = $crr['result']['address_component']['district'];
+            
             $data['valid_time'] = implode(' - ', $data['valid_time']);
             $data['day_time'] = implode(' - ', $data['day_time']);
             unset($data['latlng']);
@@ -193,6 +200,18 @@ class SystemStore extends AuthController
         } catch (\Exception $e) {
             SystemStoreModel::rollbackTrans();
             return JsonService::fail($e->getMessage());
+        }
+    }
+    //根据经纬度查询所在城市
+    public static function getCity($longitude, $latitude,$mapkey) {
+        //调取腾讯接口,其中ak为key,注意location纬度在前，经度在后
+        $api = "https://apis.map.qq.com/ws/geocoder/v1/?location=" . $latitude . "," . $longitude . "&output=json&pois=1&key=".$mapkey;
+        $content = file_get_contents($api);
+        $arr = json_decode($content, true);
+        if ($arr['status'] == 0) {
+            return $arr;
+        } else {
+            return 'error';
         }
     }
 }

@@ -96,6 +96,13 @@ class StoreOrderController
         $data['integralRatio'] = $other['integralRatio'];
         $data['offline_pay_status'] = (int)sys_config('offline_pay_status') ?? (int)2;
         $data['store_self_mention'] = (int)sys_config('store_self_mention') ?? 0;//门店自提是否开启
+        
+        // 单个商品的情况 要处理到店自提
+        $isHex = 0;
+        if (count($cartInfo)==1 && $cartInfo[0]['hex_t'] == 1){
+            $isHex =1;
+        }
+        $data['isHex'] = $isHex;
         $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];//门店信息
         return app('json')->successful($data);
     }
@@ -207,6 +214,7 @@ class StoreOrderController
             $isChannel = 2;
         $order = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, false, $isChannel, $shipping_type, $real_name, $phone, $storeId);
         if ($order === false) return app('json')->fail(StoreOrder::getErrorInfo('订单生成失败'));
+       
         $orderId = $order['order_id'];
         $info = compact('orderId', 'key');
         if ($orderId) {
@@ -436,6 +444,8 @@ class StoreOrderController
             $addr = UserAddress::where('uid', $order['uid'])->where('is_default', 1)->find();
             $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$order['uid'],$order['point_pay']);
             //修改订单情况
+            StoreOrderCartInfo::where('oid',$order['id'])->delete();
+            StoreOrderCartInfo::setCartInfo($order['id'], $cartInfo);
             
             
             $order['pay_price'] = $priceGroup['pay_amount'];

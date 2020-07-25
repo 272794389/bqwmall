@@ -15,6 +15,10 @@ use crmeb\traits\ModelTrait;
 use think\facade\Log;
 use app\models\system\SystemStore;
 use app\models\routine\RoutineTemplate;
+use app\models\user\StorePayLog;
+use app\admin\model\system\DataConfig;
+use think\facade\Db;
+
 use app\models\user\{
     User, UserAddress, UserBill, WechatUser
 };
@@ -437,6 +441,7 @@ class StoreOrder extends BaseModel
             $cartGroup = self::getCacheOrderInfo($uid, $key);
             if (!$cartGroup) return self::setErrorInfo('订单已过期,请刷新当前页面!', true);
             $cartInfo = $cartGroup['cartInfo'];
+            
             $priceGroup = $cartGroup['priceGroup'];
             $other = $cartGroup['other'];
             $payPrice = (float)$priceGroup['totalPrice'];
@@ -444,7 +449,6 @@ class StoreOrder extends BaseModel
             if ($payType == 'offline' && sys_config('offline_postage') == 1) {
                 $payPostage = 0;
             } else {
-                
                 $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral)['storePostage'];
             }
             if ($shipping_type === 1) {
@@ -563,6 +567,7 @@ class StoreOrder extends BaseModel
                     'SurplusIntegral' => $SurplusIntegral,
                 ];
             }
+           
             $orderInfo = [
                 'uid' => $uid,
                 'order_id' => $test ? 0 : self::getNewOrderId(),
@@ -584,6 +589,7 @@ class StoreOrder extends BaseModel
                 'pay_postage' => $payPostage,
                 'deduction_price' => $deductionPrice,
                 'paid' => 0,
+                'addressId' => $addressId,
                 'pay_type' => $payType,
                 'use_integral' => $usedIntegral,
                 'gain_integral' => $gainIntegral,
@@ -618,7 +624,8 @@ class StoreOrder extends BaseModel
             $res4 = false !== StoreOrderCartInfo::setCartInfo($order['id'], $cartInfo);
             //购物车状态修改
             $res6 = false !== StoreCart::where('id', 'IN', $cartIds)->update(['is_pay' => 1]);
-            if (!$res4 || !$res5 || !$res6) return self::setErrorInfo('订单生成失败!', true);
+            if (!$res4 || !$res5 || !$res6) {
+                return self::setErrorInfo('订单生成失败!', true);}
             //自动设置默认地址
             UserRepository::storeProductOrderCreateEbApi($order, compact('cartInfo', 'addressId'));
             self::clearCacheOrderInfo($uid, $key);
@@ -853,8 +860,9 @@ class StoreOrder extends BaseModel
         if($res1&&($order['give_point']>0||$order['pay_point']>0)){
             $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, $order['give_point'], $order['pay_point'],0,0, '购买商品赠送');
         }
+      
         if($res1){//订单拆分及奖励提成核算
-            $res1 = self::orderSplit($order_id);
+            $res1 = self::orderSplit($order['id']);
         }
         $resPink = true;
         $res1 = self::where('order_id', $orderId)->update(['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()]);//订单改为支付
@@ -871,23 +879,23 @@ class StoreOrder extends BaseModel
     // 拆分规则  1 单个商品的不拆分  2 到店核销的商品每个一单 3 供应商不同订单不同
     
     public static function orderSplit($id){
-        $order = self::where('id', $id)->find()->toArray();
-        $cartIds = json_decode($order['cart_id'],true);
         $group = [];
-        $orderRate = [];
+        $order =  self::where('id', $id)->find()->toArray();
+        $cartIds =$order['cart_id'];
         $cartInfo = StoreOrderCartInfo::getProductListByOid($order['id']);
         $productIds = [];
         $productMap = [];
         foreach ($cartInfo as $value){
             $productIds[] = $value['product_id'];
-            $value['cartInfo'] = json_decode($value['cart_info'],true);
+            $value['cartInfo'] = $value['cart_info'];
             $productMap[$value['product_id']] = $value;
         }
-    
+        
         $productList = StoreProduct::getListByIds($productIds);
         //获取平台费率参数
         $feeRate = DataConfig::where('id', 1)->find();
         // 单个商品订单不拆分
+        self::beginTrans();
         if (count($cartIds) <= 1){
             $cart = $productMap[$productIds[0]];
             $product = $productList[0];
@@ -919,25 +927,151 @@ class StoreOrder extends BaseModel
                     $res = StorePayLog::expend($uinfo['spread_uid'], $id, 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
                 }
             }
-            if($order['hex_t']==1){
+           
+            if($product['hex_t']==1){//
                 $verify_code = self::getStoreCode();//生成订单核销码
                 self::where('id', $id)->update(['verify_code' => $verify_code,]);//订单改为支付
             }
-            
-        }
-    
-        $storeProduct = [];
-        $order_index = 0;
-        self::beginTrans();
-        foreach ($productList as $product){
-            $cart =  $productMap[$product['id']];
-            $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
-            $verify_code='';
-            $shipping_type=1;
-            if ($product['hex_t'] == 1){
-                $verify_code = self::getStoreCode();
-                $shipping_type=2;
+            //计算省市区代理提成
+            $district='';
+            if($order['shipping_type']==2){
+                $address = $storeInfo['address'];
+                $agent = explode(",",$address);
+                $district = $agent[2];
+            }else{
+                $addressInfo = UserAddress::find($order['addressId']);
+                $district = $addressInfo['district'];
             }
+            $districtInfo = Db::name('system_city')->where('name', 'like', "%$district%")->find();//地区
+            //查询区id
+            $cityInfo = Db::name('system_city')->where('city_id', $districtInfo['parent_id'])->find();//城市
+            $province = Db::name('system_city')->where('city_id', $cityInfo['parent_id'])->find();//省份
+            //计算代理商总佣金
+            $runamount = $carinfo['profit'];
+            $agentAmount = $feeRate['agent_pro']*$runamount/100;
+            $districtAmount = 0;
+            $cityAmount = 0;
+            if($agentAmount>0){
+                $use_amount=0;
+                if($districtInfo['agent_uid']>0){//地区代理佣金
+                    $use_amount = $runamount*$feeRate['agent_district']/100;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $districtAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = StorePayLog::expend($districtInfo['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    }
+                }
+                if($cityInfo['agent_uid']>0){//城市代理佣金
+                    $use_amount = $runamount*$feeRate['agent_city']/100-$districtAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $cityAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = StorePayLog::expend($cityInfo['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    }
+                }
+                if($province['agent_uid']>0){//省级代理佣金
+                    $use_amount = $runamount*$feeRate['agent_pro']/100-$districtAmount-$cityAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $agentAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$agentAmount>0){
+                        $res = false !== User::bcInc($province['agent_uid'], 'now_money', $agentAmount, 'uid');
+                    }
+                    if($res&&$repeat_point>0){
+                        $res = false !== User::bcInc($province['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$agentAmount>0){
+                        $res = StorePayLog::expend($province['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    }
+                }
+            }
+            //计算总监佣金
+            $agentAmount = $feeRate['inspect_pro']*$runamount/100;
+            $districtAmount = 0;
+            $cityAmount = 0;
+            if($agentAmount>0){
+                $use_amount=0;
+                if($districtInfo['inspect_uid']>0){//地区总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_district']/100;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $districtAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = StorePayLog::expend($districtInfo['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    }
+                }
+                if($cityInfo['inspect_uid']>0){//城市总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_city']/100-$districtAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $cityAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = StorePayLog::expend($cityInfo['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    }
+                }
+                if($province['inspect_uid']>0){//省级总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_pro']/100-$districtAmount-$cityAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $agentAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$agentAmount>0){
+                        $res = false !== User::bcInc($province['inspect_uid'], 'now_money', $agentAmount, 'uid');
+                    }
+                    if($res&&$repeat_point>0){
+                        $res = false !== User::bcInc($province['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$agentAmount>0){
+                        $res = StorePayLog::expend($province['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    }
+                }
+            }
+        }else{
+            $order_index = 0;
+            $addressId = $order['addressId'];
+            if(!$addressId){
+                $addressId = -1;
+            }
+            $addressInfo = UserAddress::find($addressId);
+            $district = $addressInfo['district'];
+            $runamount = 0;
+           
+            foreach ($productList as $product){
+                $cart =  $productMap[$product['id']];
+                $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
+                $cartOrderInfo = StoreOrderCartInfo::where('cart_id',$cart['cartInfo']['id'])->find();
+                $runamount = bcadd($runamount, $carinfo['profit'], 2); 
+                $verify_code='';
+                $shipping_type=1;
+                if ($product['hex_t'] == 1){
+                    $verify_code = self::getStoreCode();
+                    $shipping_type=2;
+                }
                 $order_index++;
                 // 单独订单
                 $total_price = $cart['cartInfo']['cart_num'] * $product['price'];
@@ -961,29 +1095,42 @@ class StoreOrder extends BaseModel
                     'mark' => $order['mark'],
                     'unique'=> md5($order['unique'].'_'.$order_index),
                     'verify_code' => $verify_code,
-    
-    
+            
+            
                     // 公共复制部分
                     'pid' => $order['id'],
                     'uid' => $order['uid'],
-                    'paid' =>$order['paid'],
-                    'pay_time' =>$order['pay_time'],
+                    'paid' =>1,
+                    'pay_time' =>time(),
+                    'addressId' =>$order['addressId'],
                     'pay_type' =>$order['pay_type'],
                     'real_name' =>$order['real_name'],
                     'user_phone' => $order['user_phone'],
                     'user_address' =>$order['user_address'],
                     'status' => $order['status'],
-    
+            
                 ];
                 $rs =  self::create($orderInfo);
                 if ($rs['id'] <1){
                     self::rollback();
                     return ;
                 }
+               
+                /*
+                $group[] = [
+                    'oid'=>$rs['id'],
+                    'cart_id'=>$cart['cartInfo']['id'],
+                    'product_id'=>$product['id'],
+                    'cart_info'=>$cart['cartInfo'],
+                    'unique'=>md5($cart['cartInfo']['id'].''.$rs['id'])
+                ];*/
+                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])
+            ->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
+                
                 
                 //计算商家推荐人提成
                 $storeInfo = SystemStore::where('id',$product['store_id'])->find();
-                
+            
                 //给商家结算货款
                 if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
                     $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $carinfo['huokuan'], 'uid');
@@ -1008,10 +1155,124 @@ class StoreOrder extends BaseModel
                         $res = StorePayLog::expend($uinfo['spread_uid'], $rs['id'], 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
                     }
                 }
+            }  
+            
+            //计算代理商提成
+            $districtInfo = Db::name('system_city')->where('name', 'like', "%$district%")->find();//地区
+            //查询区id
+            $cityInfo = Db::name('system_city')->where('city_id', $districtInfo['parent_id'])->find();//城市
+            $province = Db::name('system_city')->where('city_id', $cityInfo['parent_id'])->find();//省份
+            //计算代理商总佣金
+            $agentAmount = $feeRate['agent_pro']*$runamount/100;
+            $districtAmount = 0;
+            $cityAmount = 0;
+            if($agentAmount>0){
+                $use_amount=0;
+                if($districtInfo['agent_uid']>0){//地区代理佣金
+                    $use_amount = $runamount*$feeRate['agent_district']/100;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $districtAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = StorePayLog::expend($districtInfo['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    }
+                }
+                if($cityInfo['agent_uid']>0){//城市代理佣金
+                    $use_amount = $runamount*$feeRate['agent_city']/100-$districtAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $cityAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = StorePayLog::expend($cityInfo['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    }
+                }
+                if($province['agent_uid']>0){//省级代理佣金
+                    $use_amount = $runamount*$feeRate['agent_pro']/100-$districtAmount-$cityAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $agentAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$agentAmount>0){
+                        $res = false !== User::bcInc($province['agent_uid'], 'now_money', $agentAmount, 'uid');
+                    }
+                    if($res&&$repeat_point>0){
+                        $res = false !== User::bcInc($province['agent_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$agentAmount>0){
+                        $res = StorePayLog::expend($province['agent_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    }
+                }
+            }
+            
+            //计算总监佣金
+            $agentAmount = $feeRate['inspect_pro']*$runamount/100;
+            $districtAmount = 0;
+            $cityAmount = 0;
+            if($agentAmount>0){
+                $use_amount=0;
+                if($districtInfo['inspect_uid']>0){//地区总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_district']/100;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $districtAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = false !== User::bcInc($districtInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$districtAmount>0){
+                        $res = StorePayLog::expend($districtInfo['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    }
+                }
+                if($cityInfo['inspect_uid']>0){//城市总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_city']/100-$districtAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $cityAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = false !== User::bcInc($cityInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$cityAmount){
+                        $res = StorePayLog::expend($cityInfo['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    }
+                }
+                if($province['inspect_uid']>0){//省级总监佣金
+                    $use_amount = $runamount*$feeRate['inspect_pro']/100-$districtAmount-$cityAmount;
+                    $fee = $use_amount*$feeRate['fee_rate']/100;
+                    $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
+                    $agentAmount = $use_amount - $fee - $repeat_point;
+                    if($res&&$agentAmount>0){
+                        $res = false !== User::bcInc($province['inspect_uid'], 'now_money', $agentAmount, 'uid');
+                    }
+                    if($res&&$repeat_point>0){
+                        $res = false !== User::bcInc($province['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
+                    }
+                    if($res&&$agentAmount>0){
+                        $res = StorePayLog::expend($province['inspect_uid'], $order['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    }
+                }
+            }  
+            // 标记父订单
+            $res = self::where('id', $order['id'])
+            ->update(['is_del' => 1, 'is_parent' => 1, 'is_system_del' => 1]);
         }
-        
+       
         //结算推荐人奖励
-        $runamount = $order['pay_price'];
         $use_amount = 0;
         $fee=0;
         $repeat_point=0;
@@ -1049,12 +1310,13 @@ class StoreOrder extends BaseModel
                 }else{
                     break;
                 }
-            }
+            } 
         }
-    
-        // 标记父订单
-        $res = self::where('id', $order['id'])
-        ->update(['is_del' => 1, 'is_parent' => 1, 'is_system_del' => 1]);
+        
+        if (count($group) > 0){
+            StoreOrderCartInfo::setAll($group);
+        }
+        
     
         if (!$res) self::rollback();
         self::commit();
@@ -1074,6 +1336,7 @@ class StoreOrder extends BaseModel
      */
     public static function yuePay($order_id, $uid, $formId = '')
     {
+        
         $orderInfo = self::where('uid', $uid)->where('order_id', $order_id)->where('is_del', 0)->find();
         if (!$orderInfo) return self::setErrorInfo('订单不存在!');
         if ($orderInfo['paid']) return self::setErrorInfo('该订单已支付!');
@@ -1094,9 +1357,8 @@ class StoreOrder extends BaseModel
           $use_money = -$orderInfo['pay_price'];
         }
         if($res1&&$use_money!=0){
-            $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, 0,0,0,0, '余额购买商品');
+            $res1 = StorePayLog::expend($uid, $orderInfo['id'], 1,$use_money, 0, 0,0,0,0, '余额购买商品');
         }
-        
         $res2 = self::paySuccess($order_id, 'yue', $formId);//余额支付成功
         try {
             PaymentRepositories::yuePayProduct($userInfo, $orderInfo);
@@ -1220,7 +1482,7 @@ class StoreOrder extends BaseModel
      */
     public static function getUserOrderDetail($uid, $key)
     {
-        return self::where('order_id|unique', $key)->where('uid', $uid)->where('is_del', 0)->find();
+        return self::where('order_id|unique', $key)->where('uid', $uid)->find();
     }
 
 

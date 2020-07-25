@@ -60,7 +60,7 @@ class StoreProduct extends BaseModel
         return htmlspecialchars_decode($value);
     }
 
-    public static function getValidProduct($productId, $field = 'add_time,browse,cate_id,code_path,cost,ficti,give_integral,id,image,is_sub,is_bargain,is_benefit,is_best,is_del,is_hot,is_new,is_postage,is_seckill,is_show,store_id,keyword,mer_id,mer_use,ot_price,postage,price,sales,slider_image,sort,stock,store_info,store_name,unit_name,vip_price,IFNULL(sales,0) + IFNULL(ficti,0) as fsales,video_link,belong_t,give_point,pay_point,pay_amount,pay_paypoint,pay_repeatpoint,give_rate')
+    public static function getValidProduct($productId, $field = 'add_time,browse,cate_id,code_path,cost,ficti,give_integral,id,image,is_sub,is_bargain,is_benefit,is_best,is_del,is_hot,is_new,is_postage,is_seckill,is_show,store_id,keyword,mer_id,mer_use,ot_price,postage,price,sales,slider_image,sort,stock,store_info,store_name,unit_name,vip_price,IFNULL(sales,0) + IFNULL(ficti,0) as fsales,video_link,belong_t,give_point,pay_point,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,hex_t')
     {
         $Product = self::where('is_del', 0)->where('is_show', 1)->where('id', $productId)->field($field)->find();
         if ($Product) return $Product->toArray();
@@ -181,6 +181,7 @@ class StoreProduct extends BaseModel
         $priceOrder = $data['priceOrder'];
         $salesOrder = $data['salesOrder'];
         $news = $data['news'];
+        $belong_t = $data['belong_t'];
         $condition=$data['condition'];
         $page = $data['page'];
         $limit = $data['limit'];
@@ -199,7 +200,9 @@ class StoreProduct extends BaseModel
         }
         if (!empty($keyword)) $model->where('keyword|store_name', 'LIKE', htmlspecialchars("%$keyword%"));
         if ($news != 0) $model->where('is_new', 1);
-        
+        if($belong_t>0){
+            $model->where('belong_t', $belong_t);
+        }
         if($condition==1){//周边
             $model->where('belong_t', 2);
         }else if($condition==2){//消费积分兑换
@@ -353,6 +356,53 @@ class StoreProduct extends BaseModel
             }
         }
         return self::setLevelPrice($list, $uid);
+    }
+    
+    /**
+     * 同城商品列表
+     * @return mixed
+     */
+    public static function lst($latitude, $longitude,$mapkay, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder)
+    {
+        $crr = self::getCity($longitude, $latitude,$mapkay);
+        $city = $crr['result']['address_component']['city'];
+        $district = $crr['result']['address_component']['district'];
+        $baseOrder = '';
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC'; 
+        
+        if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+        $model = self::getProductWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
+        ->order($baseOrder);
+       
+        if ($limit) $model->limit($limit);
+        $list = $model->select();
+        return $list;
+    }
+    
+    public static function getProductWhere($city,$district,$sid,$cid,$keyword,$model, $aler = '', $join = '')
+    {
+        $model = $model->where($aler.'is_del', 0)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
+        $model = $model->where($join . '.city', 'LIKE', "%$city%");
+        $model = $model->where($join . '.district', 'LIKE', "%$district%");
+        if($sid>0){
+            $model = $model->where($aler.'cate_id',$sid);
+        }
+        if (!empty($keyword)) $model->where($aler.'store_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        return $model;
+    }
+    
+    
+    //根据经纬度查询所在城市
+    public static function getCity($longitude, $latitude,$mapkay) {
+        //调取腾讯接口,其中ak为key,注意location纬度在前，经度在后
+        $api = "https://apis.map.qq.com/ws/geocoder/v1/?location=" . $latitude . "," . $longitude . "&output=json&pois=1&key=".$mapkay;
+        $content = file_get_contents($api);
+        $arr = json_decode($content, true);
+        if ($arr['status'] == 0) {
+            return $arr;
+        } else {
+            return 'error';
+        }
     }
     
     /**

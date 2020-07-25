@@ -36,6 +36,7 @@ class StoreProductController
         $data = UtilService::getMore([
             ['sid', 0],
             ['cid', 0],
+            ['belong_t', -1],
             ['keyword', ''],
             ['priceOrder', ''],
             ['salesOrder', ''],

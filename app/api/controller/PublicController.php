@@ -268,6 +268,7 @@ class PublicController
             ['cid', 0],
             ['keyword', ''],
             ['salesOrder', ''],
+            ['salesOrder', ''],
             ['condition', 1]
         ], $request, true);
         $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
@@ -276,6 +277,32 @@ class PublicController
         $data['tengxun_map_key'] = sys_config('tengxun_map_key');
         return app('json')->successful($data);
     }
+    
+    
+    /**
+     * 同城商品列表
+     * @return mixed
+     */
+    public function tgoods_list(Request $request)
+    {
+        list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder) = UtilService::getMore([
+            ['latitude', ''],
+            ['longitude', ''],
+            ['page', 1],
+            ['limit', 10],
+            ['sid', 0],
+            ['cid', 0],
+            ['keyword', ''],
+            ['salesOrder', ''],
+            ['priceOrder', '']
+        ], $request, true);
+        $list = StoreProduct::lst($latitude, $longitude,sys_config('tengxun_map_key'), $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder);
+        if (!$list) $list = [];
+        $data['list'] = $list;
+        $data['tengxun_map_key'] = sys_config('tengxun_map_key');
+        return app('json')->successful($data);
+    }
+    
 
     /**
      * 查找城市数据
