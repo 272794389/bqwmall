@@ -152,14 +152,6 @@ Route::group(function () {
     Route::get('spread/paypoint_record/:type', 'user.StorePayLogController/paypoint_record')->name('yuRecord');//消费积分记录
     Route::get('spread/repoint_record/:type', 'user.StorePayLogController/repoint_record')->name('yuRecord');//重消积分记录
     
-    
-    
-    
-    
-    
-    
-    
-    
     //提现类
     Route::get('extract/bank', 'user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'user.UserExtractController/cash')->name('extractCash');//提现申请
