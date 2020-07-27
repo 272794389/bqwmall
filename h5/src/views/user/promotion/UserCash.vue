@@ -55,7 +55,7 @@
             />
           </div>
         </div>
-        <div class="tip">当前可提现金额: {{ commissionCount }}</div>
+        <div class="tip">当前可提现金额: {{ commissionCount }}<span v-if="withdraw_fee>0">，提现费率：{{ withdraw_fee }}%</span></div>
         <div class="bnt bg-color-red" @click="submitted">提现</div>
       </div>
       <div :hidden="currentTab !== 1" class="list">
@@ -74,7 +74,7 @@
             />
           </div>
         </div>
-        <div class="tip">当前可提现金额: {{ commissionCount }}</div>
+        <div class="tip">当前可提现金额: {{ commissionCount }}<span v-if="withdraw_fee>0">，提现费率：{{ withdraw_fee }}%</span></div>
         <div class="bnt bg-color-red" @click="submitted">提现</div>
       </div>
       <div :hidden="currentTab !== 2" class="list">
@@ -102,7 +102,7 @@
             />
           </div>
         </div>
-        <div class="tip">当前可提现金额: {{ commissionCount }}</div>
+        <div class="tip">当前可提现金额: {{ commissionCount }}<span v-if="withdraw_fee>0">，提现费率：{{ withdraw_fee }}%</span></div>
         <div class="bnt bg-color-red" @click="submitted">提现</div>
       </div>
     </div>
@@ -135,6 +135,7 @@ export default {
       },
       currentTab: 0,
       minPrice: 0,
+      withdraw_fee:0,
       banks: [],
       commissionCount: 0
     };
@@ -153,7 +154,8 @@ export default {
         res => {
           that.banks = res.data.extractBank;
           that.minPrice = res.data.minPrice;
-          that.commissionCount = res.data.commissionCount;
+          that.withdraw_fee = res.data.withdraw_fee;
+          that.commissionCount = res.data.use_money;
         },
         function(err) {
           that.$dialog.message(err.msg);

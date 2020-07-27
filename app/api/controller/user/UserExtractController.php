@@ -8,6 +8,7 @@ use app\models\user\UserBill;
 use app\models\user\UserExtract;
 use app\Request;
 use crmeb\services\UtilService;
+use think\facade\Db;
 
 /**
  * 提现类
@@ -44,6 +45,13 @@ class UserExtractController
         $data['brokerage_price'] = $user['brokerage_price'];
         //可提现佣金
         $data['commissionCount'] = $data['brokerage_price'] - $data['broken_commission'];
+        
+        //用户信息
+        $data['use_money'] = $user['now_money'];
+        //查询提现手续费率
+        $withdraw_fee = Db::name('data_config')->where('id',1)->value('withdraw_fee');
+        $data['withdraw_fee'] = $withdraw_fee;
+        
         $extractBank = sys_config('user_extract_bank') ?? []; //提现银行
         $extractBank = str_replace("\r\n", "\n", $extractBank);//防止不兼容
         $data['extractBank'] = explode("\n", is_array($extractBank) ? (isset($extractBank[0]) ? $extractBank[0] : $extractBank) : $extractBank);
