@@ -44,6 +44,46 @@ export default [
     component: () => import("@views/user/UserAccount.vue")
   },
   {
+    path: "/user/huokuan",
+    name: "UserHuokuan",
+    meta: {
+      title: "我的货款",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserHuokuan.vue")
+  },
+  {
+    path: "/user/give",
+    name: "UserGive",
+    meta: {
+      title: "我的购物积分",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserGive.vue")
+  },
+  {
+    path: "/user/paypoint",
+    name: "UserPaypoint",
+    meta: {
+      title: "我的消费积分",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserPaypoint.vue")
+  },
+  {
+	    path: "/user/repaypoint",
+	    name: "UserRePaypoint",
+	    meta: {
+	      title: "我的重消积分",
+	      keepAlive: true,
+	      auth: true
+	    },
+	    component: () => import("@views/user/UserRePaypoint.vue")
+	  },
+  {
     path: "/user/add_manage",
     name: "AddressManagement",
     meta: {
@@ -143,6 +183,47 @@ export default [
     },
     component: () => import("@views/user/UserBill.vue")
   },
+  {
+    path: "/user/re_huokuan/:types?",
+    name: "UserHuokuanRecord",
+    meta: {
+      title: "货款明细",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/RecodeHuokuan.vue")
+  },
+  {
+    path: "/user/re_give/:types?",
+    name: "UserGiveRecord",
+    meta: {
+      title: "购物积分明细",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserGiveRecord.vue")
+  },
+  {
+    path: "/user/re_pay/:types?",
+    name: "UserPayPointRecord",
+    meta: {
+      title: "消费积分明细",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserPayPointRecord.vue")
+  },
+  {
+    path: "/user/re_repay/:types?",
+    name: "UserRePointRecord",
+    meta: {
+      title: "重消积分明细",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserRePointRecord.vue")
+  },
+  
   {
     path: "/user/cashrecord",
     name: "CashRecord",

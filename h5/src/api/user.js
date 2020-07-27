@@ -222,6 +222,45 @@ export function getCommissionInfo(q, types) {
   return request.get("/spread/commission/" + types, q);
 }
 
+
+/*
+ * 资金明细（types|0=全部,1=消费,2=充值）
+ * */
+export function getPayLog(q, types) {
+  return request.get("/spread/yurecord/" + types, q);
+}
+
+
+
+/*
+ * 货款明细（types|0=全部,1=消费,2=收入）
+ * */
+export function getPayHuokuanLog(q, types) {
+  return request.get("/spread/huo_record/" + types, q);
+}
+
+/*
+ * 购物积分明细（types|0=全部,1=消费,2=收入）
+ * */
+export function getPayGiveLog(q, types) {
+  return request.get("/spread/give_record/" + types, q);
+}
+
+/*
+ * 消费积分明细（types|0=全部,1=消费,2=收入）
+ * */
+export function getPayPointLog(q, types) {
+  return request.get("/spread/paypoint_record/" + types, q);
+}
+
+/*
+ * 重复消费积分明细（types|0=全部,1=消费,2=收入）
+ * */
+export function getPayRepointLog(q, types) {
+  return request.get("/spread/repoint_record/" + types, q);
+}
+
+
 /*
  * 积分记录
  * */

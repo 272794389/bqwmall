@@ -145,6 +145,23 @@ Route::group(function () {
     Route::get('spread/count/:type', 'user.UserBillController/spread_count')->name('spreadCount');//推广 佣金 3/提现 4 总和
     Route::get('spread/banner', 'user.UserBillController/spread_banner')->name('spreadBanner');//推广分销二维码海报生成
     Route::get('integral/list', 'user.UserBillController/integral_list')->name('integralList');//积分记录
+    
+    
+    
+    Route::get('spread/yurecord/:type', 'user.StorePayLogController/yu_record')->name('yuRecord');//余额收入记录
+    Route::get('spread/huo_record/:type', 'user.StorePayLogController/huo_record')->name('yuRecord');//货款收入记录
+    Route::get('spread/give_record/:type', 'user.StorePayLogController/give_record')->name('yuRecord');//购物积分记录
+    Route::get('spread/paypoint_record/:type', 'user.StorePayLogController/paypoint_record')->name('yuRecord');//消费积分记录
+    Route::get('spread/repoint_record/:type', 'user.StorePayLogController/repoint_record')->name('yuRecord');//重消积分记录
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //提现类
     Route::get('extract/bank', 'user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'user.UserExtractController/cash')->name('extractCash');//提现申请

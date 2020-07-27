@@ -5,7 +5,7 @@
         <div class="headerCon">
           <div class="account acea-row row-top row-between">
             <div class="assets">
-              <div>总资产(元)</div>
+              <div>可用余额(元)</div>
               <div class="money">{{ now_money }}</div>
             </div>
             <router-link :to="'/user/Recharge'" class="recharge font-color-red"
@@ -27,15 +27,15 @@
       <div class="nav acea-row row-middle">
         <router-link class="item" :to="'/user/bill/0'">
           <div class="pictrue"><img src="@assets/images/record1.png" /></div>
-          <div>账单记录</div>
+          <div>全部记录</div>
         </router-link>
         <router-link class="item" :to="'/user/bill/1'">
           <div class="pictrue"><img src="@assets/images/record2.png" /></div>
-          <div>消费记录</div>
+          <div>支出记录</div>
         </router-link>
         <router-link class="item" :to="'/user/bill/2'">
           <div class="pictrue"><img src="@assets/images/record3.png" /></div>
-          <div>充值记录</div>
+          <div>收入记录</div>
         </router-link>
         <router-link class="item" :to="'/user/integral'">
           <div class="pictrue"><img src="@assets/images/record4.png" /></div>
@@ -64,6 +64,7 @@
           <div class="pictrue"><img src="@assets/images/money.png" /></div>
         </router-link>
       </div>
+      <!--
       <div class="list">
         <div class="item acea-row row-between-wrapper">
           <div class="picTxt acea-row row-between-wrapper">
@@ -114,6 +115,7 @@
           <div class="bnt end" v-else>已结束</div>
         </div>
       </div>
+      -->
     </div>
     <Recommend></Recommend>
   </div>

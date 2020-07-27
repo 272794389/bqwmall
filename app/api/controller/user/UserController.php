@@ -12,8 +12,12 @@ use app\models\store\StoreBargain;
 use app\models\store\StoreCombination;
 use app\models\store\StoreCouponUser;
 use app\models\store\StoreOrder;
+use app\models\store\StorePayOrder;
 use app\models\store\StoreProductRelation;
 use app\models\store\StoreSeckill;
+use app\models\store\StoreService;
+use app\models\user\StorePayLog;
+use app\models\system\SystemStore;
 use app\models\user\User;
 use app\models\user\UserAddress;
 use app\models\user\UserBill;
@@ -70,8 +74,31 @@ class UserController
     {
         $uid = $request->uid();
         $user['now_money'] = User::getUserInfo($uid, 'now_money')['now_money'];//当前总资金
+        $user['huokuan'] = User::getUserInfo($uid, 'huokuan')['huokuan'];//当前货款总额
+        $user['give_point'] = User::getUserInfo($uid, 'give_point')['give_point'];//当前购物积分总额
+        $user['pay_point'] = User::getUserInfo($uid, 'pay_point')['pay_point'];//当前消费积分总额
+        $user['repeat_point'] = User::getUserInfo($uid, 'repeat_point')['repeat_point'];//当前货款总额
+        
+        $user['in_huokuan'] = StorePayLog::getHuokuanSum($uid,0);//货款总收入
+        $user['out_huokuan'] = StorePayLog::getHuokuanSum($uid,1)*-1;//货款总支出
+        $user['in_givepoint'] = StorePayLog::getGiveSum($uid,0);//购物积分总收入
+        $user['out_givepoint'] = StorePayLog::getGiveSum($uid,1)*-1;//购物积分总支出
+        $user['in_paypoint'] = StorePayLog::getPayPointSum($uid,0);//消费积分总收入
+        $user['out_paypoint'] = StorePayLog::getPayPointSum($uid,1)*-1;//消费积分总支出
+        $user['in_repoint'] = StorePayLog::getRePointSum($uid,0);//重消积分总收入
+        $user['out_repoint'] = StorePayLog::getRePointSum($uid,1)*-1;//重消积分总支出
+        
+        
         $user['recharge'] = UserBill::getRecharge($uid);//累计充值
         $user['orderStatusSum'] = StoreOrder::getOrderStatusSum($uid);//累计消费
+        
+        
+        
+        
+        
+        $payAmount = StorePayOrder::getOrderStatusSum($uid);//累计到店消费
+        $user['orderStatusSum'] += $payAmount;
+        
         return app('json')->successful($user);
     }
 
@@ -107,6 +134,26 @@ class UserController
                 $user['promoter_price'] = bcsub($storeBrokeragePrice, $price, 2);
             }
         }
+        
+        //查询我的店铺
+        $storeInfo = SystemStore::where('user_id',$user['uid'])->find();
+        if($storeInfo){//存在商户信息
+            $user['store_name'] = $storeInfo['mer_name'];
+        }else{
+            $user['store_name'] = '';
+        }
+        
+        //判断是否有核销权限
+        $is_check=0;
+        $service = StoreService::where('uid',$user['uid'])->where('is_check',1)->field('count(id) as counts')->find();
+        if($service){
+            if($service['counts']>0){
+                $is_check=1;
+            }
+        }
+        $user['is_check'] = $is_check;
+        
+        
         //可提现佣金
         //返佣 +
         $brokerage_commission = UserBill::where(['uid' => $user['uid'], 'category' => 'now_money', 'type' => 'brokerage'])

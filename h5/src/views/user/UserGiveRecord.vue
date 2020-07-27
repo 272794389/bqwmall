@@ -21,8 +21,8 @@
                 <div class="name line1">{{ val.mark }}</div>
                 <div>{{ val.add_time }}</div>
               </div>
-              <div class="num" :class="val.use_money < 0 ? 'font-color-red' : ''">
-                {{ val.use_money > 0 ? "+" : "" }}{{ val.use_money }}
+              <div class="num" :class="val.give_point < 0 ? 'font-color-red' : ''">
+                {{ val.give_point > 0 ? "+" : "" }}{{ val.give_point }}
               </div>
             </div>
           </div>
@@ -33,10 +33,10 @@
   </div>
 </template>
 <script>
-import {getPayLog } from "../../api/user";
+import {getPayGiveLog } from "../../api/user";
 import Loading from "@components/Loading";
 export default {
-  name: "UserBill",
+  name: "UserGiveRecord",
   components: {
     Loading
   },
@@ -94,7 +94,7 @@ export default {
       let that = this;
       if (that.loaded == true || that.loading == true) return;
       that.loading = true;
-      getPayLog(that.where, that.types).then(
+      getPayGiveLog(that.where, that.types).then(
         res => {
           that.loading = false;
           that.loaded = res.data.length < that.where.limit;

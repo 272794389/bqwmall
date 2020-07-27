@@ -33,10 +33,10 @@
   </div>
 </template>
 <script>
-import {getPayLog } from "../../api/user";
+import {getPayHuokuanLog } from "../../api/user";
 import Loading from "@components/Loading";
 export default {
-  name: "UserBill",
+  name: "UserHuokuanRecord",
   components: {
     Loading
   },
@@ -94,7 +94,7 @@ export default {
       let that = this;
       if (that.loaded == true || that.loading == true) return;
       that.loading = true;
-      getPayLog(that.where, that.types).then(
+      getPayHuokuanLog(that.where, that.types).then(
         res => {
           that.loading = false;
           that.loaded = res.data.length < that.where.limit;

@@ -98,6 +98,17 @@ class StorePayOrder extends BaseModel
         $count = (int)self::where('uid', $uid)->where('add_time', '>=', strtotime(date("Y-m-d")))->where('add_time', '<', strtotime(date("Y-m-d", strtotime('+1 day'))))->count();
         return 'wx' . date('YmdHis', time()) . (10000 + $count + $uid);
     }
+    
+    
+    /**
+     * 累计消费
+     * @param $uid
+     * @return float
+     */
+    public static function getOrderStatusSum($uid)
+    {
+        return self::where('uid', $uid)->where('paid', 1)->sum('pay_amount');
+    }
 
     /**
      * 充值js支付

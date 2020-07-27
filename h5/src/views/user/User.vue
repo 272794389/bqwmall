@@ -28,38 +28,23 @@
       <div class="nav acea-row row-middle">
         <router-link :to="{ path: '/user/account' }" class="item">
           <div class="num">{{ userInfo.now_money || 0 }}</div>
+          <div>余额</div>
+        </router-link>
+        <router-link :to="{ path: '/user/huokuan' }" class="item">
+          <div class="num">{{ userInfo.huokuan || 0 }}</div>
           <div>货款</div>
         </router-link>
-        <!--<router-link-->
-        <!--:to="'/user/user_promotion'"-->
-        <!--class="item"-->
-        <!--v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"-->
-        <!--&gt;-->
-        <div
-          @click="goPagey('/user/user_promotion')"
-          class="item"
-          v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"
-        >
-          <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
+        <router-link :to="'/user/give'" class="item">
+          <div class="num">{{ userInfo.give_point || 0 }}</div>
           <div>购物积分</div>
-        </div>
-
-        <!--</router-link>-->
-        <router-link :to="'/user/integral'" class="item" v-else>
-          <div class="num">{{ userInfo.integral || 0 }}</div>
-          <div>当前佣金</div>
         </router-link>
-        <router-link :to="'/user/user_coupon'" class="item">
-          <div class="num">{{ userInfo.couponCount || 0 }}</div>
+        <router-link :to="'/user/paypoint'" class="item">
+          <div class="num">{{ userInfo.pay_point || 0 }}</div>
           <div>消费积分</div>
         </router-link>
-        <router-link :to="'/user/user_coupon'" class="item">
-          <div class="num">{{ userInfo.couponCount || 0 }}</div>
+        <router-link :to="'/user/repaypoint'" class="item">
+          <div class="num">{{ userInfo.repeat_point || 0 }}</div>
           <div>重消积分</div>
-        </router-link>
-        <router-link :to="'/user/user_coupon'" class="item">
-          <div class="num">{{ userInfo.couponCount || 0 }}</div>
-          <div>红包</div>
         </router-link>
       </div>
       <div class="myOrder">
@@ -118,12 +103,54 @@
       </div>
     </div>
     <div class="myOrder1">
-     <div v-for="(item, index) in MyMenus">
-	  <div  class="title" :key="index" @click="goPages(index)">
-		  <div class="title1-1"><img :src="item.pic" /></div>
-		  <div class="title1-2">{{ item.name }}</div>
-		  <div class="title1-3"><span class="iconfont icon-jiantou"></span></div>
+       <div class="title">
+		 <router-link :to="'/user/user_promotion'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/extension.png" /></div>
+		  <div class="title1-2">我的推广</div>
+		  <div class="title1-3">查看我的推广<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
 	  </div>
+	  <div class="title">
+		 <router-link :to="'/collection'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/collection.png" /></div>
+		  <div class="title1-2">我的收藏</div>
+		  <div class="title1-3">查看我收藏的商品<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+	  <div class="title">
+		 <router-link :to="'/user/add_manage'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/address.png" /></div>
+		  <div class="title1-2">收货地址</div>
+		  <div class="title1-3">更改我的收货地址<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+      <div class="title">
+		 <router-link :to="'/user/user_coupon'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/coupon.png" /></div>
+		  <div class="title1-2">我的优惠券</div>
+		  <div class="title1-3">查看我的优惠券<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+	  <div class="title"  v-if="userInfo.is_check==1">
+		 <router-link :to="'/order/order_cancellation'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/hex.png" /></div>
+		  <div class="title1-2">订单核销</div>
+		  <div class="title1-3">扫码核销订单<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+	  <div class="title"  v-if="userInfo.store_name!=''">
+		 <router-link :to="'/merchant/home'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/shop.png" /></div>
+		  <div class="title1-2">商户中心</div>
+		  <div class="title1-3">管理{{userInfo.store_name}}<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+	  <div class="title">
+		 <router-link :to="'/customer/list'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/coupon.png" /></div>
+		  <div class="title1-2">联系客服</div>
+		  <div class="title1-3"><span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
 	  </div>
 	<div class="foot">
 	  <div class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</div>
@@ -178,11 +205,6 @@ export default {
       getUser().then(res => {
         that.userInfo = res.data;
         that.orderStatusNum = res.data.orderStatusNum;
-        this.generalContent = {
-          promoterNum: `您在商城累计消费金额仅差 <span style="color: #ee5a52;">${res
-            .data.promoter_price || 0}元</span>即可开通推广权限`,
-          title: "您未获得推广权限"
-        };
       });
     },
     MenuUser: function() {
@@ -191,14 +213,7 @@ export default {
         that.MyMenus = res.data.routine_my_menus;
       });
     },
-    goPagey(url) {
-      if (!this.userInfo.is_promoter && this.userInfo.statu == 1)
-        return this.$dialog.toast({ mes: "您还没有推广权限！！" });
-      if (!this.userInfo.is_promoter && this.userInfo.statu == 2) {
-        return (this.generalActive = true);
-      }
-      this.$router.push({ path: url });
-    },
+   
     goPages: function(index) {
       let url = this.MyMenus[index].wap_url;
       if (url === "/user/user_promotion") {
