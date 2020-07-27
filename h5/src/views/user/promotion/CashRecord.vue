@@ -18,13 +18,10 @@
           <div class="listn" v-for="(val, indexn) in item.list" :key="indexn">
             <div class="itemn acea-row row-between-wrapper">
               <div>
-                <div class="name line1">{{ val.title }}</div>
+                <div class="name line1"><span v-if="val.status ===0">提现审核中</span><span v-if="val.status <0">提现失败</span><span v-if="val.status >0">提现成功</span></div>
                 <div>{{ val.add_time }}</div>
               </div>
-              <div class="num" v-if="val.pm == 1">+{{ val.number }}</div>
-              <div class="num font-color-red" v-if="val.pm == 0">
-                -{{ val.number }}
-              </div>
+              <div class="num">{{ val.extract_price }}</div>
             </div>
           </div>
         </div>
@@ -34,7 +31,7 @@
   </div>
 </template>
 <script>
-import { getCommissionInfo, getSpreadInfo } from "../../../api/user";
+import { getWithdrawInfo, getWithdrawStatic } from "../../../api/user";
 import Loading from "@components/Loading";
 
 export default {
@@ -51,7 +48,7 @@ export default {
         page: 1,
         limit: 3
       },
-      types: 4,
+      types: 1,
       loaded: false,
       loading: false
     };
@@ -68,7 +65,7 @@ export default {
       let that = this;
       if (that.loading == true || that.loaded == true) return;
       that.loading = true;
-      getCommissionInfo(that.where, that.types).then(
+      getWithdrawInfo(that.where, that.types).then(
         res => {
           that.loading = false;
           that.loaded = res.data.length < that.where.limit;
@@ -82,9 +79,9 @@ export default {
     },
     getCommission: function() {
       let that = this;
-      getSpreadInfo().then(
+      getWithdrawStatic(that.types).then(
         res => {
-          that.commission = res.data.commissionCount;
+          that.commission = res.data.withdrawAmount;
         },
         error => {
           this.$dialog.message(error.msg);

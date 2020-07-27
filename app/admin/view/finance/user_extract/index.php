@@ -67,6 +67,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 
                     <div class="col-sm-3 ui-sortable">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
@@ -78,6 +79,7 @@
                             </div>
                         </div>
                     </div>
+                     -->
                     <div class="col-sm-3 ui-sortable">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
@@ -97,6 +99,7 @@
                                 <th class="text-center">编号</th>
                                 <th class="text-center">用户信息</th>
                                 <th class="text-center">提现金额</th>
+                                <th class="text-center">手续费</th>
                                 <th class="text-center">提现方式</th>
                                 <th class="text-center">添加时间</th>
                                 <th class="text-center">备注</th>
@@ -115,6 +118,9 @@
                             </td>
                             <td class="text-center" style="color: #00aa00;">
                                 {$vo.extract_price}
+                            </td>
+                            <td class="text-center" style="color: #00aa00;">
+                                {$vo.fee}
                             </td>
                             <td class="text-left">
                                 {if condition="$vo['extract_type'] eq 'bank'"}

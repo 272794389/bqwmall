@@ -10,6 +10,7 @@ namespace app\admin\model\user;
 
 use app\admin\model\wechat\WechatUser;
 use app\models\routine\RoutineTemplate;
+use app\models\user\StorePayLog;
 use think\facade\Route as Url;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
@@ -86,12 +87,14 @@ class UserExtract extends BaseModel
         $fail_time = time();
         $data = self::get($id);
         $extract_number = $data['extract_price'];
-        $mark = '提现失败,退回佣金' . $extract_number . '元';
+        $mark = '提现失败,退回余额' . $extract_number . '元';
         $uid = $data['uid'];
         $status = -1;
         $User = User::where('uid', $uid)->find()->toArray();
         UserBill::income('提现失败', $uid, 'now_money', 'extract', $extract_number, $id, bcadd($User['now_money'], $extract_number, 2), $mark);
-        User::bcInc($uid, 'brokerage_price', $extract_number, 'uid');
+        StorePayLog::expend($uid,$id, 2, $extract_number, 0, 0, 0,0,0, $mark);
+        
+        User::bcInc($uid, 'now_money', $extract_number, 'uid');
         $extract_type = '未知方式';
         switch ($data['extract_type']) {
             case 'alipay':
@@ -107,7 +110,7 @@ class UserExtract extends BaseModel
         if (strtolower($User['user_type']) == 'wechat') {
             WechatTemplateService::sendTemplate(WechatUser::where('uid', $uid)->value('openid'), WechatTemplateService::USER_BALANCE_CHANGE, [
                 'first' => $mark,
-                'keyword1' => '佣金提现',
+                'keyword1' => '余额提现',
                 'keyword2' => date('Y-m-d H:i:s', time()),
                 'keyword3' => $extract_number,
                 'remark' => '错误原因:' . $fail_msg
@@ -123,7 +126,7 @@ class UserExtract extends BaseModel
 
         $data = self::get($id);
         $extractNumber = $data['extract_price'];
-        $mark = '成功提现佣金' . $extractNumber . '元';
+        $mark = '成功提现余额' . $extractNumber . '元';
         $wechatUserInfo = WechatUser::where('uid', $data['uid'])->field('openid,user_type,routine_openid,nickname')->find();
         $extract_type = '未知方式';
         switch ($data['extract_type']) {
@@ -143,10 +146,10 @@ class UserExtract extends BaseModel
             } else if (strtolower($wechatUserInfo->user_type) == 'wechat') {
                 WechatTemplateService::sendTemplate($wechatUserInfo->openid, WechatTemplateService::USER_BALANCE_CHANGE, [
                     'first' => $mark,
-                    'keyword1' => '佣金提现',
+                    'keyword1' => '余额提现',
                     'keyword2' => date('Y-m-d H:i:s', time()),
                     'keyword3' => $extractNumber,
-                    'remark' => '点击查看我的佣金明细'
+                    'remark' => '点击查看我的余额明细'
                 ], Url::buildUrl('/user/cashrecord')->suffix('')->domain(true)->build());
             }
         }

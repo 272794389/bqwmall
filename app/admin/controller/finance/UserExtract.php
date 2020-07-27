@@ -13,6 +13,7 @@ use think\facade\Route as Url;
 use crmeb\services\JsonService;
 use app\admin\model\user\UserExtract as UserExtractModel;
 use crmeb\services\{UtilService as Util, FormBuilder as Form};
+use think\facade\Db;
 
 /**
  * 用户提现管理
@@ -111,6 +112,8 @@ class UserExtract extends AuthController
             if (!$data['bank_code']) return JsonService::fail('请输入银行卡号');
             if (!$data['bank_address']) return JsonService::fail('请输入开户行');
         }
+        $withdraw_fee = Db::name('data_config')->where('id',1)->value('withdraw_fee');
+        $data['fee'] = $data['extract_price']*$withdraw_fee/100;
         if (!UserExtractModel::edit($data, $id))
             return JsonService::fail(UserExtractModel::getErrorInfo('修改失败'));
         else

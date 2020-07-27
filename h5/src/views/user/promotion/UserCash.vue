@@ -37,12 +37,18 @@
           <div class="input">
             <select v-model="post.bankname">
               <option value="">请选择银行</option>
+              <option value="中国银行">中国银行</option>
+              <option value="中国工商银行">中国工商银行</option>
+              <option value="中国农业银行">中国农业银行</option>
+              <option value="中国建设银行">中国建设银行</option>
+              <!--
               <option
                 v-for="(item, index) in banks"
                 :key="index"
                 value="item"
                 >{{ item }}</option
               >
+              -->
             </select>
           </div>
         </div>

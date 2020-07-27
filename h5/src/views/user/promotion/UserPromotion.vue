@@ -2,12 +2,12 @@
   <div class="my-promotion">
     <div class="header">
       <div class="name acea-row row-center-wrapper">
-        <div>当前佣金</div>
+        <div>当前可用余额</div>
         <router-link class="record" :to="'/user/cashrecord'">
           提现记录<span class="iconfont icon-xiangyou"></span>
         </router-link>
       </div>
-      <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
+      <div class="num">{{ userInfo.now_money || 0 }}</div>
       <div class="profit acea-row row-between-wrapper">
         <div class="item">
           <div>昨日收益</div>

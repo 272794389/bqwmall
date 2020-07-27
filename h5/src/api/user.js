@@ -224,6 +224,18 @@ export function getCommissionInfo(q, types) {
 
 
 /*
+ * 余额提现记录
+ * */
+export function getWithdrawInfo(q, types) {
+  return request.get("/extract/withdraw/" + types, q);
+}
+
+//统计提现金额
+export function getWithdrawStatic(types) {
+	  return request.get("/extract/withdrawStatic/" + types);
+	}
+
+/*
  * 资金明细（types|0=全部,1=消费,2=充值）
  * */
 export function getPayLog(q, types) {

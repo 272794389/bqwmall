@@ -146,8 +146,6 @@ Route::group(function () {
     Route::get('spread/banner', 'user.UserBillController/spread_banner')->name('spreadBanner');//推广分销二维码海报生成
     Route::get('integral/list', 'user.UserBillController/integral_list')->name('integralList');//积分记录
     
-    
-    
     Route::get('spread/yurecord/:type', 'user.StorePayLogController/yu_record')->name('yuRecord');//余额收入记录
     Route::get('spread/huo_record/:type', 'user.StorePayLogController/huo_record')->name('yuRecord');//货款收入记录
     Route::get('spread/give_record/:type', 'user.StorePayLogController/give_record')->name('yuRecord');//购物积分记录
@@ -165,6 +163,8 @@ Route::group(function () {
     //提现类
     Route::get('extract/bank', 'user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'user.UserExtractController/cash')->name('extractCash');//提现申请
+    Route::get('extract/withdraw/:type', 'user.UserExtractController/withdraw')->name('withdraw');//余额明细
+    Route::get('extract/withdrawStatic/:type', 'user.UserExtractController/withdrawStatic')->name('withdrawStatic');//提现中金额
     //充值类
     Route::post('recharge/routine', 'user.UserRechargeController/routine')->name('rechargeRoutine');//小程序充值
     Route::post('recharge/wechat', 'user.UserRechargeController/wechat')->name('rechargeWechat');//公众号充值

@@ -84,4 +84,29 @@ class UserExtractController
         else
             return app('json')->fail(UserExtract::getErrorInfo('提现失败'));
     }
+    
+    
+    /**
+     * 余额提现明细
+     * @param Request $request
+     * @param $type 1 余额提现，2 货款提现
+     * @return mixed
+     */
+    public function withdraw(Request $request, $type)
+    {
+        list($page, $limit) = UtilService::getMore([
+            ['page', 0],
+            ['limit', 0],
+        ], $request, true);
+        return app('json')->successful(UserExtract::getUserWithdrawList($request->uid(), $page, $limit,$type));
+    }
+    
+    public function withdrawStatic(Request $request,$type)
+    {
+        $uid = $request->uid();
+        $withdrawAmount = UserExtract::getWithdrawSum($uid,$type);//除失败的提现金额
+       
+        $data['withdrawAmount'] = $withdrawAmount;
+        return app('json')->successful($data);
+    }
 }

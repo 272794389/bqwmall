@@ -10,6 +10,7 @@ namespace app\models\user;
 use crmeb\basic\BaseModel;
 use crmeb\services\workerman\ChannelService;
 use crmeb\traits\ModelTrait;
+use think\facade\Db;
 
 
 /**
@@ -60,16 +61,20 @@ class UserExtract extends BaseModel
         if(!in_array($data['extract_type'],self::$extractType))
             return self::setErrorInfo('提现方式不存在');
         $userInfo = User::get($userInfo['uid']);
-        $extractPrice = $userInfo['brokerage_price'];
-        if($extractPrice < 0) return self::setErrorInfo('提现佣金不足'.$data['money']);
-        if($data['money'] > $extractPrice) return self::setErrorInfo('提现佣金不足'.$data['money']);
-        if($data['money'] <= 0) return self::setErrorInfo('提现佣金大于0');
-        $balance = bcsub($userInfo['brokerage_price'],$data['money'],2);
+        $extractPrice = $userInfo['now_money'];
+        if($extractPrice < 0) return self::setErrorInfo('提现金额不足'.$data['money']);
+        if($data['money'] > $extractPrice) return self::setErrorInfo('提现金额不足'.$data['money']);
+        if($data['money'] <= 0) return self::setErrorInfo('提现金额大于0');
+        $balance = bcsub($userInfo['now_money'],$data['money'],2);
         if($balance < 0) $balance=0;
+        //查询提现手续费率
+        $withdraw_fee = Db::name('data_config')->where('id',1)->value('withdraw_fee');
+        $fee = $withdraw_fee*$data['money']/100;
         $insertData = [
             'uid' => $userInfo['uid'],
             'extract_type' => $data['extract_type'],
             'extract_price' => $data['money'],
+            'fee' => $fee,
             'add_time' => time(),
             'balance' => $balance,
             'status' => self::AUDIT_STATUS
@@ -94,12 +99,13 @@ class UserExtract extends BaseModel
             if(!$data['weixin']) return self::setErrorInfo('请输入微信账号');
             $mark = '使用微信提现'.$insertData['extract_price'].'元';
         }
+       
         self::beginTrans();
         try{
             $res1 = self::create($insertData);
             if(!$res1) return self::setErrorInfo('提现失败');
-            $res2 = User::edit(['brokerage_price'=>$balance],$userInfo['uid'],'uid');
-            $res3 = UserBill::expend('余额提现',$userInfo['uid'],'now_money','extract',$data['money'],$res1['id'],$balance,$mark);
+            $res2 = User::edit(['now_money'=>$balance],$userInfo['uid'],'uid');
+            $res3 = StorePayLog::expend($userInfo['uid'],$res1['id'], 2, -$data['money'], 0, 0, 0,0,$fee, '余额提现');
             $res = $res2 && $res3;
             if($res){
                 self::commitTrans();
@@ -163,6 +169,42 @@ class UserExtract extends BaseModel
     public static function extractSum($uid)
     {
         return self::where('uid',$uid)->where('status',1)->sum('extract_price');
+    }
+    
+    
+    /*
+     * 获取余额提现明细
+     * @param int $uid 用户uid
+     * @param int $page 页码
+     * @param int $limit 展示多少条
+     * @param int $type 展示类型
+     * @return array
+     * */
+    public static function getUserWithdrawList($uid, $page, $limit,$type)
+    {
+        if (!$limit) return [];
+        $model = self::where('uid', $uid)->where('belong_t',$type)->order('add_time desc')
+        ->field('FROM_UNIXTIME(add_time,"%Y-%m") as time,group_concat(id SEPARATOR ",") ids')->group('time');
+        if ($page) $model = $model->page((int)$page, (int)$limit);
+        $list = ($list = $model->select()) ? $list->toArray() : [];
+        $data = [];
+        foreach ($list as $item) {
+            $value['time'] = $item['time'];
+            $value['list'] = self::where('id', 'in', $item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i") as add_time,extract_price,status')->order('add_time DESC')->select();
+            array_push($data, $value);
+        }
+        return $data;
+    }
+    
+    /**
+     * 获取除失败的提现金额
+     * @param $uid
+     * @return float
+     */
+    public static function getWithdrawSum($uid,$type)
+    {
+        return self::where('uid', $uid)->where('status','>', -1)->where('belong_t', $type)
+        ->sum('extract_price');
     }
 
 }
