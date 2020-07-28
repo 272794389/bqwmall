@@ -120,7 +120,6 @@ class UserRecharge extends BaseModel
         event('RechargeSuccess', [$order]);
         return $res;
     }
-
     /**
      * 导入佣金到余额
      * @param $uid 用户uid
