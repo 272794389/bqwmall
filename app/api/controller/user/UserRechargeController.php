@@ -77,7 +77,7 @@ class UserRechargeController
                 }
                 return app('json')->successful(['type' => $from, 'data' => $recharge]);
                 break;
-            case 1: //佣金转入余额
+            case 1: //货款转入余额
                 if (UserRecharge::importNowMoney($request->uid(), $price))
                     return app('json')->successful('转入余额成功');
                 else
