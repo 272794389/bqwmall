@@ -46,5 +46,4 @@ class StoreService
         array_multisort($idArr,SORT_ASC,$serviceLogList);
         return app('json')->successful($serviceLogList);
     }
-
 }
