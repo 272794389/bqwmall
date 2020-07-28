@@ -75,6 +75,7 @@ class UserExtract extends BaseModel
             'extract_type' => $data['extract_type'],
             'extract_price' => $data['money'],
             'fee' => $fee,
+            'belong_t' => 1,
             'add_time' => time(),
             'balance' => $balance,
             'status' => self::AUDIT_STATUS
@@ -121,6 +122,77 @@ class UserExtract extends BaseModel
             return self::setErrorInfo('提现失败!');
         }
     }
+    
+    
+    /**
+     * 用户自主货款提现记录提现记录,后台执行审核
+     * @param array $userInfo 用户个人信息
+     * @param array $data 提现详细信息
+     * @return bool
+     */
+    public static function userHuoExtract($userInfo,$data){
+        if(!in_array($data['extract_type'],self::$extractType))
+            return self::setErrorInfo('提现方式不存在');
+            $userInfo = User::get($userInfo['uid']);
+            $extractPrice = $userInfo['huokuan'];
+            if($extractPrice < 0) return self::setErrorInfo('提现金额不足'.$data['money']);
+            if($data['money'] > $extractPrice) return self::setErrorInfo('提现金额不足'.$data['money']);
+            if($data['money'] <= 0) return self::setErrorInfo('提现金额大于0');
+            $balance = bcsub($userInfo['huokuan'],$data['money'],2);
+            if($balance < 0) $balance=0;
+            //查询提现手续费率
+            $insertData = [
+                'uid' => $userInfo['uid'],
+                'extract_type' => $data['extract_type'],
+                'extract_price' => $data['money'],
+                'belong_t' => 2,
+                'add_time' => time(),
+                'balance' => $balance,
+                'status' => self::AUDIT_STATUS
+            ];
+            if(isset($data['name']) && strlen(trim($data['name']))) $insertData['real_name'] = $data['name'];
+            else $insertData['real_name'] = $userInfo['nickname'];
+            if(isset($data['cardnum'])) $insertData['bank_code'] = $data['cardnum'];
+            else $insertData['bank_code'] = '';
+            if(isset($data['bankname'])) $insertData['bank_address']=$data['bankname'];
+            else $insertData['bank_address']='';
+            if(isset($data['weixin'])) $insertData['wechat'] = $data['weixin'];
+            else $insertData['wechat'] = $userInfo['nickname'];
+            if($data['extract_type'] == 'alipay'){
+                if(!$data['alipay_code']) return self::setErrorInfo('请输入支付宝账号');
+                $insertData['alipay_code'] = $data['alipay_code'];
+                $mark = '使用支付宝提现'.$insertData['extract_price'].'元';
+            }else if($data['extract_type'] == 'bank'){
+                if(!$data['cardnum']) return self::setErrorInfo('请输入银行卡账号');
+                if(!$data['bankname']) return self::setErrorInfo('请输入开户行信息');
+                $mark = '使用银联卡'.$insertData['bank_code'].'提现'.$insertData['extract_price'].'元';
+            }else if($data['extract_type'] == 'weixin'){
+                if(!$data['weixin']) return self::setErrorInfo('请输入微信账号');
+                $mark = '使用微信提现'.$insertData['extract_price'].'元';
+            }
+             
+            self::beginTrans();
+            try{
+                $res1 = self::create($insertData);
+                if(!$res1) return self::setErrorInfo('提现失败');
+                $res2 = User::edit(['huokuan'=>$balance],$userInfo['uid'],'uid');
+                $res3 = StorePayLog::expend($userInfo['uid'],$res1['id'], 2, 0, -$data['money'], 0, 0,0,0, '货款提现');
+                $res = $res2 && $res3;
+                if($res){
+                    self::commitTrans();
+                    try{
+                        ChannelService::instance()->send('WITHDRAW', ['id'=>$res1->id]);
+                    }catch (\Exception $e){}
+                    event('AdminNewPush');
+                    //发送模板消息
+                    return true;
+                }else return self::setErrorInfo('提现失败!');
+            }catch (\Exception $e){
+                self::rollbackTrans();
+                return self::setErrorInfo('提现失败!');
+            }
+    }
+    
 
     /**
      * 获得用户最后一次提现信息

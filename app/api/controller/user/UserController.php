@@ -91,11 +91,6 @@ class UserController
         
         $user['recharge'] = UserBill::getRecharge($uid);//累计充值
         $user['orderStatusSum'] = StoreOrder::getOrderStatusSum($uid);//累计消费
-        
-        
-        
-        
-        
         $payAmount = StorePayOrder::getOrderStatusSum($uid);//累计到店消费
         $user['orderStatusSum'] += $payAmount;
         

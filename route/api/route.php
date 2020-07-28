@@ -155,6 +155,7 @@ Route::group(function () {
     //提现类
     Route::get('extract/bank', 'user.UserExtractController/bank')->name('extractBank');//提现银行/提现最低金额
     Route::post('extract/cash', 'user.UserExtractController/cash')->name('extractCash');//提现申请
+    Route::post('extract/huo_cash', 'user.UserExtractController/huo_cash')->name('extractHuoCash');//提现申请
     Route::get('extract/withdraw/:type', 'user.UserExtractController/withdraw')->name('withdraw');//余额明细
     Route::get('extract/withdrawStatic/:type', 'user.UserExtractController/withdrawStatic')->name('withdrawStatic');//提现中金额
     //充值类

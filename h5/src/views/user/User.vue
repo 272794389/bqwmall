@@ -138,11 +138,11 @@
 		  <div class="title1-3">扫码核销订单<span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
-	  <div class="title"  v-if="userInfo.store_name!=''">
+	  <div class="title">
 		 <router-link :to="'/merchant/home'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/shop.png" /></div>
-		  <div class="title1-2">商户中心</div>
-		  <div class="title1-3">管理{{userInfo.store_name}}<span class="iconfont icon-jiantou"></span></div>
+		  <div class="title1-2">我是商家</div>
+		  <div class="title1-3"><span v-if="userInfo.store_name!=''">管理{{userInfo.store_name}}</span><span v-else>我要入驻</span><span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
 	  <div class="title">

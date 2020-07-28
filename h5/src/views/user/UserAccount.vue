@@ -8,9 +8,14 @@
               <div>可用余额(元)</div>
               <div class="money">{{ now_money }}</div>
             </div>
-            <router-link :to="'/user/Recharge'" class="recharge font-color-red"
-              >充值</router-link
-            >
+            <div style="width:1.5rem;">
+	            <router-link :to="'/user/Recharge'" style="margin-bottom: 0.2rem;float:left;" class="recharge font-color-red"
+	              >充值</router-link
+	            >
+	            <router-link :to="'/user/user_cash'" style="float:left;" class="recharge font-color-red"
+	              >提现</router-link
+	            >
+            </div>
           </div>
           <div class="cumulative acea-row row-top">
             <div class="item">

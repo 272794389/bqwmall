@@ -295,6 +295,13 @@ export function postCashInfo(cash) {
 }
 
 /*
+ * 货款提现申请
+ * */
+export function postHuoCashInfo(cash) {
+  return request.post("/extract/huo_cash", cash);
+}
+
+/*
  * 会员中心
  * */
 export function getVipInfo() {

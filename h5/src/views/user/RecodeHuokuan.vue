@@ -21,8 +21,8 @@
                 <div class="name line1">{{ val.mark }}</div>
                 <div>{{ val.add_time }}</div>
               </div>
-              <div class="num" :class="val.use_money < 0 ? 'font-color-red' : ''">
-                {{ val.use_money > 0 ? "+" : "" }}{{ val.use_money }}
+              <div class="num" :class="val.huokuan < 0 ? 'font-color-red' : ''">
+                {{ val.huokuan > 0 ? "+" : "" }}{{ val.huokuan }}
               </div>
             </div>
           </div>

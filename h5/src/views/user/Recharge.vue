@@ -29,7 +29,7 @@
             <div class="tip-samll">
               当前可转入货款：
               <span class="font-color"
-                >￥{{ userInfo.huokuan || 0 }}</span
+                >￥{{ huokuan || 0 }}</span
               >
             </div>
           </div>
@@ -95,12 +95,14 @@ export default {
       activePic: 0,
       numberPic: "",
       paid_price: "",
+      huokuan:0,
       rechargeAttention: []
     };
   },
   computed: mapGetters(["userInfo"]),
   mounted: function() {
     this.now_money = this.userInfo.now_money;
+    this.huokuan = this.userInfo.huokuan;
     this.getRecharge();
   },
   methods: {
@@ -165,10 +167,7 @@ export default {
                       price,
                       parseInt(that.userInfo.now_money)
                     );
-                    that.userInfo.huokuan = sub(
-                      that.userInfo.huokuan,
-                      price
-                    );
+                    that.huokuan = sub(that.huokuan,price);
                     that.money = "";
                     return that.$dialog.toast({ mes: res.msg });
                   })

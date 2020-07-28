@@ -10,6 +10,7 @@ namespace app\admin\controller\finance;
 use app\admin\controller\AuthController;
 use app\admin\model\user\{User,UserBill};
 use app\admin\model\finance\FinanceModel;
+use app\admin\model\finance\StorePayLog;
 use crmeb\services\{UtilService as Util,JsonService as Json};
 
 /**
@@ -50,6 +51,34 @@ class Finance extends AuthController
         ]);
         return Json::successlayui(FinanceModel::getBillList($where));
     }
+    
+    //资金监控
+    public function index()
+    {
+        return $this->fetch();
+    }
+    
+    
+    /**
+     * 显示资金记录ajax列表
+     */
+    public function payloglist()
+    {
+        $where = Util::getMore([
+            ['start_time', ''],
+            ['end_time', ''],
+            ['nickname', ''],
+            ['limit', 20],
+            ['page', 1],
+            ['belong_t', ''],
+            ['pay_type', ''],
+        ]);
+        return Json::successlayui(StorePayLog::getLogList($where));
+    }
+    
+    
+    
+    
 
     /**
      *保存资金监控的excel表格
@@ -60,9 +89,10 @@ class Finance extends AuthController
             ['start_time', ''],
             ['end_time', ''],
             ['nickname', ''],
-            ['type', ''],
+            ['belong_t', ''],
+            ['pay_type', ''],
         ]);
-        FinanceModel::SaveExport($where);
+        StorePayLog::SaveExport($where);
     }
 
     /**

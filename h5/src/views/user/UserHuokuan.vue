@@ -8,7 +8,7 @@
               <div>货款余额(元)</div>
               <div class="money">{{ now_money }}</div>
             </div>
-            <router-link :to="'/user/Recharge'" class="recharge font-color-red"
+            <router-link :to="'/user/huokuan_cash'" class="recharge font-color-red"
               >提现</router-link
             >
           </div>
@@ -36,6 +36,10 @@
         <router-link class="item" :to="'/user/re_huokuan/2'">
           <div class="pictrue"><img src="@assets/images/record3.png" /></div>
           <div>收入记录</div>
+        </router-link>
+        <router-link class="item" :to="'/user/huocashrecord'">
+          <div class="pictrue"><img src="@assets/images/qiandai.png" /></div>
+          <div>提现记录</div>
         </router-link>
       </div>
     </div>

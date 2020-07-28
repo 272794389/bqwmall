@@ -110,10 +110,9 @@ class UserRecharge extends BaseModel
         if (!$order) return false;
         $user = User::getUserInfo($order['uid']);
         self::beginTrans();
-        $price = bcadd($order['price'], $order['give_price'], 2);
+        $price = bcadd($order['price'], 0, 2);
         $res1 = self::where('order_id', $order['order_id'])->update(['paid' => 1, 'pay_time' => time()]);
-        $mark = '成功充值余额' . floatval($order['price']) . '元' . ($order['give_price'] ? ',赠送' . $order['give_price'] . '元' : '');
-        $res2 = UserBill::income('用户余额充值', $order['uid'], 'now_money', 'recharge', $order['price'], $order['id'], $user['now_money'], $mark);
+        $res2 = StorePayLog::expend($order['uid'],$order['id'], 4, $price,0, 0, 0,0,0, '余额充值' . floatval($price) . '元');
         $res3 = User::edit(['now_money' => bcadd($user['now_money'], $price, 2)], $order['uid'], 'uid');
         $res = $res1 && $res2 && $res3;
         self::checkTrans($res);
@@ -121,7 +120,7 @@ class UserRecharge extends BaseModel
         return $res;
     }
     /**
-     * 导入佣金到余额
+     * 导入货款到余额
      * @param $uid 用户uid
      * @param $price 导入金额
      * @return bool
@@ -135,27 +134,13 @@ class UserRecharge extends BaseModel
         $user = User::getUserInfo($uid);
         self::beginTrans();
         try {
-            $broken_time = intval(sys_config('extract_time'));
-            $search_time = time() - 86400 * $broken_time;
-
-            //返佣 +
-            $brokerage_commission = UserBill::where(['uid' => $uid, 'category' => 'now_money', 'type' => 'brokerage'])
-                ->where('add_time', '>', $search_time)
-                ->where('pm', 1)
-                ->sum('number');
-            //退款退的佣金 -
-            $refund_commission = UserBill::where(['uid' => $uid, 'category' => 'now_money', 'type' => 'brokerage'])
-                ->where('add_time', '>', $search_time)
-                ->where('pm', 0)
-                ->sum('number');
-            $broken_commission = bcsub($brokerage_commission, $refund_commission, 2);
-            if ($broken_commission < 0)
-                $broken_commission = 0;
-            $commissionCount = bcsub($user['brokerage_price'], $broken_commission, 2);
-            if ($price > $commissionCount) return self::setErrorInfo('转入金额不能大于可提现佣金！');
+            $huokuan = $user['huokuan'];
+            $res=true;
+            
+            if ($price > $huokuan) return self::setErrorInfo('转入金额不能大于货款余额！');
             $res1 = User::bcInc($uid, 'now_money', $price, 'uid');
-            $res3 = User::bcDec($uid, 'brokerage_price', $price, 'uid');
-            $res2 = UserBill::expend('用户佣金转入余额', $uid, 'now_money', 'recharge', $price, 0, $user['now_money'], '成功转入余额' . floatval($price) . '元');
+            $res3 = User::bcDec($uid, 'huokuan', $price, 'uid');
+            $res2 = StorePayLog::expend($uid,-1, 3, $price, -$price, 0, 0,0,0, '货款转入余额' . floatval($price) . '元');
             $res = $res2 && $res1 && $res3;
             self::checkTrans($res);
             if ($res) {

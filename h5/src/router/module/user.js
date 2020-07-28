@@ -144,6 +144,16 @@ export default [
     component: () => import("@views/user/promotion/CashAudit.vue")
   },
   {
+    path: "/user/haudit",
+    name: "HuoCashAudit",
+    meta: {
+      title: "提现审核",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/HuoCashAudit.vue")
+  },
+  {
     path: "/user/promoter_order",
     name: "PromoterOrder",
     meta: {
@@ -235,6 +245,16 @@ export default [
     component: () => import("@views/user/promotion/CashRecord.vue")
   },
   {
+    path: "/user/huocashrecord",
+    name: "HuokuanCashRecord",
+    meta: {
+      title: "货款提现记录",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/HuokuanCashRecord.vue")
+  },
+  {
     path: "/user/commission",
     name: "CommissionDetails",
     meta: {
@@ -302,6 +322,16 @@ export default [
       auth: true
     },
     component: () => import("@views/user/promotion/UserCash.vue")
+  },
+  {
+    path: "/user/huokuan_cash",
+    name: "HuokuanCash",
+    meta: {
+      title: "货款提现",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/HuokuanCash.vue")
   },
   {
     path: "/customer/list/:productId?",

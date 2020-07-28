@@ -48,6 +48,8 @@ class UserExtractController
         
         //用户信息
         $data['use_money'] = $user['now_money'];
+        //用户信息
+        $data['huokuan'] = $user['huokuan'];
         //查询提现手续费率
         $withdraw_fee = Db::name('data_config')->where('id',1)->value('withdraw_fee');
         $data['withdraw_fee'] = $withdraw_fee;
@@ -83,6 +85,32 @@ class UserExtractController
             return app('json')->successful('申请提现成功!');
         else
             return app('json')->fail(UserExtract::getErrorInfo('提现失败'));
+    }
+    
+    /**
+     * 货款提现申请
+     * @param Request $request
+     * @return mixed
+     */
+    public function huo_cash(Request $request)
+    {
+        $extractInfo = UtilService::postMore([
+            ['alipay_code', ''],
+            ['extract_type', ''],
+            ['money', 0],
+            ['name', ''],
+            ['bankname', ''],
+            ['cardnum', ''],
+            ['weixin', ''],
+        ], $request);
+        if (!preg_match('/^[0-9]*$/',$extractInfo['money'])) return app('json')->fail('提现金额输入有误');
+        if (!$extractInfo['cardnum'] =='')
+            if (!preg_match('/^([1-9]{1})(\d{14}|\d{18})$/',$extractInfo['cardnum']))
+                return app('json')->fail('银行卡号输入有误');
+                if (UserExtract::userHuoExtract($request->user(), $extractInfo))
+                    return app('json')->successful('申请提现成功!');
+                    else
+                        return app('json')->fail(UserExtract::getErrorInfo('提现失败'));
     }
     
     
