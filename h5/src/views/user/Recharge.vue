@@ -27,9 +27,9 @@
           <div class="tip-box">
             <span class="tip">提示：</span>
             <div class="tip-samll">
-              当前可转入佣金：
+              当前可转入货款：
               <span class="font-color"
-                >￥{{ userInfo.brokerage_price || 0 }}</span
+                >￥{{ userInfo.huokuan || 0 }}</span
               >
             </div>
           </div>
@@ -45,7 +45,6 @@
             <div class="pic-number-pic">
               {{ item.quota }}<span class="pic-number"> 元</span>
             </div>
-            <div class="pic-number">赠送：{{ item.price }} 元</div>
           </div>
           <div
             class="pic-box pic-box-color acea-row row-center-wrapper"
@@ -61,12 +60,13 @@
             />
           </div>
         </div>
+        <!--
         <div class="acea-row row-column">
           <div class="tip mt-30">注意事项：</div>
           <div class="tip-samll" v-for="item in rechargeAttention" :key="item">
-            {{ item }}
           </div>
         </div>
+        -->
         <div class="pay-btn bg-color-red" @click="recharge">
           {{ active ? "立即转入" : "立即充值" }}
         </div>
@@ -85,7 +85,7 @@ export default {
   props: {},
   data: function() {
     return {
-      navRecharge: ["账户充值", "佣金导入"],
+      navRecharge: ["账户充值", "货款导入"],
       active: 0,
       payType: ["weixin"],
       from: isWeixin() ? "weixin" : "weixinh5",
@@ -165,8 +165,8 @@ export default {
                       price,
                       parseInt(that.userInfo.now_money)
                     );
-                    that.userInfo.brokerage_price = sub(
-                      that.userInfo.brokerage_price,
+                    that.userInfo.huokuan = sub(
+                      that.userInfo.huokuan,
                       price
                     );
                     that.money = "";
