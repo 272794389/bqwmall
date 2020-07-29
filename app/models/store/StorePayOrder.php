@@ -140,7 +140,6 @@ class StorePayOrder extends BaseModel
     {
         return WechatService::jsPay(WechatUser::uidToOpenid($orderInfo['uid'], 'openid'),$orderInfo['order_id'],$orderInfo['price'],'user_pay','商家消费');
     }
-   
 
     /**
      * //TODO用户下单成功后
