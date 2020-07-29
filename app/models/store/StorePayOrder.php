@@ -14,6 +14,7 @@ use crmeb\traits\ModelTrait;
 use app\models\user\User;
 use app\models\system\SystemStore;
 use app\models\user\StorePayLog;
+use app\models\user\WechatUser;
 use app\admin\model\system\DataConfig;
 use think\facade\Db;
 use crmeb\services\{ SystemConfigService, WechatTemplateService, workerman\ChannelService};
