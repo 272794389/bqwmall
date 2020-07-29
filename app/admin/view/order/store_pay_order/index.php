@@ -92,6 +92,7 @@
                                 <th class="text-center">编号</th>
                                 <th class="text-center">订单号</th>
                                 <th class="text-center">用户信息</th>
+                                <th class="text-center">商户名称</th>
                                 <th class="text-center">消费金额</th>
                                 <th class="text-center">实际支付</th>
                                 <th class="text-center">购物积分支付</th>
@@ -112,6 +113,9 @@
                             </td>
                             <td class="text-center">
                                用户昵称: {$vo.nickname}/用户id:{$vo.uid}
+                            </td>
+                            <td class="text-center">
+                               {$vo.mer_name}
                             </td>
                             <td class="text-center" style="color: #00aa00;">
                                 {$vo.total_amount}
