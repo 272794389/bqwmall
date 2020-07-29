@@ -126,7 +126,7 @@ class StorePayOrder extends BaseModel
      * @param $orderInfo
      * @return mixed
      */
-    public static function wxH5Pay($orderInfo)
+    public static function h5Pay($orderInfo)
     {
         return WechatService::paymentPrepare(null,$orderInfo['order_id'],$orderInfo['price'],'user_pay','商家消费', '', 'MWEB');
     }
