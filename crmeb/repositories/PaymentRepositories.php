@@ -4,6 +4,7 @@ namespace crmeb\repositories;
 
 use app\models\store\StoreOrder;
 use app\models\user\UserRecharge;
+use app\models\store\StorePayOrder;
 
 /**
  * Class PaymentRepositories
@@ -68,6 +69,21 @@ class PaymentRepositories
         try {
             if (UserRecharge::be(['order_id' => $order_id, 'paid' => 1])) return true;
             return UserRecharge::rechargeSuccess($order_id);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * 消费成功后
+     * @param string|null $order_id 订单id
+     * @return bool
+     */
+    public static function wechatUserPay(string $order_id = null)
+    {
+        try {
+            if (StorePayOrder::be(['order_id' => $order_id, 'paid' => 1])) return true;
+            return StorePayOrder::paySuccess($order_id);
         } catch (\Exception $e) {
             return false;
         }

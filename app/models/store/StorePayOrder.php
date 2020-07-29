@@ -128,9 +128,8 @@ class StorePayOrder extends BaseModel
      */
     public static function wxH5Pay($orderInfo)
     {
-        return WechatService::paymentPrepare(null,$orderInfo['order_id'],$orderInfo['price'],'user_vip','购买vip', '', 'MWEB');
+        return WechatService::paymentPrepare(null,$orderInfo['order_id'],$orderInfo['price'],'user_pay','商家消费', '', 'MWEB');
     }
-
     /**
      * 公众号支付
      * @param $orderInfo
@@ -139,8 +138,9 @@ class StorePayOrder extends BaseModel
      */
     public static function wxPay($orderInfo)
     {
-        return WechatService::jsPay(WechatUser::uidToOpenid($orderInfo['uid'], 'openid'),$orderInfo['order_id'],$orderInfo['price'],'user_vip','购买vip');
+        return WechatService::jsPay(WechatUser::uidToOpenid($orderInfo['uid'], 'openid'),$orderInfo['order_id'],$orderInfo['price'],'user_pay','商家消费');
     }
+   
 
     /**
      * //TODO用户下单成功后

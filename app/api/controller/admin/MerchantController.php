@@ -136,7 +136,7 @@ class MerchantController
         $ermaImg = '';
         if(!$erma_url){
             //$siteUrl = sysConfig('site_url');
-            $siteUrl = "https://oss.dshqfsc.com";
+            $siteUrl = "https://bqw.dshqfsc.com";
             $codeUrl = UtilService::setHttpType($siteUrl, 1)."/sdetail/".$store_id."?spread=".$uid;//二维码链接
             $name = date("Y-m-d")."-order-sale-".time().".jpg";
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);

@@ -383,7 +383,7 @@ class PublicController
                     //创建订单jspay支付
                     $payPriceStatus = StorePayOrder::jsPayPrice($orderId, $uid, $formId);
                     if ($payPriceStatus)//0元支付成功
-                        return app('json')->status('success', '微信支付成功', $info);
+                        return app('json')->status('success', '微信支付成功', $orderinfo);
                         else
                             return app('json')->status('pay_error', StorePayOrder::getErrorInfo());
                 } else {
@@ -396,7 +396,7 @@ class PublicController
                             $jsConfig = StorePayOrder::wxPay($orderinfo);
                         }
                     } catch (\Exception $e) {
-                        return app('json')->status('pay_error', $e->getMessage(), $info);
+                        return app('json')->status('pay_error', $e->getMessage(), $orderinfo);
                     }
                     $info['jsConfig'] = $jsConfig;
                     if ($from == 'weixinh5') {
