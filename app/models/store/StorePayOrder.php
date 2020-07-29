@@ -10,6 +10,7 @@ namespace app\models\store;
 use crmeb\basic\BaseModel;
 use crmeb\services\MiniProgramService;
 use crmeb\services\WechatService;
+use crmeb\repositories\ShortLetterRepositories;
 use crmeb\traits\ModelTrait;
 use app\models\user\User;
 use app\models\system\SystemStore;
@@ -177,6 +178,11 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = StorePayLog::expend($storeInfo['user_id'], $orderInfo['id'], 0, 0, $amount, 0, 0,0,0, '货款结算');
             }
+            if($amount>0){//给商家结算货款
+                $data['code'] = '1';
+                $content = "尊敬的商户您好，您刚完成一笔交易，货款结算：".$amount."元！";
+                ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content);
+            }
         }
         //用于分配整体利润
         $runamount = ($orderInfo['total_amount'] - $amount - $orderInfo['pay_give'])*(100-$feeRate['plat_rate'])/100;
@@ -211,6 +217,11 @@ class StorePayOrder extends BaseModel
                         if($res){
                             $res = StorePayLog::expend($spread_uid, $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '分销奖励');
                         }
+                        if($uinfo['phone']){//推荐奖励
+                            $data['code'] = '1';
+                            $content = "尊敬的客户您好，您的账户收到一笔分销奖励，奖励金额：".$use_amount."元！";
+                            ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                        }
                     }
                     $spread_uid = $uinfo['spread_uid'];
                 }else{
@@ -234,6 +245,11 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = StorePayLog::expend($uinfo['spread_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
+            if($uinfo['phone']){//推荐奖励
+                $data['code'] = '1';
+                $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";
+                ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+            }
         }
         
         //计算省市区代理提成
@@ -256,13 +272,19 @@ class StorePayOrder extends BaseModel
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $districtAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$districtAmount>0){
-                    $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
+                    $uinfo = User::getUserInfo($districtInfo['agent_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$districtAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$districtAmount>0){
-                    $res = StorePayLog::expend($districtInfo['agent_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    $res = StorePayLog::expend($districtInfo['agent_uid'], $orderInfo['id'], 0, $districtAmount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
                 }
             }
             if($cityInfo['agent_uid']>0){//城市代理佣金
@@ -271,13 +293,19 @@ class StorePayOrder extends BaseModel
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $cityAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$cityAmount){
-                    $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $use_amount, 'uid');
+                    $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
+                    $uinfo = User::getUserInfo($cityInfo['agent_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$cityAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$cityAmount){
-                    $res = StorePayLog::expend($cityInfo['agent_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    $res = StorePayLog::expend($cityInfo['agent_uid'], $orderInfo['id'], 0, $cityAmount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
                 }
             }
             if($province['agent_uid']>0){//省级代理佣金
@@ -287,12 +315,18 @@ class StorePayOrder extends BaseModel
                 $agentAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$agentAmount>0){
                     $res = false !== User::bcInc($province['agent_uid'], 'now_money', $agentAmount, 'uid');
+                    $uinfo = User::getUserInfo($province['agent_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$agentAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$repeat_point>0){
                     $res = false !== User::bcInc($province['agent_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$agentAmount>0){
-                    $res = StorePayLog::expend($province['agent_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    $res = StorePayLog::expend($province['agent_uid'], $orderInfo['id'], 0, $agentAmount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
                 }
             }
         }
@@ -309,13 +343,19 @@ class StorePayOrder extends BaseModel
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $districtAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$districtAmount>0){
-                    $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $districtAmount, 'uid');
+                    $uinfo = User::getUserInfo($districtInfo['inspect_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$districtAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$districtAmount>0){
-                    $res = StorePayLog::expend($districtInfo['inspect_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
+                    $res = StorePayLog::expend($districtInfo['inspect_uid'], $orderInfo['id'], 0, $districtAmount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
                 }
             }
             if($cityInfo['inspect_uid']>0){//城市总监佣金
@@ -324,13 +364,19 @@ class StorePayOrder extends BaseModel
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $cityAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$cityAmount){
-                    $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $use_amount, 'uid');
+                    $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $cityAmount, 'uid');
+                    $uinfo = User::getUserInfo($cityInfo['inspect_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$cityAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$cityAmount){
-                    $res = StorePayLog::expend($cityInfo['inspect_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
+                    $res = StorePayLog::expend($cityInfo['inspect_uid'], $orderInfo['id'], 0, $cityAmount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
                 }
             }
             if($province['inspect_uid']>0){//省级总监佣金
@@ -340,12 +386,18 @@ class StorePayOrder extends BaseModel
                 $agentAmount = $use_amount - $fee - $repeat_point;
                 if($res&&$agentAmount>0){
                     $res = false !== User::bcInc($province['inspect_uid'], 'now_money', $agentAmount, 'uid');
+                    $uinfo = User::getUserInfo($province['inspect_uid']);
+                    if($uinfo['phone']){//推荐奖励
+                        $data['code'] = '1';
+                        $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$agentAmount."元！";
+                        ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
+                    }
                 }
                 if($res&&$repeat_point>0){
                     $res = false !== User::bcInc($province['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$agentAmount>0){
-                    $res = StorePayLog::expend($province['inspect_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
+                    $res = StorePayLog::expend($province['inspect_uid'], $orderInfo['id'], 0, $agentAmount, 0, 0, 0,$repeat_point,$fee, '省级代理商奖励');
                 }
             }
         }

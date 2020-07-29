@@ -3,7 +3,7 @@
     <div class="mabox">
          <div class="malogo"><img src="@assets/images/qiandai.png"/><span>二维码收款</span></div>
          <div class="erma_tip">扫二维码向我付款</div>
-         <img src="{{erurl}}" style="width:50%;margin-left:25%;margin-bottom:0.8rem;" />
+         <img :src="erurl" style="width:50%;margin-left:25%;margin-bottom:0.8rem;" />
     </div>
   </div>
 </template>
@@ -28,9 +28,11 @@ export default {
     this.getErMaUrl();
   },
   methods: {
-    getErMaUrl: async function () {
-      const {data} = await getErMaUrl();
-      this.$data.erurl = data.ermaImg;
+    getErMaUrl:function () {
+      let that = this;
+       getErMaUrl().then(res => {
+        that.erurl = res.data.ermaImg;
+      });
     }
   }
 };

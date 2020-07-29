@@ -145,6 +145,9 @@ Route::group(function () {
     Route::get('spread/count/:type', 'user.UserBillController/spread_count')->name('spreadCount');//推广 佣金 3/提现 4 总和
     Route::get('spread/banner', 'user.UserBillController/spread_banner')->name('spreadBanner');//推广分销二维码海报生成
     Route::get('integral/list', 'user.UserBillController/integral_list')->name('integralList');//积分记录
+    Route::get('extract/payorderinfo/:type', 'user.UserPayOrderController/payorderinfo')->name('payorderinfo');//消费记录明细
+    Route::get('payinfo', 'user.UserPayOrderController/payinfo')->name('payinfo');//推广数据 昨天的佣金 累计提现金额 当前佣金
+    
     
     Route::get('spread/yurecord/:type', 'user.StorePayLogController/yu_record')->name('yuRecord');//余额收入记录
     Route::get('spread/huo_record/:type', 'user.StorePayLogController/huo_record')->name('yuRecord');//货款收入记录

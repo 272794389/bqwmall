@@ -110,11 +110,18 @@
 		  <div class="title1-3">查看我的财富<span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
-       <div class="title">
+      <div class="title">
 		 <router-link :to="'/user/user_promotion'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/extension.png" /></div>
 		  <div class="title1-2">我的推广</div>
 		  <div class="title1-3">查看我的推广<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
+	  <div class="title">
+		 <router-link :to="'/user/payorder'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/record3.png" /></div>
+		  <div class="title1-2">消费统计</div>
+		  <div class="title1-3">查看消费订单<span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
 	  <div class="title">

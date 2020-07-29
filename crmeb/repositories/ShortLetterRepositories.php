@@ -29,17 +29,18 @@ class ShortLetterRepositories
     {
         if ($switch && $phone) {
             $sms = new Sms([
-                'sms_account' => sys_config('sms_account'),
-                'sms_token' => sys_config('sms_token'),
-                'site_url' => sys_config('site_url')
+                'sms_account' => 'gzbqw',
+                'sms_token' => '284166',
+                'sms_productid' => '625799',
+                'smsApi' => 'http://123.206.19.78:9001/sendXSms.do?'
             ]);
-            $res = $sms->send($phone, $template, $data);
+            $res = $sms->sendSms($phone, $template);
             if ($res === false) {
                 $errorSmg = $sms->getError();
                 Log::info($logMsg ?? $errorSmg);
                 return $errorSmg;
             } else {
-                SmsRecord::sendRecord($phone, $res['data']['content'], $res['data']['template'], $res['data']['id']);
+                SmsRecord::sendRecord($phone,$template,1);
             }
             return true;
         } else {

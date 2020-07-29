@@ -25,6 +25,18 @@ class Yunxin extends BaseSms
      * @var string
      */
     protected $smsToken;
+    
+    /**
+     * 短信id
+     * @var string
+     */
+    protected $productId;
+    
+    /**
+     * 短信接口地址
+     * @var string
+     */
+    protected $smsApi;
 
     /**
      * 是否登陆
@@ -54,6 +66,8 @@ class Yunxin extends BaseSms
         parent::initialize($config);
         $this->smsAccount = $config['sms_account'] ?? null;
         $this->smsToken = $config['sms_token'] ?? null;
+        $this->productId = $config['sms_productid'] ?? null;
+        $this->smsApi = $config['sms_smsApi'] ?? null;
         $this->payNotify = ($config['site_url'] ?? '') . '/api/sms/pay/notify';
         if ($this->smsAccount && $this->smsToken) {
             $this->status = true;
@@ -139,6 +153,7 @@ class Yunxin extends BaseSms
      */
     public function send(string $phone, string $templateId, array $data = [])
     {
+        
         if (!$phone) {
             return $this->setError('Mobile number cannot be empty');
         }
@@ -160,9 +175,24 @@ class Yunxin extends BaseSms
         if ($resource['status'] === 400) {
             return $this->setError($resource['msg']);
         }
+       
         return $resource;
     }
 
+    
+    public function sendSms(string $phone, string $content)
+    {
+        $url="http://123.206.19.78:9001/sendXSms.do?";
+        $url.="username=gzbqw";
+        $url.="&password=284166";
+        $url.="&productid=625799";
+        $url.="&mobile=".$phone;
+        $content=urlencode($content);
+        $url.="&content=".$content;
+        $res = file_get_contents($url);
+        return $res;
+    }
+    
     /**
      * 账号信息
      * @return mixed

@@ -222,6 +222,19 @@ export function getCommissionInfo(q, types) {
   return request.get("/spread/commission/" + types, q);
 }
 
+/*
+ * 消费订单明细
+ * */
+export function getPayOrderInfo(q, types) {
+  return request.get("/extract/payorderinfo/" + types, q);
+}
+
+/*
+ * 推广数据
+ * */
+export function getPayInfo() {
+  return request.get("/payinfo");
+}
 
 /*
  * 余额提现记录

@@ -133,6 +133,7 @@ class AuthController
         $nowKey = 'sms.' . date('YmdHi');
 
         if (!Cache::has($keyName))
+            
             return app('json')->make(401, '发送验证码失败');
 
         if (($num = Cache::get($keyName)) > 2) {
@@ -173,7 +174,8 @@ class AuthController
             return app('json')->fail($time . '秒内有效');
         $code = rand(100000, 999999);
         $data['code'] = $code;
-        $res = ShortLetterRepositories::send(true, $phone, $data, 'VERIFICATION_CODE');
+        $content = "您的验证码是：".$code.",请勿告诉他人！";
+        $res = ShortLetterRepositories::send(true, $phone, $data,$content);
         if ($res !== true)
             return app('json')->fail('短信平台验证码发送失败' . $res);
         CacheService::set('code_' . $phone, $code, $time);

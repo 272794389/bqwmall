@@ -276,6 +276,16 @@ export default [
     component: () => import("@views/user/promotion/CommissionDetails.vue")
   },
   {
+    path: "/user/payorder",
+    name: "PayOrderList",
+    meta: {
+      title: "消费记录",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/PayOrderList.vue")
+  },
+  {
     path: "/user/integral",
     name: "Integral",
     meta: {

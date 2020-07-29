@@ -133,7 +133,7 @@ class MerchantController
         
         if(!$store_id) return $this->failed('数据不存在');
        
-        $ermaImg = '';
+        $ermaImg = $erma_url;
         if(!$erma_url){
             //$siteUrl = sysConfig('site_url');
             $siteUrl = "https://bqw.dshqfsc.com";
@@ -152,7 +152,7 @@ class MerchantController
                 $ermaImg = $farr[0]."-".$ermaImg;
             }
             // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
-            $data['erma_url']="oss.dshqfsc.com/".$name;
+            $data['erma_url']="http://oss.dshqfsc.com/".$name;
             $ermaImg = $data['erma_url'];
             SystemStore::edit($data,$store_id);
         }
@@ -160,7 +160,7 @@ class MerchantController
         // status 0 未申请  1已申请未审核通过 2 已申请已审核通过
         return app('json')->successful([
            
-            'ermaImg' =>$ermaImg,
+            'ermaImg' =>$erma_url,
         ]);
     }
     

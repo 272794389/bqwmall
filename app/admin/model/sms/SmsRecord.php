@@ -81,14 +81,14 @@ class SmsRecord extends BaseModel
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public static function sendRecord($phone, $content, $template, $record_id)
+    public static function sendRecord($phone, $content,  $record_id)
     {
         $map = [
             'uid' => sys_config('sms_account'),
             'phone' => $phone,
             'content' => $content,
             'add_time' => time(),
-            'template' => $template,
+            'template' => 1,
             'record_id' => $record_id,
             'add_ip' => app()->request->ip(),
         ];
