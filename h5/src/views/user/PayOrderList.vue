@@ -18,13 +18,10 @@
           <div class="listn" v-for="(val, indexn) in item.list" :key="indexn">
             <div class="itemn acea-row row-between-wrapper">
               <div>
-                <div class="name line1">{{ val.title }}</div>
+                <div class="name line1">{{ val.mer_name }}</div>
                 <div>{{ val.add_time }}</div>
               </div>
-              <div class="num" v-if="val.pm == 1">+{{ val.number }}</div>
-              <div class="num font-color-red" v-if="val.pm == 0">
-                -{{ val.number }}
-              </div>
+              <div class="num">{{ val.pay_amount }}</div>
             </div>
           </div>
         </div>
