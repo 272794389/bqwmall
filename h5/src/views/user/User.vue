@@ -30,7 +30,7 @@
           <div class="num">{{ userInfo.now_money || 0 }}</div>
           <div>余额</div>
         </router-link>
-        <router-link :to="{ path: '/user/huokuan' }" class="item">
+        <router-link :to="{ path: '/user/huokuan' }" class="item" v-if="userInfo.store_name!=''">
           <div class="num">{{ userInfo.huokuan || 0 }}</div>
           <div>货款</div>
         </router-link>
@@ -103,6 +103,13 @@
       </div>
     </div>
     <div class="myOrder1">
+      <div class="title">
+		 <router-link :to="'/user/user_finance'" class="title1">
+		  <div class="title1-1"><img src="@assets/images/balance.png" /></div>
+		  <div class="title1-2">财富中心</div>
+		  <div class="title1-3">查看我的财富<span class="iconfont icon-jiantou"></span></div>
+		 </router-link>
+	  </div>
        <div class="title">
 		 <router-link :to="'/user/user_promotion'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/extension.png" /></div>

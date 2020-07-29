@@ -64,6 +64,30 @@
           </div>
         </VueCoreImageUpload>
       </div>
+      <div class="item acea-row row-between-wrapper row-row">
+        <div class="name">营业执照</div>
+        <VueCoreImageUpload
+                class="btn btn-primary"
+                :crop="false"
+                compress="80"
+                @imageuploaded="limageuploaded"
+                :headers="headers"
+                :max-file-size="5242880"
+                :credentials="false"
+                inputAccept="image/*"
+                inputOfFile="file"
+                :url="url"
+                ref="upImg"
+        >
+          <div class="pictrue acea-row row-center-wrapper row-row">
+            <img height="40px" :src="store.license" alt="">
+
+
+            <span class="iconfont icon-icon25201"></span>
+            <div>上传营业执照</div>
+          </div>
+        </VueCoreImageUpload>
+      </div>
 
 
       <div class="item acea-row row-between-wrapper">
@@ -166,7 +190,7 @@
     <div></div>
 
 
-    <div class="keepBnt bg-color-red" @click="submit">立即保存</div>
+    <div class="keepBnt bg-color-red" @click="submit">立即提交</div>
   </div>
 </template>
 <script type="text/babel">
@@ -197,6 +221,7 @@ export default {
       show2: false,
       model2: "",
       image:'',
+      license:'',
       district: District,
       day_time_start:"00:00",
       day_time_end:"00:00",
@@ -205,6 +230,7 @@ export default {
       store: {
         is_default: 0 ,
         image:'',
+        license:'',
       },
       address: {},
       isWechat: isWeixin()
@@ -220,7 +246,6 @@ export default {
   mounted: function() {
     let id = this.$route.params.id;
     this.id = id;
-
     document.title = !id ? "新增门店" : "修改门店";
     this.getUserAddress();
   },
@@ -294,6 +319,7 @@ export default {
             introduction: this.store.introduction,
             phone: phone,
             image:this.store.image,
+            license:this.store.license,
             address: this.address,
             detailed_address: detail,
             is_show: isShow,
@@ -317,6 +343,11 @@ export default {
       if (res.status !== 200)
         return this.$dialog.error(res.msg || "上传图片失败");
         this.store.image =res.data.url
+    },
+    limageuploaded(res) {
+      if (res.status !== 200)
+        return this.$dialog.error(res.msg || "上传图片失败");
+        this.store.license =res.data.url
     },
 
     ChangeIsShow: function() {

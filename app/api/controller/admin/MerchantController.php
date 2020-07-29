@@ -136,8 +136,8 @@ class MerchantController
         $ermaImg = '';
         if(!$erma_url){
             //$siteUrl = sysConfig('site_url');
-            $siteUrl = "http://www.dshqfsc.com";
-            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/sdetail/".$store_id;//二维码链接
+            $siteUrl = "https://oss.dshqfsc.com";
+            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/sdetail/".$store_id."?spread=".$uid;//二维码链接
             $name = date("Y-m-d")."-order-sale-".time().".jpg";
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
             if(!$imageInfo) return app('json')->fail('二维码生成失败');
@@ -152,7 +152,7 @@ class MerchantController
                 $ermaImg = $farr[0]."-".$ermaImg;
             }
             // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
-            $data['erma_url']="img-bqw.dshqfsc.com/".$name;
+            $data['erma_url']="oss.dshqfsc.com/".$name;
             $ermaImg = $data['erma_url'];
             SystemStore::edit($data,$store_id);
         }
@@ -307,6 +307,7 @@ class MerchantController
 
             ['detailed_address', ''],
             ['image', ''],
+            ['license', ''],
             ['latitude', ''],
             ['longitude', ''],
             ['day_time', ''],
@@ -326,6 +327,7 @@ class MerchantController
             'address' => $q['address']['province'].','.$q['address']['city'].','.$q['address']['district'],
             'detailed_address' => $q['detailed_address'],
             'image' => $q['image'],
+            'license' => $q['license'],
             'latitude' => $q['latitude'],
             'longitude' => $q['longitude'],
             'day_time' => $q['day_time'],

@@ -184,6 +184,17 @@ export default [
     component: () => import("@views/user/promotion/UserPromotion.vue")
   },
   {
+    path: "/user/user_finance",
+    name: "UserFinance",
+    meta: {
+      title: "我的推广",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/UserFinance.vue")
+  },
+  
+  {
     path: "/user/bill/:types?",
     name: "UserBill",
     meta: {

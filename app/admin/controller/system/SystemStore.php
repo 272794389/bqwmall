@@ -59,6 +59,7 @@ class SystemStore extends AuthController
     {
         $catList = StroreCateModel::getAllCatList()['data'];
         $store = SystemStoreModel::getStoreDispose($id);
+        //echo $id;exit;
         $this->assign(compact('store', 'catList'));
         return $this->fetch();
     }

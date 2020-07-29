@@ -35,6 +35,7 @@
         <span class="iconfont icon-tongji"></span>
         <div>推广人统计</div>
       </router-link>
+      <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"
         :to="'/user/commission'"
@@ -63,6 +64,7 @@
         <span class="iconfont icon-paihang"></span>
         <div>佣金排行</div>
       </router-link>
+      -->
     </div>
   </div>
 </template>

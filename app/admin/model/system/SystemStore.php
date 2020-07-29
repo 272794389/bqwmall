@@ -36,7 +36,7 @@ class SystemStore extends BaseModel
 
     public static function verificWhere()
     {
-        return self::where('is_show', 1)->where('is_del', 0);
+        return self::where('is_del', 0);
     }
 
     /**
