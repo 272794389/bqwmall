@@ -1,8 +1,7 @@
 <template>
   <div class="index" v-cloak>
     <div
-      class="follow acea-row row-between-wrapper"
-      v-if="followHid && isWeixin"
+      class="follow acea-row row-between-wrapper" v-if="followHid && isWeixin"
     >
       <div>点击“立即关注”即可关注公众号</div>
       <div class="acea-row row-middle">
@@ -15,7 +14,7 @@
       <div class="mask" @click="closeFollowCode"></div>
     </div>
     <div class="header acea-row row-center-wrapper">
-      <div class="logo"><img :src="logoUrl" /></div>
+      <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/search'" class="search acea-row row-middle">
         <span class="iconfont icon-xiazai5"></span>搜索商品
       </router-link>
