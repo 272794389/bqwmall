@@ -197,6 +197,8 @@ class StorePayOrder extends BaseModel
             }
             SystemStore::bcInc($orderInfo['store_id'], 'sales', 1, 'id');
         }
+        
+        
         //用于分配整体利润
         $runamount = ($orderInfo['total_amount'] - $amount - $orderInfo['pay_give'])*(100-$feeRate['plat_rate'])/100;
         $use_amount = 0;
