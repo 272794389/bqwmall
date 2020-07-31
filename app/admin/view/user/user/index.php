@@ -215,6 +215,9 @@
                     <table class="layui-hide" id="userList" lay-filter="userList"></table>
                     <script type="text/html" id="nickname">
                         {{d.nickname}}
+                        {{# if(d.phone){ }}
+                          <p style="color:#dab176">{{d.phone}}</p>
+                        {{# } }}
                         {{# if(d.vip_name){ }}
                         <p style="color:#dab176">{{d.vip_name}}</p>
                         {{# } }}
@@ -305,19 +308,18 @@
     layList.tableList('userList',"{:Url('get_user_list')}",function () {
         return [
             {type:'checkbox'},
-            {field: 'uid', title: '编号',event:'uid',width:'4%',align:'center'},
+            {field: 'uid', title: '编号',event:'uid',width:'6%',align:'center'},
             {field: 'avatar', title: '头像', event:'open_image', width: '6%',align:'center', templet: '<p lay-event="open_image"><img class="avatar" style="cursor: pointer" class="open_image" data-image="{{d.avatar}}" src="{{d.avatar}}" alt="{{d.nickname}}"></p>'},
             {field: 'nickname', title: '姓名',templet:'#nickname',align:'center'},
-            {field: 'phone', title: '手机号',align:'center',width:'8%'},
             {field: 'now_money', title: '余额',width:'6%',sort:true,event:'now_money',align:'center'},
+            {field: 'huokuan', title: '货款',width:'6%',sort:true,event:'huokuan',align:'center'},
+            {field: 'give_point', title: '购物积分',width:'8%',sort:true,event:'give_point',align:'center'},
+            {field: 'pay_point', title: '消费积分',width:'8%',sort:true,event:'pay_point',align:'center'},
+            {field: 'repeat_point', title: '重消积分',width:'8%',sort:true,event:'repeat_point',align:'center'},
             {field: 'pay_count', title: '购买次数',align:'center',width:'6%'},
-            {field: 'extract_count_price', title: '累计提现',align:'center',width:'6%'},
-            {field: 'integral', title: '积分',width:'6%',sort:true,event:'integral',align:'center'},
             {field: 'spread_uid_nickname', title: '推荐人',align:'center'},
-            {field: 'sex', title: '性别',width:'4%',align:'center'},
             {field: 'data_time', title: '访问日期',align:'center',width:'12%',templet:'#data_time'},
             // {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%',align:'center'},
-            {field: 'user_type', title: '用户类型',width:'6%',align:'center'},
             {field: 'operate', title: '操作', width: '10%', align: 'center', toolbar: '#barDemo'}
         ];
     });
@@ -359,6 +361,18 @@
                 break;
             case 'now_money':
                 layList.reload({order: layList.order(type,'u.now_money')},true,null,obj);
+                break;
+            case 'huokuan':
+                layList.reload({order: layList.order(type,'u.huokuan')},true,null,obj);
+                break;
+            case 'give_point':
+                layList.reload({order: layList.order(type,'u.give_point')},true,null,obj);
+                break;
+            case 'pay_point':
+                layList.reload({order: layList.order(type,'u.pay_point')},true,null,obj);
+                break;
+            case 'repeat_point':
+                layList.reload({order: layList.order(type,'u.repeat_point')},true,null,obj);
                 break;
             case 'integral':
                 layList.reload({order: layList.order(type,'u.integral')},true,null,obj);
