@@ -179,9 +179,20 @@ class StorePayOrder extends BaseModel
                 $res = StorePayLog::expend($storeInfo['user_id'], $orderInfo['id'], 0, 0, $amount, 0, 0,0,0, '货款结算');
             }
             if($amount>0){//给商家结算货款
+                //给商家发送支付成功提醒
+                WechatTemplateService::sendTemplate(WechatUser::where('uid', $storeInfo['user_id'])->value('openid'), WechatTemplateService::ORDERTIPS_SUCCESS, [
+                    'first' => '尊敬的商家您好，您的店铺刚成交一笔消费订单',
+                    'keyword1' => $orderInfo['order_id'],
+                    'keyword2' => '客户扫码消费',
+                    'keyword3' => $amount,
+                    'keyword4' => $storeInfo['mer_name'],
+                    'keyword5' => '客户扫码消费成功，款项已进入货款，请注意查收！',
+                    'remark' => '点击查看货款记录'
+                ], Url::buildUrl('/user/huokuan')->suffix('')->domain(true)->build());
+                
                 $data['code'] = '1';
                 $content = "尊敬的商户您好，您刚完成一笔交易，货款结算：".$amount."元！";
-                ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content);
+                ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content); 
             }
             SystemStore::bcInc($orderInfo['store_id'], 'sales', 1, 'id');
         }
@@ -223,6 +234,15 @@ class StorePayOrder extends BaseModel
                             $content = "尊敬的客户您好，您的账户收到一笔分销奖励，奖励金额：".$use_amount."元！";
                             ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                         }
+                        //给推荐人发送余额变动通知
+                        $fenamount = $uinfo['now_money']+$use_amount;
+                        WechatTemplateService::sendTemplate(WechatUser::where('uid', $spread_uid)->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                            'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                            'keyword1' => '平台发放分销奖励',
+                            'keyword2' => +$use_amount,
+                            'keyword3' => $fenamount,
+                            'remark' => '感谢您的支持'
+                        ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                     }
                     $spread_uid = $uinfo['spread_uid'];
                 }else{
@@ -246,11 +266,22 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = StorePayLog::expend($uinfo['spread_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
+            $uinfo = User::getUserInfo($uinfo['spread_uid']);
             if($uinfo['phone']){//推荐奖励
                 $data['code'] = '1';
                 $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";
                 ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
             }
+            
+            //给推荐人发送余额变动通知
+            $fenamount = $uinfo['now_money']+$use_amount;
+            WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                'keyword1' => '平台发放商家推荐奖励',
+                'keyword2' => +$use_amount,
+                'keyword3' => $fenamount,
+                'remark' => '感谢您的支持'
+            ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
         }
         
         //计算省市区代理提成
@@ -280,6 +311,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$districtAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$districtAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放代理商提成',
+                        'keyword2' => +$districtAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -301,6 +341,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$cityAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$cityAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放平台发放代理商提成',
+                        'keyword2' => +$cityAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -322,6 +371,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$agentAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$agentAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放平台发放代理商提成',
+                        'keyword2' => +$agentAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$repeat_point>0){
                     $res = false !== User::bcInc($province['agent_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -351,6 +409,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$districtAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$districtAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword2' => +$districtAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -372,6 +439,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$cityAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$cityAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword2' => +$cityAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -393,6 +469,15 @@ class StorePayOrder extends BaseModel
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$agentAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
+                    //给推荐人发送余额变动通知
+                    $fenamount = $uinfo['now_money']+$agentAmount;
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
+                        'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
+                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword2' => +$agentAmount,
+                        'keyword3' => $fenamount,
+                        'remark' => '感谢您的支持'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
                 if($res&&$repeat_point>0){
                     $res = false !== User::bcInc($province['inspect_uid'], 'repeat_point', $repeat_point, 'uid');
@@ -402,6 +487,16 @@ class StorePayOrder extends BaseModel
                 }
             }
         }
+        
+        //给客户发送消费通知
+        WechatTemplateService::sendTemplate(WechatUser::where('uid', $orderInfo['uid'])->value('openid'), WechatTemplateService::PAYORDER_SUCCESS, [
+            'first' => '尊敬的客户您好，您在佰仟万平台完成了一笔交易',
+            'keyword1' => '到店扫码消费',
+            'keyword2' => $orderInfo['order_id'],
+            'keyword3' => date('Y-m-d H:i:s', time()),
+            'keyword4' => $orderInfo['total_amount'],
+            'remark' => '感谢您的支持'
+        ], Url::buildUrl('/user/payorder')->suffix('')->domain(true)->build());
         $res1 = self::where('order_id',$orderInfo['order_id'])->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);
         $res2 = $res1 && $res;
         self::checkTrans($res2);

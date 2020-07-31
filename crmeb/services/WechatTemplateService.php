@@ -54,6 +54,21 @@ class WechatTemplateService implements ProviderInterface
 
     //砍价成功
     const BARGAIN_SUCCESS = 'OPENTM410292733';
+    
+    
+    //下单成功通知
+    const PAYORDER_SUCCESS = 'OPENTM417906539';
+    
+    //订单提醒
+    const ORDERTIPS_SUCCESS = 'OPENTM206959403';
+    
+    //余额变动提醒
+    const MONEYCHANGE_SUCCESS = 'OPENTM406440024';
+    
+    
+    
+    
+    
 
     public static function getConstants($code = '')
     {
