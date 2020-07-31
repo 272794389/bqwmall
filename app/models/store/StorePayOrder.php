@@ -183,6 +183,7 @@ class StorePayOrder extends BaseModel
                 $content = "尊敬的商户您好，您刚完成一笔交易，货款结算：".$amount."元！";
                 ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content);
             }
+            SystemStore::bcInc($orderInfo['store_id'], 'sales', 1, 'id');
         }
         //用于分配整体利润
         $runamount = ($orderInfo['total_amount'] - $amount - $orderInfo['pay_give'])*(100-$feeRate['plat_rate'])/100;
