@@ -55,7 +55,7 @@
                 <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ storeInfo.pay_point }}消费积分
             </div>
             <div class="vip" v-if="storeInfo.give_rate > 0">
-                                        购物积分支付比例：{{ storeInfo.give_rate || 0}}%
+             <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ storeInfo.give_rate }}购物积分
             </div>
         </div>
         <div class="label acea-row row-between-wrapper">
