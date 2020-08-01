@@ -9,7 +9,7 @@
       <img src="@assets/images/red-packets.png" class="image" />
       <div class="text font-color-red">
         <div>会员分享返</div>
-        <div class="money"><span class="label">￥</span>{{ priceName }}</div>
+        <div class="money"><span class="label">￥</span>??.00</div>
         <div class="tip">下单即返佣金</div>
         <div class="shareBut">立即分享</div>
       </div>
