@@ -18,7 +18,6 @@ use app\models\routine\RoutineTemplate;
 use app\models\user\StorePayLog;
 use app\admin\model\system\DataConfig;
 use think\facade\Db;
-
 use app\models\user\{
     User, UserAddress, UserBill, WechatUser
 };
