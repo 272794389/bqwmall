@@ -2565,6 +2565,7 @@ class StoreOrder extends BaseModel
         } else {
             $model = $model->order('a.id desc');
         }
+        $model = $model->where('a.is_parent','<>',1);
         $data = ($data = $model->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         return self::tidyAdminOrder($data);
     }
@@ -2836,7 +2837,7 @@ class StoreOrder extends BaseModel
             $model = $model->where($aler . 'order_id|' . $aler . 'real_name|' . $aler . 'user_phone' . ($join ? '|' . $join . '.nickname|' . $join . '.uid' : ''), 'LIKE', "%$where[real_name]%");
         if (isset($where['data']) && $where['data'] !== '')
             $model = self::getModelTime($where, $model, $aler . 'add_time');
-        $model = $model->where($aler.'is_parent','<>','1');
+        
         return $model;
     }
 
