@@ -1239,9 +1239,8 @@ class StoreOrder extends BaseModel
                 }
                
                 
-                //StoreOrderCartInfo::where('cart_id='.$cart['cartInfo']['id'])->save($data);
-                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])->where('oid', $order['id'])->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
-                //StoreOrderCartInfo::where('cart_id', 1)->update(['oid' => 100, 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
+                
+                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
                 //计算商家推荐人提成
                 $storeInfo = SystemStore::where('id',$product['store_id'])->find();
             
@@ -2837,6 +2836,7 @@ class StoreOrder extends BaseModel
             $model = $model->where($aler . 'order_id|' . $aler . 'real_name|' . $aler . 'user_phone' . ($join ? '|' . $join . '.nickname|' . $join . '.uid' : ''), 'LIKE', "%$where[real_name]%");
         if (isset($where['data']) && $where['data'] !== '')
             $model = self::getModelTime($where, $model, $aler . 'add_time');
+        $model = $model->where($aler.'is_parent','<>','1');
         return $model;
     }
 
