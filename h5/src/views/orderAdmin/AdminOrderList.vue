@@ -83,7 +83,7 @@
         </div>
         <div class="public-total">
           共{{ item.total_num }}件商品，应支付
-          <span class="money">￥{{ item.pay_price }}</span> ( 邮费 ¥{{
+          <span class="money">￥{{ item.total_price }}</span> ( 邮费 ¥{{
             item.total_postage
           }}
           )
