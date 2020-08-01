@@ -2565,7 +2565,7 @@ class StoreOrder extends BaseModel
         } else {
             $model = $model->order('a.id desc');
         }
-        $model = $model->where('a.is_parent',1);
+        $model = $model->where('a.is_parent',0);
         $data = ($data = $model->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         return self::tidyAdminOrder($data);
     }
