@@ -1238,16 +1238,8 @@ class StoreOrder extends BaseModel
                     return ;
                 }
                
-                /*
-                $group[] = [
-                    'oid'=>$rs['id'],
-                    'cart_id'=>$cart['cartInfo']['id'],
-                    'product_id'=>$product['id'],
-                    'cart_info'=>$cart['cartInfo'],
-                    'unique'=>md5($cart['cartInfo']['id'].''.$rs['id'])
-                ];*/
-                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])
-            ->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
+                
+               // StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
                 
                 
                 //计算商家推荐人提成
