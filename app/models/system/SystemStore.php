@@ -5,6 +5,7 @@ namespace app\models\system;
 
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
+use app\models\store\StoreCategory;
 
 /**
  * 门店自提 model
@@ -181,6 +182,7 @@ class SystemStore extends BaseModel
                 $value['distance'] = sqrt((pow((($latitude - $value['latitude']) * 111000), 2)) + (pow((($longitude - $value['longitude']) * 111000), 2)));
                 //转换单位
                 $value['range'] = bcdiv($value['distance'], 1000, 1);
+                $value['cate_name'] = StoreCategory::where('id',$value['cat_id'])->value('cate_name'); 
             }
         }
         return $list;
