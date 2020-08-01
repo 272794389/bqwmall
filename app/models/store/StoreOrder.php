@@ -1239,7 +1239,7 @@ class StoreOrder extends BaseModel
                 }
                
                 
-                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])->update(['oid' => $rs['id'], 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
+                StoreOrderCartInfo::where('cart_id', $cart['cartInfo']['id'])->update(['oid' => 999, 'unique' => md5($cart['cartInfo']['id'].''.$rs['id'])]);
                 
                 
                 //计算商家推荐人提成
