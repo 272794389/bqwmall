@@ -179,7 +179,6 @@
 			</div>
 	    </div>
     </div>
-    
     <div class="wrapper" v-if="storeList.length>0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">

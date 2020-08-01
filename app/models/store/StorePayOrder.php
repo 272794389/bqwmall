@@ -158,6 +158,8 @@ class StorePayOrder extends BaseModel
         $userInfo = User::getUserInfo($uid);
         //获取平台费率参数
         $feeRate = DataConfig::where('id', 1)->find();
+        //短信发送开关
+        $sms_open = $feeRate['sms_open'];
         self::beginTrans();
         $res = true;
         if($orderInfo['pay_give']>0){
@@ -190,10 +192,11 @@ class StorePayOrder extends BaseModel
                     'keyword5' => '客户扫码消费成功，款项已进入货款，请注意查收！',
                     'remark' => '点击查看货款记录'
                 ], Url::buildUrl('/user/huokuan')->suffix('')->domain(true)->build());
-                
-                $data['code'] = '1';
-                $content = "尊敬的商户您好，您刚完成一笔交易，货款结算：".$amount."元！";
-                ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content); 
+                if($sms_open>0){
+                    $data['code'] = '1';
+                    $content = "尊敬的商户您好，您刚完成一笔交易，货款结算：".$amount."元！";
+                    ShortLetterRepositories::send(true, $storeInfo['link_phone'], $data,$content); 
+                }
             }
             SystemStore::bcInc($orderInfo['store_id'], 'sales', 1, 'id');
         }
@@ -232,7 +235,7 @@ class StorePayOrder extends BaseModel
                         if($res){
                             $res = StorePayLog::expend($spread_uid, $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '分销奖励');
                         }
-                        if($uinfo['phone']){//推荐奖励
+                        if($uinfo['phone']&&$sms_open>0){//推荐奖励
                             $data['code'] = '1';
                             $content = "尊敬的客户您好，您的账户收到一笔分销奖励，奖励金额：".$use_amount."元！";
                             ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -270,7 +273,7 @@ class StorePayOrder extends BaseModel
                 $res = StorePayLog::expend($uinfo['spread_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
             $uinfo = User::getUserInfo($uinfo['spread_uid']);
-            if($uinfo['phone']){//推荐奖励
+            if($uinfo['phone']&&$sms_open>0){//推荐奖励
                 $data['code'] = '1';
                 $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";
                 ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -309,7 +312,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
                     $uinfo = User::getUserInfo($districtInfo['agent_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$districtAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -339,7 +342,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
                     $uinfo = User::getUserInfo($cityInfo['agent_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$cityAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -369,7 +372,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$agentAmount>0){
                     $res = false !== User::bcInc($province['agent_uid'], 'now_money', $agentAmount, 'uid');
                     $uinfo = User::getUserInfo($province['agent_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$agentAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -407,7 +410,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $districtAmount, 'uid');
                     $uinfo = User::getUserInfo($districtInfo['inspect_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$districtAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -437,7 +440,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $cityAmount, 'uid');
                     $uinfo = User::getUserInfo($cityInfo['inspect_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$cityAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
@@ -467,7 +470,7 @@ class StorePayOrder extends BaseModel
                 if($res&&$agentAmount>0){
                     $res = false !== User::bcInc($province['inspect_uid'], 'now_money', $agentAmount, 'uid');
                     $uinfo = User::getUserInfo($province['inspect_uid']);
-                    if($uinfo['phone']){//推荐奖励
+                    if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$agentAmount."元！";
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
