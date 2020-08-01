@@ -232,7 +232,7 @@ class StorePayOrder extends BaseModel
                         if($res){
                             $res = false !== User::bcInc($spread_uid, 'repeat_point', $repeat_point, 'uid');
                         }
-                        if($res){
+                        if($res&&$use_amount>0){
                             $res = StorePayLog::expend($spread_uid, $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '分销奖励');
                         }
                         if($uinfo['phone']&&$sms_open>0){//推荐奖励
@@ -269,7 +269,7 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
             }
-            if($res){
+            if($res&&$use_amount>0){
                 $res = StorePayLog::expend($uinfo['spread_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
             $uinfo = User::getUserInfo($uinfo['spread_uid']);
@@ -351,7 +351,7 @@ class StorePayOrder extends BaseModel
                     $fenamount = $uinfo['now_money']+$cityAmount;
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
-                        'keyword1' => '平台发放平台发放代理商提成',
+                        'keyword1' => '平台发放代理商提成',
                         'keyword2' => +$cityAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
@@ -381,7 +381,7 @@ class StorePayOrder extends BaseModel
                     $fenamount = $uinfo['now_money']+$agentAmount;
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
-                        'keyword1' => '平台发放平台发放代理商提成',
+                        'keyword1' => '平台发放代理商提成',
                         'keyword2' => +$agentAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
@@ -419,7 +419,7 @@ class StorePayOrder extends BaseModel
                     $fenamount = $uinfo['now_money']+$districtAmount;
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
-                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword1' => '平台发放总监提成',
                         'keyword2' => +$districtAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
@@ -449,7 +449,7 @@ class StorePayOrder extends BaseModel
                     $fenamount = $uinfo['now_money']+$cityAmount;
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
-                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword1' => '平台发放总监提成',
                         'keyword2' => +$cityAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
@@ -479,7 +479,7 @@ class StorePayOrder extends BaseModel
                     $fenamount = $uinfo['now_money']+$agentAmount;
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
-                        'keyword1' => '平台发放平台发放总监提成',
+                        'keyword1' => '平台发放总监提成',
                         'keyword2' => +$agentAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
@@ -501,7 +501,7 @@ class StorePayOrder extends BaseModel
             'keyword2' => $orderInfo['order_id'],
             'keyword3' => date('Y-m-d H:i:s', time()),
             'keyword4' => $orderInfo['total_amount'],
-            'remark' => '感谢您的支持'
+            'remark' => '本次消费总额'.$orderInfo['total_amount'].'元,实际支付'.$orderInfo['pay_amount'].'元，感谢您的支持'
         ], Url::buildUrl('/user/payorder')->suffix('')->domain(true)->build());
         $res1 = self::where('order_id',$orderInfo['order_id'])->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);
         $res2 = $res1 && $res;
