@@ -2,7 +2,7 @@
   <div class="paybox">
     <div class="pay_box">
        <div class="shop_name">商家：{{storeInfo.name}}</div>
-       <div class="shop_amount"><span>￥</span><input type="text" placeholder="" v-model="amount" /></div>
+       <div class="shop_amount"><span style="font-size:0.3rem; color:#999">￥</span><input type="text" placeholder="" v-model="amount" /></div>
        <div class="pay_btn" @click="confirm" type="text">立即付款</div>
     </div>
 </template>
