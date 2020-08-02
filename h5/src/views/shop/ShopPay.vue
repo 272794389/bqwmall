@@ -3,7 +3,7 @@
     <div class="pay_box">
        <div class="shop_name">商家：{{storeInfo.name}}</div>
        <div class="shop_amount"><span>￥</span><input type="text" placeholder="" v-model="amount" /></div>
-       <div class="pay_btn" @click="confirm" type="text">立即结算</div>
+       <div class="pay_btn" @click="confirm" type="text">立即付款</div>
     </div>
 </template>
 <script>
@@ -69,7 +69,7 @@ export default {
 .paybox{background: #fff;width: 96%;margin-left: 2%; margin-top: 0.5rem;box-shadow: 2px 2px 5px #ccc;}
 .pay_box{width: 90%; margin-left: 5%;}
 .shop_name{line-height: 0.5rem;margin-top: 0.3rem;font-size: 0.35rem;}
-.shop_amount{line-height: 1rem;border-bottom: 1px solid #999;font-size: 0.5rem;margin-top:0.2rem;margin-bottom:0.5rem;}
+.shop_amount{line-height: 1rem;border-bottom: 1px solid #efefef;font-size: 0.5rem;margin-top:0.2rem;margin-bottom:0.5rem;}
 .pay_btn{width:100%;margin-left:0rem;}
 .shop_amount span{width:10%;}
 .shop_amount input{width:90%;}
