@@ -29,6 +29,14 @@
                                 </Row>
                             </Form-Item>
                             <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>用户id：</span>
+                                        <i-Input placeholder="用户id" v-model="form.user_id" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
                                 <span>所属分类：</span>
                                 <i-select style="width: 80%" v-model="form.cat_id">
                                     <i-option v-for="cat in catList" :value="cat.id" >{{cat.cate_name}}</i-option>
@@ -168,6 +176,110 @@
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
+                                        <span>营业执照：</span>
+                                        <div class="demo-upload-list" v-if="form.license">
+                                            <template>
+                                                <img :src="form.license">
+                                                <div class="demo-upload-list-cover">
+                                                    <Icon type="ios-eye-outline" @click="lvisible = true "></Icon>
+                                                    <Icon type="ios-trash-outline" @click="form.license=''"></Icon>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'license'])}',{w:900,h:550})" v-if="!form.license">
+                                            <div class="ivu-upload ivu-upload-drag">
+                                                <div style="width: 58px; height: 58px; line-height: 58px;">
+                                                    <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Modal title="查看图片" :visible.sync="lvisible">
+                                            <img :src="form.license" v-if="lvisible" style="width: 100%">
+                                        </Modal>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>身份证头像页：</span>
+                                        <div class="demo-upload-list" v-if="form.idCardz">
+                                            <template>
+                                                <img :src="form.idCardz">
+                                                <div class="demo-upload-list-cover">
+                                                    <Icon type="ios-eye-outline" @click="izvisible = true "></Icon>
+                                                    <Icon type="ios-trash-outline" @click="form.idCardz=''"></Icon>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'idCardz'])}',{w:900,h:550})" v-if="!form.idCardz">
+                                            <div class="ivu-upload ivu-upload-drag">
+                                                <div style="width: 58px; height: 58px; line-height: 58px;">
+                                                    <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Modal title="查看图片" :visible.sync="izvisible">
+                                            <img :src="form.idCardz" v-if="izvisible" style="width: 100%">
+                                        </Modal>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>身份证国徽页：</span>
+                                        <div class="demo-upload-list" v-if="form.idCardf">
+                                            <template>
+                                                <img :src="form.idCardf">
+                                                <div class="demo-upload-list-cover">
+                                                    <Icon type="ios-eye-outline" @click="idvisible = true "></Icon>
+                                                    <Icon type="ios-trash-outline" @click="form.idCardf=''"></Icon>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'idCardf'])}',{w:900,h:550})" v-if="!form.idCardf">
+                                            <div class="ivu-upload ivu-upload-drag">
+                                                <div style="width: 58px; height: 58px; line-height: 58px;">
+                                                    <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Modal title="查看图片" :visible.sync="idvisible">
+                                            <img :src="form.idCardf" v-if="idvisible" style="width: 100%">
+                                        </Modal>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>经营许可证：</span>
+                                        <div class="demo-upload-list" v-if="form.xukeImg">
+                                            <template>
+                                                <img :src="form.xukeImg">
+                                                <div class="demo-upload-list-cover">
+                                                    <Icon type="ios-eye-outline" @click="xuvisible = true "></Icon>
+                                                    <Icon type="ios-trash-outline" @click="form.xukeImg=''"></Icon>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <div class="ivu-upload" style="display: inline-block; width: 58px;" @click="openWindows('选择图片','{:Url('widget.images/index',['fodder'=>'xukeImg'])}',{w:900,h:550})" v-if="!form.xukeImg">
+                                            <div class="ivu-upload ivu-upload-drag">
+                                                <div style="width: 58px; height: 58px; line-height: 58px;">
+                                                    <i class="ivu-icon ivu-icon-camera" style="font-size: 20px;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Modal title="查看图片" :visible.sync="xuvisible">
+                                            <img :src="form.xukeImg" v-if="xuvisible" style="width: 100%">
+                                        </Modal>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
                                         <span style="float: left">经纬度：</span>
                                         <Tooltip content="请点击查找位置进行选择位置">
                                             <i-Input placeholder="经纬度" v-model="form.latlng" :readonly="true" style="width: 80%" >
@@ -218,6 +330,7 @@
                     form:{
                     	mer_name:storeData.mer_name || '',
                         name:storeData.name || '',
+                        user_id:storeData.user_id || '',
                         cat_id:storeData.cat_id || 0,
                         introduction:storeData.introduction || '',
                         phone:storeData.phone || '',
@@ -228,6 +341,10 @@
                         pay_rate:storeData.pay_rate || 0,
                         address:storeData.address || [],
                         image:storeData.image || '',
+                        license:storeData.license || '',
+                        idCardz:storeData.idCardz || '',
+                        idCardf:storeData.idCardf || '',
+                        xukeImg:storeData.xukeImg || '',
                         belong_t:storeData.belong_t || 0,
                         detailed_address:storeData.detailed_address || '',
                         latlng:storeData.latlng || '',
@@ -235,6 +352,10 @@
                         day_time:storeData.day_time || [],
                     },
                     visible:false,
+                    lvisible:false,
+                    izvisible:false,
+                    idvisible:false,
+                    xuvisible:false,
                 }
             },
             methods:{
@@ -289,6 +410,9 @@
                     if(!that.form.address) return  $eb.message('error','请选择门店地址');
                     if(!that.form.detailed_address) return  $eb.message('error','请填写门店详细地址');
                     if(!that.form.image) return  $eb.message('error','请选择门店logo');
+                    if(!that.form.license) return  $eb.message('error','请上传营业执照');
+                    if(!that.form.idCardz) return  $eb.message('error','请上传身份证头像页');
+                    if(!that.form.idCardf) return  $eb.message('error','请上传身份证国徽页');
                     if(!that.form.valid_time) return  $eb.message('error','请选择核销时效');
                     if(!that.form.day_time) return  $eb.message('error','请选择门店营业时间');
                     if(!that.form.latlng) return  $eb.message('error','请选择门店经纬度！');
