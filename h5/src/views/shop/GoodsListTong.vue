@@ -56,6 +56,7 @@
                                       ￥<span class="num">{{ item.price }}</span>
                <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
           </div>
+          <!--
           <div class="vip acea-row row-between-wrapper" :class="Switch === true ? '' : 'on'">
              <div v-if="item.belong_t == 0">
 	            <div class="vip" v-if="item.pay_paypoint > 0"  style="width:3.3rem;">
@@ -72,6 +73,7 @@
                  <img src="@assets/images/give.png" style="width: 0.35rem;"/>￥{{ item.pay_point }}消费积分
              </div>
           </div>
+          -->
         </div>
       </div>
     </div>

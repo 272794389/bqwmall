@@ -29,9 +29,11 @@
           <div class="pline1">{{ item.store_name }}</div>
           <div class="money font-color-red">
             ￥<span class="num">{{ item.price }}</span>
-           <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+           
           </div>
           <div class="vip-money acea-row row-middle">
+            <span class="shou" style="margin-left:0rem;">已售{{ item.sales }}{{ item.unit_name }}</span>
+           <!--
             <div class="vip" v-if="item.pay_paypoint > 0">
                <img src="@assets/images/fu.png" class="image" />{{ item.pay_paypoint || 0}}个消费积分+￥{{ item.pay_amount || 0}}
             </div>
@@ -41,6 +43,7 @@
             <div class="vip" v-if="item.pay_repeatpoint ==0&&item.pay_paypoint==0">
                <img src="@assets/images/fu.png" class="image" />￥{{ item.pay_amount || 0}}
             </div>
+            -->
           </div>
         </div>
       </div>

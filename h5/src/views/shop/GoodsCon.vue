@@ -38,24 +38,24 @@
         <div class="introduce">{{ storeInfo.store_name }}</div>
         <div class="label acea-row row-between-wrapper" v-if="storeInfo.belong_t == 0">
            <div class="vip" v-if="storeInfo.pay_paypoint > 0">
-               <img src="@assets/images/fu.png" class="image" />{{ storeInfo.pay_paypoint || 0}}个消费积分+￥{{ storeInfo.pay_amount || 0}}
+                                           支付{{ storeInfo.pay_paypoint || 0}}个消费积分+￥{{ storeInfo.pay_amount || 0}}元现金
             </div>
             <div class="vip" v-if="storeInfo.pay_repeatpoint > 0">
-               <img src="@assets/images/fu.png" class="image" />{{ storeInfo.pay_repeatpoint || 0}}个重消积分+￥{{ storeInfo.pay_amount || 0}}
+                                           支付{{ storeInfo.pay_repeatpoint || 0}}个重消积分+￥{{ storeInfo.pay_amount || 0}}元现金
             </div>
             <div class="vip" v-if="storeInfo.pay_repeatpoint ==0&&storeInfo.pay_paypoint==0">
-               <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.pay_amount || 0}}
+                                            支付￥{{ storeInfo.pay_amount || 0}}元现金
             </div>
             <div class="vip" v-if="storeInfo.give_point > 0">
-                 <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ storeInfo.give_point }}购物积分
+                                            支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.give_point }}购物积分
             </div>
         </div>
         <div class="label acea-row row-between-wrapper" v-if="storeInfo.belong_t == 1||storeInfo.belong_t == 2">
            <div class="vip" v-if="storeInfo.pay_point > 0">
-                <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}<img src="@assets/images/give.png" />￥{{ storeInfo.pay_point }}消费积分
+                                              支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.pay_point }}个消费积分
             </div>
             <div class="vip" v-if="storeInfo.give_rate > 0">
-             <img src="@assets/images/fu.png" class="image" />￥{{ storeInfo.price }}+￥{{ storeInfo.give_rate }}购物积分
+                                              支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.give_rate }}购物积分
             </div>
         </div>
         <div class="label acea-row row-between-wrapper">

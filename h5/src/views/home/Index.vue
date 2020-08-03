@@ -124,11 +124,6 @@
 				                                   ￥<span class="num">{{ item.price }}</span>
 				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
 				          </div>
-				          <div class="vip acea-row row-between-wrapper">
-				            <div class="vip-money">
-				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
-				            </div>
-				          </div>
 				        </div>
 			      </div>
 			</div>
@@ -137,7 +132,7 @@
     <div class="wrapper" v-if="info.bastList.length > 0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">商品中心推荐</div>
+          <div class="name line1">商品中心</div>
           <div class="line1" style="color: #999;">支持消费积分、重消积分兑换</div>
         </div>
         <router-link :to="{ path: '/cgoods_list/'}" class="more"
@@ -168,11 +163,6 @@
 				          <div class="money font-color-red">
 				                                   ￥<span class="num">{{ item.price }}</span>
 				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				          <div class="vip acea-row row-between-wrapper">
-				            <div class="vip-money">
-				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
-				            </div>
 				          </div>
 				        </div>
 			      </div>
