@@ -137,7 +137,7 @@
     <div class="wrapper" v-if="info.bastList.length > 0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">商品中心推荐</div>
+          <div class="name line1">商品中心</div>
           <div class="line1" style="color: #999;">支持消费积分、重消积分兑换</div>
         </div>
         <router-link :to="{ path: '/cgoods_list/'}" class="more"
@@ -183,7 +183,7 @@
       <div class="title acea-row row-between-wrapper">
         <div class="text">
           <div class="name line1">周边的店</div>
-          <div class="line1" style="color: #999;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+          <div class="line1" style="color: #999;">赠消费积分，购物积分支付,抵扣券抵扣</div>
         </div>
         <router-link :to="'/store_list/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
