@@ -405,7 +405,6 @@ export default {
 }
 .store-img img {
   width: 100%;
-  height: 100%;
 }
 .store-name {
   color: #282828;
