@@ -139,7 +139,25 @@
           >更多<span class="iconfont icon-jiantou"></span
         ></router-link>
       </div>
+      <div class="productList" ref="container">
+	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+			      <div @click="goDetail(item)" v-for="(item, index) in info.bastList" :key="index" class="item" :title="item.store_name">
+				        <div class="pictrue">
+				          <img :src="item.image"/> 
+				        </div>
+				        <div class="text">
+				          <div class="name pline1">{{ item.store_name }}</div>
+				          <div class="money font-color-red">
+				                                   ￥<span class="num">{{ item.price }}</span>
+				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+				          </div>
+				        </div>
+			      </div>
+			</div>
+	    </div>
+	    <!--
       <ShopGood-list :good-list="info.bastList" :is-sort="false"></ShopGood-list>
+      -->
     </div>
     
     <div class="wrapper" v-if="info.netGoodList">
