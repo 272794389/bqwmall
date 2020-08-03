@@ -86,14 +86,14 @@
       <router-link :to="'/cgoods_list/'" class="assemble" style="background: rgb(9,197,15);">
         <div class="sp">
 	          <div class="name">商品中心</div>
-	          <div class="infor">各种实用实惠的商品</div>
+	          <div class="infor">各种实惠的商品</div>
 	        </div>
       </router-link>
       <router-link :to="'/store_list/'" class="assemble" style="background: rgb(44,176,126);">
         <div class="sp">
 	        <div class="text">
 	          <div class="name">周边的店</div>
-	          <div class="infor">本地吃喝玩乐购商家</div>
+	          <div class="infor">本地吃喝玩乐商家</div>
 	        </div>
         </div>
       </router-link>
@@ -105,7 +105,7 @@
     <div class="wrapper" v-if="nearGoodList.length>0">
 	      <div class="title acea-row row-between-wrapper" style="border-top:none;">
 	        <div class="text">
-	          <div class="name line1">同城商品推荐</div>
+	          <div class="name line1">同城商品</div>
 	          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
 	        </div>
 	        <router-link :to="{ path: '/tgoods_list/'}" class="more"
@@ -138,7 +138,7 @@
       <div class="title acea-row row-between-wrapper">
         <div class="text">
           <div class="name line1">商品中心推荐</div>
-          <div class="line1" style="color: #f00;">支持消费积分、重消积分兑换</div>
+          <div class="line1" style="color: #999;">支持消费积分、重消积分兑换</div>
         </div>
         <router-link :to="{ path: '/cgoods_list/'}" class="more"
           >更多<span class="iconfont icon-jiantou"></span
@@ -150,8 +150,8 @@
     <div class="wrapper" v-if="info.netGoodList">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">网店商品推荐</div>
-          <div class="line1" style="color: #f00;">现金支付赠送消费积分，可用抵扣券抵扣</div>
+          <div class="name line1">网店商品</div>
+          <div class="line1" style="color: #999;">现金支付赠送消费积分，可用抵扣券抵扣</div>
         </div>
         <router-link :to="'/wgoods_list/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
@@ -182,8 +182,8 @@
     <div class="wrapper" v-if="storeList.length>0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
-          <div class="name line1">周边的店推荐</div>
-          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+          <div class="name line1">周边的店</div>
+          <div class="line1" style="color: #999;">赠消费积分|购物积分支付|抵扣券抵扣</div>
         </div>
         <router-link :to="'/store_list/'" class="more"
           >更多<span class="iconfont icon-jiantou"></span
