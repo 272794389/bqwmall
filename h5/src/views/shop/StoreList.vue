@@ -52,7 +52,7 @@
         <div class="store-cent-left" style="width:5">
           <div class="store-name">{{ item.name }}</div>
           <div class="store-address line1">
-            {{ item.address }}{{ ", " + item.detailed_address }}
+            {{item.detailed_address }}
           </div>
           <div class="store-address line1">
                                已消费{{ item.sales }}笔<span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
@@ -375,7 +375,6 @@ export default {
 }
 .store-img img {
   width: 100%;
-  height: 100%;
 }
 .store-name {
   color: #282828;

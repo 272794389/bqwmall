@@ -206,7 +206,7 @@
 		        <div class="text">
 		          <div class="pline2">{{ item.name }}</div>
 		          <div class="shoptip">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km,，已消费{{ item.sales }}笔</div>
-		          <div class="shoptip shopaddress">{{ item.address }}{{ ", " + item.detailed_address }}</div>
+		          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
 		          <div class="shoptip">购物积分支付比例：{{ item.give_rate }}%</div>
 		        </div>
 		      </div>
