@@ -33,6 +33,8 @@
                                         <option value="1">购物订单</option>
                                         <option value="2">提现</option>
                                         <option value="3">货款转余额</option>
+                                        <option value="4">在线充值</option>
+                                        <option value="5">系统升级</option>
                                     </select>
                                 </div>
                             </div>
@@ -72,10 +74,14 @@
                                                                   消费订单
                         {{# }else if(d.belong_t ==1){ }}
                                                                   购物订单
-                        {{# }else if(d.belong_t ==1){ }}
+                        {{# }else if(d.belong_t ==2){ }}
                                                                   提现
-                        {{# }else{ }}
+                        {{# }else if(d.belong_t ==3){ }}
                                                                   货款转余额
+                        {{# }else if(d.belong_t ==4){ }}
+                                                                  在线充值
+                        {{# }else{ }}
+                                                                  系统升级
                         {{# } }}
                     </script>
                 </div>

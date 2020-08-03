@@ -124,11 +124,6 @@
 				                                   ￥<span class="num">{{ item.price }}</span>
 				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
 				          </div>
-				          <div class="vip acea-row row-between-wrapper">
-				            <div class="vip-money">
-				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
-				            </div>
-				          </div>
 				        </div>
 			      </div>
 			</div>
@@ -168,11 +163,6 @@
 				          <div class="money font-color-red">
 				                                   ￥<span class="num">{{ item.price }}</span>
 				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				          <div class="vip acea-row row-between-wrapper">
-				            <div class="vip-money">
-				                 <img src="@assets/images/give.png" />￥{{ item.pay_point }}消费积分
-				            </div>
 				          </div>
 				        </div>
 			      </div>
