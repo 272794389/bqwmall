@@ -4,44 +4,24 @@
 
       <div class="item acea-row row-between-wrapper">
         <div class="name">商家名称</div>
-        <input
-                type="text"
-                placeholder="商家名称"
-                v-model="store.mer_name"
-                required
-        />
+        <input type="text" placeholder="商家名称" v-model="store.mer_name" required/>
       </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">商家联系人</div>
-        <input
-                type="text"
-                placeholder="商家联系人"
-                v-model="store.link_name"
-                required
-        />
+        <input type="text" placeholder="商家联系人" v-model="store.link_name" required />
       </div>
 
       <div class="item acea-row row-between-wrapper">
         <div class="name">商家联系电话</div>
-        <input
-                type="text"
-                placeholder="请输入联系电话"
-                v-model="store.link_phone"
-                required
-        />
+        <input type="text" placeholder="请输入联系电话" v-model="store.link_phone" required />
       </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">门店名称</div>
-        <input
-          type="text"
-          placeholder="请输入门店名称"
-          v-model="store.name"
-          required
-        />
+        <input type="text" placeholder="请输入门店名称" v-model="store.name" required/>
       </div>
 
       <div class="item acea-row row-between-wrapper row-row">
-        <div class="name">门店logo</div>
+        <div class="name">门头照片</div>
         <VueCoreImageUpload
                 class="btn btn-primary"
                 :crop="false"
@@ -57,10 +37,8 @@
         >
           <div class="pictrue acea-row row-center-wrapper row-row">
             <img height="40px" :src="store.image" alt="">
-
-
             <span class="iconfont icon-icon25201"></span>
-            <div>上传logo</div>
+            <div>上传照片</div>
           </div>
         </VueCoreImageUpload>
       </div>
@@ -81,10 +59,75 @@
         >
           <div class="pictrue acea-row row-center-wrapper row-row">
             <img height="40px" :src="store.license" alt="">
-
-
             <span class="iconfont icon-icon25201"></span>
-            <div>上传营业执照</div>
+            <div>上传照片</div>
+          </div>
+        </VueCoreImageUpload>
+      </div>
+      
+      <div class="item acea-row row-between-wrapper row-row">
+        <div class="name">身份证头像页</div>
+        <VueCoreImageUpload
+                class="btn btn-primary"
+                :crop="false"
+                compress="80"
+                @imageuploaded="idimageuploaded"
+                :headers="headers"
+                :max-file-size="5242880"
+                :credentials="false"
+                inputAccept="image/*"
+                inputOfFile="file"
+                :url="url"
+                ref="upImg"
+        >
+          <div class="pictrue acea-row row-center-wrapper row-row">
+            <img height="40px" :src="store.idCardz" alt="">
+            <span class="iconfont icon-icon25201"></span>
+            <div>上传照片</div>
+          </div>
+        </VueCoreImageUpload>
+      </div>
+      <div class="item acea-row row-between-wrapper row-row">
+        <div class="name">身份证国徽页</div>
+        <VueCoreImageUpload
+                class="btn btn-primary"
+                :crop="false"
+                compress="80"
+                @imageuploaded="idgimageuploaded"
+                :headers="headers"
+                :max-file-size="5242880"
+                :credentials="false"
+                inputAccept="image/*"
+                inputOfFile="file"
+                :url="url"
+                ref="upImg"
+        >
+          <div class="pictrue acea-row row-center-wrapper row-row">
+            <img height="40px" :src="store.idCardf" alt="">
+            <span class="iconfont icon-icon25201"></span>
+            <div>上传照片</div>
+          </div>
+        </VueCoreImageUpload>
+      </div>
+      <div class="item acea-row row-between-wrapper row-row">
+        <div class="name">许可证</div>
+        <VueCoreImageUpload
+                class="btn btn-primary"
+                :crop="false"
+                compress="80"
+                @imageuploaded="ximageuploaded"
+                :headers="headers"
+                :max-file-size="5242880"
+                :credentials="false"
+                inputAccept="image/*"
+                inputOfFile="file"
+                :url="url"
+                ref="upImg"
+        >
+          <div class="pictrue acea-row row-center-wrapper row-row">
+            <img height="40px" :src="store.xukeImg" alt="">
+            <span class="iconfont icon-icon25201"></span>
+            <div>上传照片</div>
           </div>
         </VueCoreImageUpload>
       </div>
@@ -92,29 +135,17 @@
 
       <div class="item acea-row row-between-wrapper">
         <div class="name">门店简介</div>
-        <input
-                type="text"
-                placeholder="请输入门店简介"
-                v-model="store.introduction"
-                required
-        />
+        <input type="text" placeholder="请输入门店简介" v-model="store.introduction" required/>
       </div>
 
 
       <div class="item acea-row row-between-wrapper">
         <div class="name">门店电话</div>
-        <input
-          type="text"
-          placeholder="请输入联系电话"
-          v-model="store.phone"
-          required
-        />
+        <input type="text" placeholder="请输入联系电话" v-model="store.phone" required />
       </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">所在地区</div>
-        <div
-          class="picker acea-row row-between-wrapper select-value form-control"
-        >
+        <div class="picker acea-row row-between-wrapper select-value form-control" >
           <div class="address">
             <div slot="right" @click.stop="show2 = true">
               {{ model2 || "请选择门店地址" }}
@@ -135,43 +166,19 @@
 
       <div class="item acea-row row-between-wrapper">
         <div class="name">详细地址</div>
-        <input
-          type="text"
-          placeholder="请填写具体地址"
-          v-model="store.detailed_address"
-          required
-        />
+        <input type="text" placeholder="请填写具体地址" v-model="store.detailed_address" required/>
       </div>
 
 
-<!--      <div class="item acea-row row-between-wrapper">-->
-<!--        <div class="name">地图位置</div>-->
-<!--        <input-->
-<!--                type="text"-->
-<!--                placeholder="请输入姓名"-->
-<!--                v-model="store.a"-->
-<!--                required-->
-<!--        />-->
-<!--      </div>-->
 
-<!--      <div class="item acea-row row-between-wrapper">-->
-<!--        <div class="name">核销时效</div>-->
-<!--        <input-->
-<!--                type="text"-->
-<!--                placeholder="核销时效"-->
-<!--                v-model="store.valid_time"-->
-<!--                required-->
-<!--        />-->
-<!--      </div>-->
 
       <div class="item acea-row row-between-wrapper row-row" >
         <div class="name">营业时间</div>
-        <date-time class="timeSelect" type="time" v-model="day_time_start" ></date-time>
-        <date-time class="timeSelect" type="time" v-model="day_time_end" ></date-time>
+        <date-time class="timeSelect" type="time" v-model="day_time_start" style="width:30%;"></date-time>
+        <date-time class="timeSelect" type="time" v-model="day_time_end"  style="width:30%;"></date-time>
       </div>
-
-
     </div>
+    <!--
     <div class="default acea-row row-middle">
       <div class="select-btn">
         <div class="checkbox-wrapper">
@@ -187,6 +194,7 @@
         </div>
       </div>
     </div>
+    -->
     <div></div>
 
 
@@ -231,6 +239,9 @@ export default {
         is_default: 0 ,
         image:'',
         license:'',
+        idCardz:'',
+        idCardf:'',
+        xukeImg:'',
       },
       address: {},
       isWechat: isWeixin()
@@ -294,7 +305,11 @@ export default {
         phone = this.store.phone,
         model2 = this.model2,
         detail = this.store.detailed_address,
-        isShow = this.store.is_show;
+        isShow = this.store.is_show,
+        image = this.store.image,
+        license=this.store.license,
+        idCardz=this.store.idCardz,
+        idCardf=this.store.idCardf;
       try {
         await this.$validator({
           name: [
@@ -305,12 +320,20 @@ export default {
             required(required.message("联系电话")),
            // chs_phone(chs_phone.message())
           ],
+          image: [required("请上传门头照片")],
+          license: [required("请上传营业执照")],
+          idCardz: [required("请上经办人身份证头像页")],
+          idCardf: [required("请上经办人身份证国徽页")],
           model2: [required("请选择地址")],
           detail: [required(required.message("具体地址"))]
-        }).validate({ name, phone, model2, detail });
+        }).validate({ name, phone,image,license,idCardz,idCardf, model2, detail });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
+      /*
+      if(!image){
+        this.$dialog.toast({ mes: "请上传门头照片" });
+      }*/
       try {
         let that = this,
           data = {
@@ -320,6 +343,9 @@ export default {
             phone: phone,
             image:this.store.image,
             license:this.store.license,
+            idCardz:this.store.idCardz,
+            idCardf:this.store.idCardf,
+            xukeImg:this.store.xukeImg,
             address: this.address,
             detailed_address: detail,
             is_show: isShow,
@@ -349,7 +375,21 @@ export default {
         return this.$dialog.error(res.msg || "上传图片失败");
         this.store.license =res.data.url
     },
-
+    idimageuploaded(res) {
+      if (res.status !== 200)
+        return this.$dialog.error(res.msg || "上传图片失败");
+        this.store.idCardz =res.data.url
+    },
+    idgimageuploaded(res) {
+      if (res.status !== 200)
+        return this.$dialog.error(res.msg || "上传图片失败");
+        this.store.idCardf =res.data.url
+    },
+    ximageuploaded(res) {
+      if (res.status !== 200)
+        return this.$dialog.error(res.msg || "上传图片失败");
+        this.store.xekeImg =res.data.url
+    },
     ChangeIsShow: function() {
       this.store.is_show = !this.store.is_is_show;
     },
@@ -367,5 +407,6 @@ export default {
   .timeSelect{
     width: 2rem;
   }
+  .yd-datetime-input{width: 30%;}
 
 </style>
