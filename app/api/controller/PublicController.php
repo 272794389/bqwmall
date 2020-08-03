@@ -53,10 +53,10 @@ class PublicController
         $fastNumber = sys_config('fast_number', 0);//TODO 快速选择分类个数
         $bastNumber = sys_config('bast_number', 0);//TODO 精品推荐个数
         $firstNumber = sys_config('first_number', 0);//TODO 首发新品个数
-        $info['fastList'] = StoreCategory::getIndexList(0, 8,false);//TODO 分类个数
-        $info['sfastList'] = StoreCategory::getIndexList(8, 8,false);//TODO 分类个数
-        $info['tfastList'] = StoreCategory::getIndexList(16, 8,false);//TODO 分类个数
-        $info['ffastList'] = StoreCategory::getIndexList(24, 8,false);//TODO 分类个数
+        $info['fastList'] = StoreCategory::getIndexList(0, 10,false);//TODO 分类个数
+        $info['sfastList'] = StoreCategory::getIndexList(10, 10,false);//TODO 分类个数
+        $info['tfastList'] = StoreCategory::getIndexList(20, 10,false);//TODO 分类个数
+        $info['ffastList'] = StoreCategory::getIndexList(30, 10,false);//TODO 分类个数
         
         $info['bastList'] = StoreProduct::getProductListByBelong((int)$bastNumber, $request->uid(),0, false);//TODO 商品中心产品列表
         $info['netGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),1, false);//TODO 网店商品列表
