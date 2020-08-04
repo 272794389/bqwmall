@@ -3,11 +3,11 @@
 namespace app\admin\controller\system;
 
 use app\admin\controller\AuthController;
-use crmeb\services\JsonService;
-use crmeb\services\JsonService as Json;
 use app\admin\model\system\SystemStore as SystemStoreModel;
-use crmeb\services\UtilService;
 use app\admin\model\store\StoreCategory as StroreCateModel;
+use crmeb\services\{
+    JsonService, UtilService, JsonService as Json, FormBuilder as Form
+};
 
 /**
  * 门店管理控制器
@@ -32,6 +32,19 @@ class SystemStore extends AuthController
         ]);
         return JsonService::successlayui(SystemStoreModel::getStoreList($where));
     }
+    
+    
+    /**
+     * 显示创建资源表单页.
+     *
+     * @return \think\Response
+     */
+    public function upload($id = 0)
+    {
+        $this->assign('id', (int)$id);
+        return $this->fetch();
+    }
+    
 
     /**
      * 门店设置
@@ -132,7 +145,30 @@ class SystemStore extends AuthController
         $this->assign(compact('key'));
         return $this->fetch();
     }
-
+    
+    //保存商家轮播图片和商家介绍
+    public function saveImg($id=0){
+        
+        $data = UtilService::postMore([
+            ['slider_image', []],
+            ['introduction', '']
+            ]);
+        $data['slider_image'] = json_encode($data['slider_image']);
+        SystemStoreModel::edit($data, $id);
+        return Json::success('修改成功!');
+    }
+    
+    public function get_store_info($id = 0)
+    {
+        $storeInfo = SystemStoreModel::get($id);
+        if (!$storeInfo) {
+            return Json::fail('修改的商家不存在');
+        }
+        $storeInfo['introduction'] = htmlspecialchars_decode($storeInfo['introduction']);
+        $storeInfo['slider_image'] = is_string($storeInfo['slider_image']) ? json_decode($storeInfo['slider_image'], true) : [];
+        $data['storeInfo'] = $storeInfo;
+        return JsonService::successful($data);
+    }
     /**
      * 保存修改门店信息
      * @param int $id

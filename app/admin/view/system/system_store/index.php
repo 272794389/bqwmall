@@ -82,6 +82,9 @@
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑商家
                         </button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='upload'>
+                            上传轮播图
+                        </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='del'>
                             {{# if(d.is_del){ }}
                             恢复商家
@@ -178,6 +181,9 @@
                 break;
             case 'edit':
                 $eb.createModalFrame(data.name + '-编辑', layList.U({a: 'add', q: {id: data.id}}), {h: 700, w: 1100});
+                break;
+            case 'upload':
+            	location.href = layList.U({a:'upload',q:{id:data.id}});
                 break;
         }
     })
