@@ -66,7 +66,6 @@ class StoreProduct extends BaseModel
         if ($Product) return $Product->toArray();
         else return false;
     }
-
     public static function getGoodList($limit = 18, $field = '*')
     {
         $list = self::validWhere()->where('is_good', 1)->order('sort desc,id desc')->limit($limit)->field($field)->select();

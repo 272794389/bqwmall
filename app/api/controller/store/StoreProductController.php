@@ -138,6 +138,7 @@ class StoreProductController
         $storeInfo['userLike'] = StoreProductRelation::isProductRelation($id, $uid, 'like');
         list($productAttr, $productValue) = StoreProductAttr::getProductAttrDetail($id, $uid, $type);
         StoreVisit::setView($uid, $id, $storeInfo['cate_id'], 'viwe');
+       
         $data['storeInfo'] = StoreProduct::setLevelPrice($storeInfo, $uid, true);
         $data['similarity'] = StoreProduct::cateIdBySimilarityProduct($storeInfo['cate_id'], 'id,store_name,image,price,sales,ficti', 4);
         $data['productAttr'] = $productAttr;

@@ -336,7 +336,8 @@ class PublicController
     }
     
     public function store_detail(Request $request, $id, $type = 0){
-        if (!$id || !($storeInfo = SystemStore::getStoreDispose($id))) return app('json')->fail('商户不存在或已下架');
+        if (!$id || !($storeInfo = SystemStore::getValidStore($id))) return app('json')->fail('商户不存在或已下架');
+        //echo "slide_img=".count($storeInfo['slider_image']);
         $data['storeInfo'] = $storeInfo;
         $data['mapKey'] = sys_config('tengxun_map_key');
         $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');

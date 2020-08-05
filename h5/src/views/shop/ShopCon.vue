@@ -2,21 +2,21 @@
 <div>
   <div class="product-con storeBox"  ref="box" @scroll.native="onScroll">
     <div class="superior" id="title2">
-      <div class="storeBox-box" style="background: #fff;padding: 0.2rem;margin-top:0.5rem;">
-        <div class="store-img"><img :src="storeInfo.image" lazy-load="true" /></div>
+      <product-con-swiper
+        :img-urls="storeInfo.slider_image"
+      ></product-con-swiper>
+      <div class="storeBox-box" style="background: #fff;">
         <div class="store-cent-left" style="width:5">
           <div class="store-name">{{ storeInfo.name }}</div>
+          <Reta :size="48" :score="4.5"></Reta>
           <div class="store-address line1">
-            {{ storeInfo._detailed_address }}
+            {{ storeInfo.detailed_address }}
           </div>
           <div class="store-address line1">
                                已消费{{ storeInfo.sales }}笔
           </div>
           <div class="store-address line1">
-                               营业时间:<span style="color:#1495E7;margin-left:0.2rem;">{{ storeInfo.day_time}}</span>
-          </div>
-          <div class="store-address line1">
-                               购物积分支付比例{{ storeInfo.give_rate }}%
+                               营业中<span style="color:#282828;margin-left:0.2rem;">{{ storeInfo.day_time}}</span>
           </div>
         </div>
         <div class="row-right">
@@ -114,7 +114,7 @@
  </div>
 </template>
 <script>
-import { swiper, swiperSlide } from "vue-awesome-swiper";
+import {swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
@@ -123,6 +123,7 @@ import CouponPop from "@components/CouponPop";
 import ProductWindow from "@components/ProductWindow";
 import StorePoster from "@components/StorePoster";
 import ShareInfo from "@components/ShareInfo";
+import Reta from "@components/Star";
 import debounce from "lodash.debounce";
 import {
   getProductDetail,
@@ -143,6 +144,7 @@ const MAPKEY = "mapKey";
 export default {
   name: NAME,
   components: {
+    Reta,
     ProductConSwiper,
     UserEvaluation,
     ProductWindow
@@ -165,6 +167,7 @@ export default {
     $route(n) {
       if (n.name === NAME) {
         this.id = n.params.id;
+        this.storeInfo.slider_image = [];
         this.productCon();
       }
     }
@@ -178,6 +181,7 @@ export default {
     }
     document.addEventListener("scroll", this.onScroll, false);
     this.id = this.$route.params.id;
+    this.storeInfo.slider_image = [];
     this.productCon();
     window.addEventListener("scroll", this.handleScroll);
   },
@@ -367,6 +371,7 @@ export default {
 };
 </script>
 <style scoped>
+.product-bg{height:5.5rem;}
 .geoPage {
   position: fixed;
   width: 100%;
@@ -395,7 +400,7 @@ export default {
   width: 80%;
 }
 .store-cent-left {
-  width: 50%;
+  width: 70%;
 }
 .store-img {
   width: 1.5rem;
@@ -410,11 +415,15 @@ export default {
   color: #282828;
   font-size: 0.3rem;
   font-weight: 800;
+  letter-spacing: 3px;
+  margin-bottom: 0.2rem;
   text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;-webkit-line-clamp: 1;
 }
 .store-address {
-  color: #666666;
+  color: #282828;
   font-size: 0.24rem;
+  line-height:0.4rem;
+  letter-spacing: 1px;
 }
 .store-phone {
   width: 0.5rem;

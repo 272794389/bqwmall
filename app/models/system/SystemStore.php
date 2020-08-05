@@ -29,6 +29,15 @@ class SystemStore extends BaseModel
      * @var string
      */
     protected $name = 'system_store';
+    
+    protected function getSliderImageAttr($value)
+    {
+        $sliderImage = json_decode($value, true) ?: [];
+        foreach ($sliderImage as &$item) {
+            $item = str_replace('\\', '/', $item);
+        }
+        return $sliderImage;
+    }
 
 
     public static function getLatlngAttr($value, $data)
@@ -62,6 +71,15 @@ class SystemStore extends BaseModel
         }
         return $storeInfo;
     }
+    
+    public static function getValidStore($id = 0, $field = '*')
+    {
+        $Store = self::where('id', $id)->field($field)->find();
+        if ($Store) return $Store->toArray();
+        else return false;
+    }
+    
+    
 
     /**
      * 门店列表
