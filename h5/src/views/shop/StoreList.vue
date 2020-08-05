@@ -88,7 +88,7 @@
 		        <div class="text">
 		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
 		          <Reta :size="48" :score="4.5"></Reta>
-		          <div class="shoptip gui" style="margin-bottom:0.1rem;margin-top:-0.1rem;">火锅{{ item.cate_name }}<span style="float: right;margin-right: 0.2rem;">{{ item.range }}km</span></div>
+		          <div class="shoptip gui" style="margin-bottom:0.1rem;margin-top:-0.1rem;">{{ item.cate_name }}<span style="float: right;margin-right: 0.2rem;">{{ item.range }}km</span></div>
 		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业中{{ item.day_time }}<span style="float: right;margin-right: 0.2rem;">已售{{ item.sales }}</span></div>
 		          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
 		        </div>
