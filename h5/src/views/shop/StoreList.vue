@@ -81,10 +81,10 @@
 	  <div class="wrapper" v-if="storeList.length>0">
         <div class="goodList">
 		    <div class="item acea-row row-between-wrapper shangjia" @click="goDetail(item)" v-for="(item, index) in storeList" :key="index">
-		      <div class="pictrue" style="width:2.0rem;margin-top:-1rem;">
+		      <div class="pictrue" style="width:2.0rem;margin-top:-0.5rem;">
 		         <img :src="item.image" class="image">
 		      </div>
-		      <div class="shop_box" style="height:3.0rem">
+		      <div class="shop_box" style="height:2.6rem">
 		        <div class="text">
 		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
 		          <Reta :size="48" :score="4.5"></Reta>
