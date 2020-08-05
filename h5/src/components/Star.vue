@@ -61,10 +61,10 @@
         margin-bottom:0.2rem;
     }
     .star-48 .star-item { 
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         background-repeat: no-repeat;
-        background-size: 20px 20px;
+        background-size: 15px 15px;
     }
     .star-48 .star-item:last-child {
         margin-right: 0px;
@@ -73,7 +73,7 @@
         background-image: url("http://oss.dshqfsc.com/eda5c202008051748281568.png");
     }
     .star-48 .star-item.half {
-        background-image: url("http://oss.dshqfsc.com/7bf2e202008051748284332.png");
+        background-image: url("http://oss.dshqfsc.com/9021e202008051807133950.png");
     }
     .star-48 .star-item.off {
         background-image: url("http://oss.dshqfsc.com/1a09220200805175133424.png");

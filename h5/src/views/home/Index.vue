@@ -204,10 +204,10 @@
 		      </div>
 		      <div class="shop_box" style="height:2.0rem">
 		        <div class="text">
-		          <div class="pline2">{{ item.name }}</div>
-		          <div class="shoptip">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km,，已消费{{ item.sales }}笔</div>
+		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
+		          <Reta :size="48" :score="4.5"></Reta>
+		          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
 		          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
-		          <div class="shoptip">购物积分支付比例：{{ item.give_rate }}%</div>
 		        </div>
 		      </div>
 		    </div>
@@ -247,6 +247,7 @@ import GoodList from "@components/GoodList";
 import ShopGoodList from "@components/ShopGoodList";
 import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
+import Reta from "@components/Star";
 import { getHomeData, getShare, follow,goodListApi } from "@api/public";
 import cookie from "@utils/store/cookie";
 import { openShareAll, wxShowLocation } from "@libs/wechat";
@@ -260,6 +261,7 @@ let vm = null;
 export default {
   name: "Index",
   components: {
+    Reta,
     swiper,
     swiperSlide,
     GoodList,
@@ -539,7 +541,7 @@ export default {
 };
 </script>
 <style scoped>
-
+.star{margin-bottom:0.1rem;margin-top:0.1rem;}
 .index .follow {
   z-index: 100000;
 }

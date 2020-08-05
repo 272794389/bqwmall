@@ -41,24 +41,24 @@
         <img src="@assets/images/down.png" v-if="stock === 2" />
       </div>
     </div>
-    
+    <!--
       <div
         class="storeBox-box"
         v-for="(item, index) in storeList"
         :key="index"
         @click="goDetail(item)"
       >
+      
         <div class="store-img"><img :src="item.image" lazy-load="true" /></div>
         <div class="store-cent-left" style="width:5">
           <div class="store-name">{{ item.name }}</div>
+          <Reta :size="48" :score="4.5"></Reta>
+          <div class="store-address line1">
+                               已消费{{ item.sales }}笔
+          </div>
+          <span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
           <div class="store-address line1">
             {{item.detailed_address }}
-          </div>
-          <div class="store-address line1">
-                               已消费{{ item.sales }}笔<span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
-          </div>
-          <div class="store-address line1">
-                               购物积分支付比例{{ item.give_rate }}%
           </div>
         </div>
         <div class="row-right">
@@ -75,6 +75,27 @@
             <span class="iconfont icon-youjian"></span>
           </div>
         </div>
+        
+	 </div>
+	 -->
+	  <div class="wrapper" v-if="storeList.length>0">
+        <div class="goodList">
+		    <div class="item acea-row row-between-wrapper shangjia" @click="goDetail(item)" v-for="(item, index) in storeList" :key="index">
+		      <div class="pictrue" style="width:2.0rem;margin-top:-1rem;">
+		         <img :src="item.image" class="image">
+		      </div>
+		      <div class="shop_box" style="height:3.0rem">
+		        <div class="text">
+		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
+		          <Reta :size="48" :score="4.5"></Reta>
+		          <div class="shoptip gui" style="margin-bottom:0.2rem;">火锅{{ item.cate_name }}<span style="float: right;margin-right: 0.2rem;">{{ item.range }}km</span></div>
+		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.2rem;">营业中{{ item.day_time }}<span style="float: right;margin-right: 0.2rem;">已售{{ item.sales }}</span></div>
+		          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
+		        </div>
+		      </div>
+		    </div>
+		</div>
+        
       </div>
       <Loading :loaded="loaded" :loading="loading"></Loading>
     </div>
@@ -119,6 +140,7 @@
 import Loading from "@components/Loading";
 import { storeListApi } from "@api/store";
 import { isWeixin } from "@utils/index";
+import Reta from "@components/Star";
 import { wechatEvevt, wxShowLocation } from "@libs/wechat";
 import { mapGetters } from "vuex";
 import cookie from "@utils/store/cookie";
@@ -127,7 +149,7 @@ const LATITUDE = "user_latitude";
 const MAPKEY = "mapKey";
 export default {
   name: "storeList",
-  components: { Loading },
+  components: { Loading ,Reta},
   computed: mapGetters(["goName"]),
   data() {
    const { s = "", id = 0, title = "" } = this.$route.query;
@@ -338,6 +360,7 @@ export default {
 </script>
 
 <style scoped>
+
 .geoPage {
   position: fixed;
   width: 100%;
@@ -348,7 +371,6 @@ export default {
 .storeBox {
   width: 100%;
   background-color: #fff;
-  padding: 0 0.3rem;
 }
 .storeBox-box {
   width: 100%;
