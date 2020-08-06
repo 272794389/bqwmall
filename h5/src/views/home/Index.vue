@@ -1,5 +1,5 @@
 <template>
-  <div class="index" v-cloak>
+  <div class="index" v-cloak style="background: #F5F5F5;">
     <div
       class="follow acea-row row-between-wrapper" v-if="followHid && isWeixin"
     >
@@ -13,7 +13,7 @@
       <div class="pictrue"><img :src="followUrl" /></div>
       <div class="mask" @click="closeFollowCode"></div>
     </div>
-    <div class="header acea-row row-center-wrapper">
+    <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/search'" class="search acea-row row-middle">
         <span class="iconfont icon-xiazai5"></span>搜索商品
@@ -29,7 +29,7 @@
     </div>
     <!--分类菜单导航-->
     <div class="nav acea-row">
-     <swiper :options="dswiperOption" v-if="info.fastList.length > 0" style="padding-bottom:0.5rem;">
+     <swiper :options="dswiperOption" v-if="info.fastList.length > 0">
         <swiper-slide>
 		      <router-link tag="a" target="_blank"
 		        :to="'/gcategory/'+item.id"
@@ -74,14 +74,67 @@
 		        <div>{{ item.cate_name }}</div>
 		      </router-link>
 		   </swiper-slide>
+		   <!--
 		   <div class="swiper-pagination dpaginationBanner" style="margin-top:1.3rem;" slot="pagination"></div>
+		   -->
        </swiper>
     </div>
+    <!--
     <div class="ad_tong" v-if="article.title">
         <marquee direction="left" class="marqstyle">
         <router-link :to="'/news_detail/' + article.id" class="acea-row row-middle"
           >{{ article.title }}</router-link></marquee>
     </div>
+    -->
+    <div class="wrapper jinpbox" v-if="info.hostList.length > 0">
+      <div class="title acea-row row-between-wrapper">
+        <div class="text">
+          <div class="jname line1">
+               <span> 精品</span><img src="http://oss.dshqfsc.com/c4d8e202008061642339596.png" />
+          </div>
+        </div>
+        <router-link :to="{ path: '/hot_new_goods/' + 1 }" class="more"
+          >更多<span class="iconfont icon-jiantou"></span
+        ></router-link>
+      </div>
+      <div class="newProducts">
+        <swiper class="swiper-wrapper" :options="swiperProducts">
+          <swiper-slide
+            class="swiper-slide"
+            v-for="(item, index) in info.hostList"
+            :key="index"
+          >
+            <div @click="goDetail(item)">
+              <div class="img-box">
+                <img :src="item.image" />
+                <span class="pictrue_log_medium pictrue_log_class">精品</span>
+              </div>
+              <div class="money font-color-red" style="margin-top:0.1rem;">￥{{ item.price }}</div>
+              <div class="money" style="text-decoration: line-through;color:#999;">￥{{ item.ot_price }}</div>
+            </div>
+          </swiper-slide>
+        </swiper>
+      </div>
+     </div>
+    <div class="specialArea acea-row row-between-wrapper">
+        <div class="nav_box" @click="set_where(1)">
+          <span class="nav_title">商品中心</span>
+          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
+        </div>
+        <div class="nav_box" @click="set_where(2)">
+          <span class="nav_title">周边消费</span>
+          <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
+        </div>
+        <div class="nav_box" @click="set_where(3)">
+          <span class="nav_title">本地特惠</span>
+          <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">吃喝玩乐</span>
+        </div>
+        <div class="nav_box" @click="set_where(4)">
+          <span class="nav_title">任性购</span>
+          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
+        </div>
+    </div>
+    <!--
     <div class="specialArea acea-row row-between-wrapper">
       <router-link :to="'/cgoods_list/'" class="assemble" style="background: rgb(9,197,15);">
         <div class="sp">
@@ -102,118 +155,118 @@
           <div class="infor">商家产品优惠套餐</div>
       </router-link>
     </div>
-    <div class="wrapper" v-if="nearGoodList.length>0">
-	      <div class="title acea-row row-between-wrapper" style="border-top:none;">
+    -->
+    <div v-if="condition==3">
+	    <div class="wrapper" v-if="nearGoodList.length>0">
+		      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+		    <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
+		        <div class="text">
+		          <div class="name line1" style="font-size: 0.3rem;">更多本地特惠套餐</div>
+		        </div>
+		        <router-link :to="{ path: '/tgoods_list/'}" class="more"
+		          >更多<span class="iconfont icon-jiantou"></span
+		        ></router-link>
+	      </div>
+	    </div>
+    </div>
+    <div v-if="condition==1">
+	    <div class="wrapper" v-if="info.bastList.length > 0">
+	      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in info.bastList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+		   <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
 	        <div class="text">
-	          <div class="name line1">同城商品</div>
-	          <div class="line1" style="color: #f00;">赠消费积分|购物积分支付|抵扣券抵扣</div>
+	          <div class="name line1" style="font-size: 0.3rem;">更多抵扣商品</div>
 	        </div>
-	        <router-link :to="{ path: '/tgoods_list/'}" class="more"
+	        <router-link :to="{ path: '/cgoods_list/'}" class="more"
 	          >更多<span class="iconfont icon-jiantou"></span
 	        ></router-link>
 	      </div>
+	    </div>
+	</div>
+    <div v-if="condition==4">
+	    <div class="wrapper" v-if="info.netGoodList">
 	      <div class="productList" ref="container">
-	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-			      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
-				        <div class="pictrue">
-				          <img :src="item.image"/> 
-				        </div>
-				        <div class="text">
-				          <div class="name pline1">{{ item.store_name }}</div>
-				          <div class="money font-color-red">
-				                                   ￥<span class="num">{{ item.price }}</span>
-				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				        </div>
-			      </div>
-			</div>
-	    </div>
-    </div>
-    <div class="wrapper" v-if="info.bastList.length > 0">
-      <div class="title acea-row row-between-wrapper">
-        <div class="text">
-          <div class="name line1">商品中心</div>
-          <div class="line1" style="color: #999;">支持消费积分、重消积分兑换</div>
-        </div>
-        <router-link :to="{ path: '/cgoods_list/'}" class="more"
-          >更多<span class="iconfont icon-jiantou"></span
-        ></router-link>
-      </div>
-      <div class="productList" ref="container">
-	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-			      <div @click="goDetail(item)" v-for="(item, index) in info.bastList" :key="index" class="item" :title="item.store_name">
-				        <div class="pictrue">
-				          <img :src="item.image"/> 
-				        </div>
-				        <div class="text">
-				          <div class="name pline1">{{ item.store_name }}</div>
-				          <div class="money font-color-red">
-				                                   ￥<span class="num">{{ item.price }}</span>
-				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				        </div>
-			      </div>
-			</div>
-	    </div>
-	    <!--
-      <ShopGood-list :good-list="info.bastList" :is-sort="false"></ShopGood-list>
-      -->
-    </div>
-    
-    <div class="wrapper" v-if="info.netGoodList">
-      <div class="title acea-row row-between-wrapper">
-        <div class="text">
-          <div class="name line1">网店商品</div>
-          <div class="line1" style="color: #999;">现金支付赠送消费积分，可用抵扣券抵扣</div>
-        </div>
-        <router-link :to="'/wgoods_list/'" class="more"
-          >更多<span class="iconfont icon-jiantou"></span
-        ></router-link>
-      </div>
-      <div class="productList" ref="container">
-	         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-			      <div @click="goDetail(item)" v-for="(item, index) in info.netGoodList" :key="index" class="item" :title="item.store_name">
-				        <div class="pictrue">
-				          <img :src="item.image"/> 
-				        </div>
-				        <div class="text">
-				          <div class="name pline1">{{ item.store_name }}</div>
-				          <div class="money font-color-red">
-				                                   ￥<span class="num">{{ item.price }}</span>
-				              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-				          </div>
-				        </div>
-			      </div>
-			</div>
-	    </div>
-    </div>
-    <div class="wrapper" v-if="storeList.length>0">
-      <div class="title acea-row row-between-wrapper">
-        <div class="text">
-          <div class="name line1">周边的店</div>
-          <div class="line1" style="color: #999;">赠消费积分，购物积分支付，抵扣券抵扣</div>
-        </div>
-        <router-link :to="'/store_list/'" class="more"
-          >更多<span class="iconfont icon-jiantou"></span
-        ></router-link>
-      </div>
-      <div class="goodList">
-		    <div class="item acea-row row-between-wrapper shangjia" @click="goShop(item)" v-for="(item, index) in storeList" :key="index">
-		      <div class="pictrue" style="width:2.0rem;">
-		         <img :src="item.image" class="image">
-		      </div>
-		      <div class="shop_box" style="height:2.0rem">
-		        <div class="text">
-		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
-		          <Reta :size="48" :score="4.5"></Reta>
-		          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
-		          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
-		        </div>
-		      </div>
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in info.netGoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
 		    </div>
-	 </div>
+		    <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
+	        <div class="text">
+	          <div class="name line1" style="font-size: 0.3rem;">更多优惠商品</div>
+	        </div>
+	        <router-link :to="{ path: '/cgoods_list/'}" class="more"
+	          >更多<span class="iconfont icon-jiantou"></span
+	        ></router-link>
+	      </div>
+	    </div>
+	</div>
+	<div v-if="condition==2">
+	    <div class="wrapper" v-if="storeList.length>0">
+	      <div class="goodList">
+			    <div class="item acea-row row-between-wrapper shangjia" @click="goShop(item)" v-for="(item, index) in storeList" :key="index">
+			      <div class="pictrue" style="width:2.0rem;">
+			         <img :src="item.image" class="image">
+			      </div>
+			      <div class="shop_box" style="height:2.0rem">
+			        <div class="text">
+			          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
+			          <Reta :size="48" :score="4.5"></Reta>
+			          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
+			          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
+			        </div>
+			      </div>
+			    </div>
+		 </div>
+		 <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
+		        <div class="text">
+		          <div class="name line1" style="font-size: 0.3rem;">更多商家</div>
+		        </div>
+		        <router-link :to="{ path: '/store_list/'}" class="more"
+		          >更多<span class="iconfont icon-jiantou"></span
+		        ></router-link>
+	      </div>
+	    </div>
     </div>
-    
     <Coupon-window
       :coupon-list="couponList"
       v-if="showCoupon"
@@ -281,6 +334,7 @@ export default {
       followCode: false,
       showCoupon: false,
       logoUrl: "",
+      condition:1,
       banner: [],
       article: {},
       storeList: [],
@@ -288,7 +342,8 @@ export default {
       info: {
         fastList: [],
         bastList: [],
-        netGoodList: []
+        netGoodList: [],
+        hostList: []
       },
       couponList: [],
       swiperOption: {
@@ -415,6 +470,11 @@ export default {
           path: url
         });
       }
+    },
+    //点击事件处理
+    set_where: function(index) {
+      let that = this;
+      that.condition = index;
     },
     // 商品详情跳转
     goDetail(item) {
@@ -561,4 +621,16 @@ export default {
     background: #666;
     opacity: .2;
 }
+
+.nav_box{width: 25%; float: left;}
+.nav_title{width: 100%;float: left; text-align: center;font-size: 0.35rem;color: #000;}
+.nav_desc{float: left; width: 80%;font-size: 0.25rem; text-align: center;color: #999; margin-top:0.1rem;margin-left:10%;}
+.nav_on{background: linear-gradient(90deg,#f62c2c,#f96e29);color: #fff; border-radius: 7px;}
+.index .wrapper .newProducts .swiper-slide{width:2.2rem;}
+.index .wrapper .newProducts .swiper-slide .img-box{height:2.2rem;}
+.index .wrapper .newProducts .swiper-slide .money{padding:0rem;}
+.slider-banner{width: 96%;margin-left:2%;border-radius:0.2rem;}
+
+
+
 </style>

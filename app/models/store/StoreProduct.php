@@ -316,6 +316,7 @@ class StoreProduct extends BaseModel
         }
         return self::setLevelPrice($list, $uid);
     }
+    
 
     /**
      * 热卖产品

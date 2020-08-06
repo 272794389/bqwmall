@@ -61,7 +61,9 @@ class PublicController
         $info['bastList'] = StoreProduct::getProductListByBelong((int)$bastNumber, $request->uid(),0, false);//TODO 商品中心产品列表
         $info['netGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),1, false);//TODO 网店商品列表
         $info['nearGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),2, false);//TODO 吃喝玩乐商品列表
-
+        $info['hostList'] = StoreProduct::getBestProduct('*',(int)$firstNumber, $request->uid(),false);
+        
+        
         $couponList = StoreCouponIssue::getIssueCouponList($request->uid(), 3);
         $subscribe = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
         $newGoodsBananr = sys_config('new_goods_bananr');
