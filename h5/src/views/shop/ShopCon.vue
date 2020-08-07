@@ -2,34 +2,27 @@
 <div>
   <div class="product-con storeBox"  ref="box" @scroll.native="onScroll">
     <div class="superior" id="title2">
-      <product-con-swiper
-        :img-urls="storeInfo.slider_image"
-      ></product-con-swiper>
+      <div class="store-name">{{ storeInfo.name }}</div>
+      <div style="width: 100%;line-height: 0.8rem;color: #282828;">
+                    {{storeInfo.cate_name}} &nbsp;|&nbsp;{{ storeInfo.sales }}人消费过 </div>
+      
+      <product-con-swiper :img-urls="storeInfo.slider_image"></product-con-swiper>
       <div class="storeBox-box" style="background: #fff;">
-        <div class="store-cent-left" style="width:5">
-          <div class="store-name">{{ storeInfo.name }}</div>
-          <Reta :size="48" :score="4.5"></Reta>
-          <div class="store-address line1">
-            {{ storeInfo.detailed_address }}
-          </div>
-          <div class="store-address line1">
-                               已消费{{ storeInfo.sales }}笔
-          </div>
-          <div class="store-address line1">
-                               营业中<span style="color:#282828;margin-left:0.2rem;">{{ storeInfo.day_time}}</span>
-          </div>
+        <div class="pingfen">
+           <span>评分&nbsp;</span>
+           <div class="pingfen_box"><Reta :size="48" :score="4.5"></Reta></div>
         </div>
-        <div class="row-right">
-          <div style="padding-right: 0.1rem;">
-            <a class="store-phone" :href="'tel:' + storeInfo.phone"
-              ><span class="iconfont icon-dadianhua01"></span
-            ></a>
-          </div>
-          <div class="store-distance" @click.stop="showMaoLocation(storeInfo)">
-            <span class="addressTxt">查看地图</span>
-            <span class="iconfont icon-youjian"></span>
-          </div>
+        <div class="pingfen service" v-if="labelList.length > 0">
+          <div v-for="(item, index) in labelList" :key="index">
+            <span class="service_label">{{ item }}</span>
+           </div>
         </div>
+        <div class="pingfent ktime" style="height:0.7rem;">
+           营业时间&nbsp;&nbsp;周一至周日&nbsp;&nbsp;{{ storeInfo.day_time}}
+           <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#f00;"></span ></a>
+        </div>
+        <div class="pingfent addressUlr" style="height:0.8rem;line-height: 0.8rem;"> <span class="location">{{ storeInfo.detailed_address }}</span> <span  class="daohang" @click.stop="showMaoLocation(storeInfo)"><img  src="http://oss.dshqfsc.com/9f208202008071435308398.png"/></span></div>
+       
      </div>
      <div class="pay_btn" @click="goPay(storeInfo)">点击向商家付款</div>
      <div class="productList">
@@ -158,6 +151,7 @@ export default {
       id: 0,
       storeInfo: {},
       goodList: [],
+      labelList: [],
       lock: false,
       opacity: 0
     };
@@ -323,6 +317,7 @@ export default {
       getStoreDetail(that.id)
         .then(res => {
           that.$set(that, "storeInfo", res.data.storeInfo);
+          that.$set(that, "labelList", res.data.label_list || []);
           that.$set(that, "goodList", res.data.good_list || []);
          that.mapKey = res.data.mapKey;
         })
@@ -371,7 +366,23 @@ export default {
 };
 </script>
 <style scoped>
-.product-bg{height:5.5rem;}
+.product-bg{height:3.5rem;border-radius:0.1rem;}
+.store-name {
+  color: #282828;
+  font-size: 0.5rem;
+  font-weight: 800;
+  line-height: 0.6rem;
+  padding-top: 0.2rem;
+}
+.pingfen{float:left;width:100%;border-bottom: 1px solid #eee;color: #282828;}
+.pingfent{float:left;width:100%;border-bottom: 1px solid #eee;color: #282828;padding-top: 0.1rem;
+    padding-bottom: 0.2rem;}
+.pingfen span{float:left;}
+.pingfen_box{float:left;wdith:80%;margin-left:0.1rem;margin-top: 0.05rem;}
+.daohang{float:right;margin-right:0.1rem;color:#f00;width:7%;}
+.daohang img{width:0.5rem;}
+.location{float:left;width:90%;line-height: 0.6rem;}
+
 .geoPage {
   position: fixed;
   width: 100%;
@@ -388,65 +399,9 @@ export default {
   width: 96%;
   margin-left:2%;
   height: auto;
-  display: flex;
-  align-items: center;
   padding: 0.23rem 0;
-  justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  float: left;
 }
-.store-cent {
-  display: flex;
-  align-items: center;
-  width: 80%;
-}
-.store-cent-left {
-  width: 70%;
-}
-.store-img {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.06rem;
-  margin-right: 0.22rem;
-}
-.store-img img {
-  width: 100%;
-}
-.store-name {
-  color: #282828;
-  font-size: 0.3rem;
-  font-weight: 800;
-  letter-spacing: 3px;
-  margin-bottom: 0.2rem;
-  text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;-webkit-line-clamp: 1;
-}
-.store-address {
-  color: #282828;
-  font-size: 0.24rem;
-  line-height:0.4rem;
-  letter-spacing: 1px;
-}
-.store-phone {
-  width: 0.5rem;
-  height: 0.5rem;
-  color: #fff;
-  border-radius: 50%;
-  display: block;
-  text-align: center;
-  line-height: 0.5rem;
-  background-color: #e83323;
-  margin-bottom: 0.22rem;
-}
-.store-distance {
-  font-size: 0.22rem;
-  color: #e83323;
-}
-.iconfont {
-  font-size: 0.2rem;
-}
-.row-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 28%;
-}
+.store-phone{float:right;margin-left:0.1rem;}
+
 </style>

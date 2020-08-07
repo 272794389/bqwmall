@@ -339,7 +339,11 @@ class PublicController
     
     public function store_detail(Request $request, $id, $type = 0){
         if (!$id || !($storeInfo = SystemStore::getValidStore($id))) return app('json')->fail('商户不存在或已下架');
-        //echo "slide_img=".count($storeInfo['slider_image']);
+        $storeInfo['cate_name'] = StoreCategory::where('id',$storeInfo['cat_id'])->value('cate_name');
+        if($storeInfo['label']){
+            $label_list = explode(',',$storeInfo['label']);
+            $data['label_list'] = $label_list;
+        }
         $data['storeInfo'] = $storeInfo;
         $data['mapKey'] = sys_config('tengxun_map_key');
         $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');
