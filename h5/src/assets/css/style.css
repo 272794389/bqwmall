@@ -254,7 +254,7 @@ body{font-size:0.28rem;background-color:#fff;transition: background-color .3s ea
     text-align:center;line-height:0.34rem;border:0.02rem solid #ff4947;}
 .index .news .new-banner .text .newsTitle{width:3.97rem;font-size:0.24rem;color:#666;}
 .index .news .new-banner .iconfont{font-size:0.28rem;color:#888;}
-.index .specialArea{padding:0.3rem;}
+.index .specialArea{padding:0.3rem;margin-bottom: -0.2rem;}
 .index .specialArea .assemble{width: 31%;background: rgb(9,197,15);box-shadow: 2px 2px 1px 1px rgb(232, 232, 232);}
 .index .specialArea .name{font-size:0.4rem;color:#fff;margin-top:0.1rem;text-align: center;}
 .index .specialArea .infor{font-size:0.22rem;color:rgba(255, 255, 255, 0.8);margin-top:0.1rem;text-align: center;margin-bottom: 0.15rem;}	
@@ -1735,6 +1735,7 @@ border-radius:0.3rem;color:#fff;line-height:0.5rem;text-align:center;bottom:0.17
 .service{margin-top: 0.15rem; margin-bottom: 0.1rem;padding-bottom: 0.15rem;}
 .service_label{background-image:url('../images/dui.png');background-size: 0.3rem;background-repeat: no-repeat; padding-left: 0.4rem;background-position-y: center;width: 33%;
     line-height: 0.4rem;color: #282828;}
+.more_sy{background-image:url('../images/genduo.png');padding-left: .1rem;background-position-y: center;background-position-x: right;color: #2f77f1;width: 66%;float: left;font-size: 0.2rem; text-align: center;margin-left: 12%;margin-top: 0.2rem;background-repeat: no-repeat;}
 
 
 

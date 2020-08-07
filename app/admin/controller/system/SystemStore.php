@@ -177,6 +177,7 @@ class SystemStore extends AuthController
     {
         $data = UtilService::postMore([
             ['mer_name', ''],
+            ['label', ''],
             ['name', ''],
             ['user_id', -1],
             ['cat_id', 0],

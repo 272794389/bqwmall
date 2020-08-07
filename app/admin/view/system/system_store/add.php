@@ -31,6 +31,14 @@
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
+                                        <span>商户标签：</span>
+                                        <i-Input placeholder="多个标签用,隔开;如免费停车,无限wifi" v-model="form.label" style="width: 100%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
                                         <span>用户id：</span>
                                         <i-Input placeholder="用户id" v-model="form.user_id" style="width: 80%" type="text"></i-Input>
                                     </i-Col>
@@ -329,6 +337,7 @@
                     catList:catList,
                     form:{
                     	mer_name:storeData.mer_name || '',
+                    	mer_name:storeData.label || '',
                         name:storeData.name || '',
                         user_id:storeData.user_id || '',
                         cat_id:storeData.cat_id || 0,

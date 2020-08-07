@@ -117,21 +117,25 @@
       </div>
      </div>
     <div class="specialArea acea-row row-between-wrapper">
-        <div class="nav_box" @click="set_where(1)">
-          <span class="nav_title">商品中心</span>
+        <div class="nav_box">
+          <span :class="condition==1 ? 'nav_title_font' : 'nav_title'"  @click="set_where(1)">商品中心</span>
           <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
+          <router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>
         </div>
-        <div class="nav_box" @click="set_where(2)">
-          <span class="nav_title">周边消费</span>
+        <div class="nav_box">
+          <span :class="condition==2 ? 'nav_title_font' : 'nav_title'"  @click="set_where(2)">周边的店</span>
           <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
+          <router-link :to="{ path: '/store_list/'}" class="more_sy">更多</router-link>
         </div>
-        <div class="nav_box" @click="set_where(3)">
-          <span class="nav_title">本地特惠</span>
+        <div class="nav_box">
+          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
           <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">吃喝玩乐</span>
+          <router-link :to="{ path: '/tgoods_list/'}" class="more_sy">更多</router-link>
         </div>
-        <div class="nav_box" @click="set_where(4)">
-          <span class="nav_title">任性购</span>
+        <div class="nav_box">
+          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
           <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
+          <router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>
         </div>
     </div>
     <!--
@@ -174,14 +178,6 @@
 				      </div>
 				</div>
 		    </div>
-		    <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
-		        <div class="text">
-		          <div class="name line1" style="font-size: 0.3rem;">更多本地特惠套餐</div>
-		        </div>
-		        <router-link :to="{ path: '/tgoods_list/'}" class="more"
-		          >更多<span class="iconfont icon-jiantou"></span
-		        ></router-link>
-	      </div>
 	    </div>
     </div>
     <div v-if="condition==1">
@@ -202,14 +198,6 @@
 				      </div>
 				</div>
 		    </div>
-		   <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
-	        <div class="text">
-	          <div class="name line1" style="font-size: 0.3rem;">更多抵扣商品</div>
-	        </div>
-	        <router-link :to="{ path: '/cgoods_list/'}" class="more"
-	          >更多<span class="iconfont icon-jiantou"></span
-	        ></router-link>
-	      </div>
 	    </div>
 	</div>
     <div v-if="condition==4">
@@ -230,14 +218,6 @@
 				      </div>
 				</div>
 		    </div>
-		    <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
-	        <div class="text">
-	          <div class="name line1" style="font-size: 0.3rem;">更多优惠商品</div>
-	        </div>
-	        <router-link :to="{ path: '/cgoods_list/'}" class="more"
-	          >更多<span class="iconfont icon-jiantou"></span
-	        ></router-link>
-	      </div>
 	    </div>
 	</div>
 	<div v-if="condition==2">
@@ -257,14 +237,6 @@
 			      </div>
 			    </div>
 		 </div>
-		 <div class="title acea-row row-between-wrapper" style="margin-top: 0.2rem; margin-bottom: 1.5rem;">
-		        <div class="text">
-		          <div class="name line1" style="font-size: 0.3rem;">更多商家</div>
-		        </div>
-		        <router-link :to="{ path: '/store_list/'}" class="more"
-		          >更多<span class="iconfont icon-jiantou"></span
-		        ></router-link>
-	      </div>
 	    </div>
     </div>
     <Coupon-window
@@ -621,9 +593,9 @@ export default {
     background: #666;
     opacity: .2;
 }
-
 .nav_box{width: 25%; float: left;}
 .nav_title{width: 100%;float: left; text-align: center;font-size: 0.35rem;color: #000;}
+.nav_title_font{width: 100%;float: left; text-align: center;font-size: 0.4rem;color: #000;}
 .nav_desc{float: left; width: 80%;font-size: 0.25rem; text-align: center;color: #999; margin-top:0.1rem;margin-left:10%;}
 .nav_on{background: linear-gradient(90deg,#f62c2c,#f96e29);color: #fff; border-radius: 7px;}
 .index .wrapper .newProducts .swiper-slide{width:2.2rem;}
