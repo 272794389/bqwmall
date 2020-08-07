@@ -621,7 +621,7 @@ export default {
 }
 .nav_box{width: 25%; float: left;}
 .nav_title{width: 100%;float: left; text-align: center;font-size: 0.35rem;color: #000;}
-.nav_title_font{width: 100%;float: left; text-align: center;font-size: 0.4rem;color: #f62c2c;}
+.nav_title_font{width: 100%;float: left; text-align: center;font-size: 0.35rem;color: #f62c2c;}
 .nav_desc{float: left; width: 80%;font-size: 0.25rem; text-align: center;color: #999; margin-top:0.1rem;margin-left:10%;}
 .nav_on{background: linear-gradient(90deg,#f62c2c,#f96e29);color: #fff; border-radius: 7px;}
 .index .wrapper .newProducts .swiper-slide{width:2.2rem;}
