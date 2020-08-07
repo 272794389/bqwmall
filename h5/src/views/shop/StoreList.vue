@@ -307,6 +307,14 @@ export default {
           this.$dialog.error(err.msg);
         });
     },
+    
+    submitForm: function() {
+      this.$set(this, "storeList", []);
+      this.where.page = 1;
+      this.loaded = false;
+      this.loading = false;
+      this.getList();
+    },
     //点击事件处理
     set_where: function(index) {
       let that = this;

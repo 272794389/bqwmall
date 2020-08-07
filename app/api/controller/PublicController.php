@@ -270,7 +270,6 @@ class PublicController
             ['cid', 0],
             ['keyword', ''],
             ['salesOrder', ''],
-            ['salesOrder', ''],
             ['condition', 1]
         ], $request, true);
         $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);

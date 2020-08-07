@@ -174,7 +174,7 @@ class SystemStore extends BaseModel
         if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
         $baseOrder = '';
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
-        
+       
         if ($latitude && $longitude) {
             if($condition==1){//默认50km
                 $model = $model->where(self::getDistance($latitude, $longitude,50.1));

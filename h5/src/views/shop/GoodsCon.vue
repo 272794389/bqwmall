@@ -145,10 +145,10 @@
       <div class="title" style="padding-left:0.3rem;">商家信息</div>
          
       <div class="info acea-row row-between-wrapper">
-      <div class="pictrue"><img :src="storeItems.image" /></div>
+      <div class="pictrue"><img :src="system_store.image" /></div>
       <div class="text">
       <div class="name line1">
-      {{ storeItems.name }}
+      {{ system_store.name }}
       </div>
       <div class="address acea-row row-middle" @click="showChang">
       <span class="addressTxt line1 address_tit">{{ system_store._detailed_address}}
