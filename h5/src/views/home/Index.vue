@@ -116,27 +116,29 @@
         </swiper>
       </div>
      </div>
-    <div class="specialArea acea-row row-between-wrapper">
-        <div class="nav_box">
-          <span :class="condition==1 ? 'nav_title_font' : 'nav_title'"  @click="set_where(1)">商品中心</span>
-          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
-          <router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>
-        </div>
-        <div class="nav_box">
-          <span :class="condition==2 ? 'nav_title_font' : 'nav_title'"  @click="set_where(2)">周边的店</span>
-          <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
-          <router-link :to="{ path: '/store_list/'}" class="more_sy">更多</router-link>
-        </div>
-        <div class="nav_box">
-          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
-          <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">吃喝玩乐</span>
-          <router-link :to="{ path: '/tgoods_list/'}" class="more_sy">更多</router-link>
-        </div>
-        <div class="nav_box">
-          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
-          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
-          <router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>
-        </div>
+    <div class="specialArea acea-row row-between-wrapper" id="searchBar" :class="searchBarFixed == true ? 'isFixed' :''">
+      <div  >
+            <div class="nav_box">
+	          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
+	          <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">吃喝玩乐</span>
+	          <!--<router-link :to="{ path: '/tgoods_list/'}" class="more_sy">更多</router-link>-->
+	        </div>
+	        <div class="nav_box">
+	          <span :class="condition==2 ? 'nav_title_font' : 'nav_title'"  @click="set_where(2)">周边的店</span>
+	          <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
+	          <!--<router-link :to="{ path: '/store_list/'}" class="more_sy">更多</router-link>-->
+	        </div>
+	        <div class="nav_box">
+	          <span :class="condition==1 ? 'nav_title_font' : 'nav_title'"  @click="set_where(1)">商品中心</span>
+	          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
+	          <!--<router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>-->
+	        </div>
+	        <div class="nav_box">
+	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
+	          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
+	          <!--<router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>-->
+	        </div>
+       </div>
     </div>
     <!--
     <div class="specialArea acea-row row-between-wrapper">
@@ -298,6 +300,7 @@ export default {
   computed: mapGetters(["isLogin"]),
   data: function() {
     return {
+      searchBarFixed:false,
       newGoodsBananr: "",
       isWeixin: isWeixin(),
       followUrl: "",
@@ -306,7 +309,7 @@ export default {
       followCode: false,
       showCoupon: false,
       logoUrl: "",
-      condition:1,
+      condition:3,
       banner: [],
       article: {},
       storeList: [],
@@ -397,6 +400,7 @@ export default {
   mounted: function() {
     this.getFollow();
     let that = this;
+    window.addEventListener('scroll', this.handleScroll)
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
       cookie.set(MAPKEY, that.mapKey);
@@ -443,6 +447,16 @@ export default {
         });
       }
     },
+    handleScroll () {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      var offsetTop = document.querySelector('#searchBar').offsetTop
+      if (scrollTop > offsetTop) {
+        this.searchBarFixed = true
+      } else {
+        this.searchBarFixed = false
+      }
+      // console.log(scrollTop,offsetTop)
+    },
     //点击事件处理
     set_where: function(index) {
       let that = this;
@@ -474,6 +488,9 @@ export default {
     goShop(item){
        this.$router.push({ path: "/sdetail/" + item.id });
     },
+    destroyed () {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
     getWXLocation() {
       if (isWeixin()) {
         wxShowLocation();
@@ -502,6 +519,7 @@ export default {
         );
       }
     },
+   
      // 获取门店列表数据
     getList: function() {
       let data = {
@@ -573,6 +591,14 @@ export default {
 };
 </script>
 <style scoped>
+.isFixed{
+    position:fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 11;
+    background:#f5f5f5;
+}
 .star{margin-bottom:0.1rem;margin-top:0.1rem;}
 .index .follow {
   z-index: 100000;
