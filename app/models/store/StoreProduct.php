@@ -186,14 +186,14 @@ class StoreProduct extends BaseModel
         $limit = $data['limit'];
         $type = $data['type']; // 某些模板需要购物车数量 1 = 需要查询，0 = 不需要
         $model = self::validWhere();
-        if ($sId) {
-            $model->whereIn('id', function ($query) use ($sId) {
-                $query->name('store_product_cate')->where('cate_id', $sId)->field('product_id')->select();
-            });
-        } elseif ($cId) {
+        if ($cId) {
             $model->whereIn('id', function ($query) use ($cId) {
-                $query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($cId) {
-                    $q->name('store_category')->where('pid', $cId)->field('id')->select();
+                $query->name('store_product_cate')->where('cate_id', $cId)->field('product_id')->select();
+            });
+        } elseif ($sId) {
+            $model->whereIn('id', function ($query) use ($sId) {
+                $query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+                    $q->name('store_category')->where('pid', $sId)->field('id')->select();
                 })->field('product_id')->select();
             });
         }
@@ -202,6 +202,7 @@ class StoreProduct extends BaseModel
         if($belong_t>0){
             $model->where('belong_t', $belong_t);
         }
+        /*
         if($condition==1){//周边
             $model->where('belong_t', 2);
         }else if($condition==2){//消费积分兑换
@@ -210,7 +211,7 @@ class StoreProduct extends BaseModel
             $model->where('pay_repeatpoint', '>',0);
         }else if($condition==4){//网店商品
             $model->where('belong_t', 2);
-        }
+        }*/
         $baseOrder = '';
         if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
 //        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量

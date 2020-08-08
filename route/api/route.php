@@ -200,6 +200,7 @@ Route::group(function () {
     Route::get('search/keyword', 'PublicController/search')->name('searchKeyword');//热门搜索关键字获取
     //产品分类类
     Route::get('category', 'store.CategoryController/category')->name('category');
+    Route::get('dcategory/:id', 'store.CategoryController/dcategory')->name('dcategory');
     //产品类
     Route::post('image_base64', 'PublicController/get_image_base64')->name('getImageBase64');// 获取图片base64
     Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情

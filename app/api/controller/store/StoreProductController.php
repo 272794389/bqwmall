@@ -37,6 +37,8 @@ class StoreProductController
             ['sid', 0],
             ['cid', 0],
             ['belong_t', -1],
+            ['latitude', ''],
+            ['longitude', ''],
             ['keyword', ''],
             ['priceOrder', ''],
             ['salesOrder', ''],
@@ -46,7 +48,16 @@ class StoreProductController
             ['limit', 0],
             ['type', 0]
         ], $request);
-        return app('json')->successful(StoreProduct::getProductList($data, $request->uid()));
+        if($data['condition']==1){//同城
+             $list = StoreProduct::lst($data['latitude'], $data['longitude'],sys_config('tengxun_map_key'),$data['page'], $data['limit'],$data['sid'],$data['cid'],$data['keyword'],$data['salesOrder'],$data['priceOrder']);
+            if (!$list) $list = [];
+            $data['list'] = $list;
+            $data['tengxun_map_key'] = sys_config('tengxun_map_key');
+            return app('json')->successful($data);
+        }else{//网购
+            return app('json')->successful(StoreProduct::getProductList($data, $request->uid()));
+        }
+       
     }
 
     /**

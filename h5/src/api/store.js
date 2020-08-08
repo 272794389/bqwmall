@@ -7,6 +7,14 @@ export function getCategory() {
   return request.get("/category", {}, { login: false });
 }
 
+
+/*
+ * 商品小分类
+ * */
+export function getDetailCategory(sid) {
+  return request.get("/dcategory/" + sid, {}, { login: false });
+}
+
 /*
  * 商品详情
  * */

@@ -32,7 +32,10 @@
      <swiper :options="dswiperOption" v-if="info.fastList.length > 0">
         <swiper-slide>
 		      <router-link tag="a" target="_blank"
-		        :to="'/gcategory/'+item.id"
+		        :to="{
+	               path: '/cgoods_list',
+	               query: { sid: item.id,cid:0, title: item.cate_name }
+	             }"
 		        class="item"
 		        v-for="(item, index) in info.fastList"
 		        :key="index"
@@ -43,7 +46,10 @@
 		   </swiper-slide>
 		   <swiper-slide v-if="info.sfastList.length > 0">
 		      <router-link tag="a" target="_blank" 
-		        :to="'/gcategory/'+item.id"
+		         :to="{
+	               path: '/cgoods_list',
+	               query: { sid: item.id,cid:0, title: item.cate_name }
+	             }"
 		        class="item"
 		        v-for="(item, index) in info.sfastList"
 		        :key="index"
@@ -54,7 +60,10 @@
 		   </swiper-slide>
            <swiper-slide v-if="info.tfastList.length > 0">
 		      <router-link tag="a" target="_blank" 
-		        :to="'/gcategory/'+item.id"
+		        :to="{
+	               path: '/cgoods_list',
+	               query: { sid: item.id,cid:0, title: item.cate_name }
+	             }"
 		        class="item"
 		        v-for="(item, index) in info.tfastList"
 		        :key="index"
@@ -65,7 +74,10 @@
 		   </swiper-slide>
            <swiper-slide v-if="info.ffastList.length > 0">
 		      <router-link tag="a" target="_blank" 
-		        :to="'/gcategory/'+item.id"
+		        :to="{
+	               path: '/cgoods_list',
+	               query: { sid: item.id,cid:0, title: item.cate_name }
+	             }"
 		        class="item"
 		        v-for="(item, index) in info.ffastList"
 		        :key="index"
