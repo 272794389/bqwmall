@@ -116,7 +116,7 @@
         </swiper>
       </div>
      </div>
-     <div  id="searchBar" class="specialArea acea-row row-between-wrapper" ref="header">
+     <div  id="searchBar" class="specialArea acea-row row-between-wrapper">
         <div   :class="searchBarFixed == true ? 'isFixed' :''">
             <div class="nav_box">
 	          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
@@ -162,93 +162,85 @@
       </router-link>
     </div>
     -->
-    <div id="title3">
-	    <div v-if="condition==3">
-		    <div class="wrapper" v-if="nearGoodList.length>0">
-			      <div class="productList" ref="container">
-			         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-					      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
-						        <div class="pictrue">
-						          <img :src="item.image"/> 
-						        </div>
-						        <div class="text">
-						          <div class="name pline1">{{ item.store_name }}</div>
-						          <div class="money font-color-red">
-						                                   ￥<span class="num">{{ item.price }}</span>
-						              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-						          </div>
-						        </div>
-					      </div>
-					</div>
-			    </div>
+    <div v-if="condition==3">
+	    <div class="wrapper" v-if="nearGoodList.length>0">
+		      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
 		    </div>
 	    </div>
-    </DIV>
-    <div id="title1">
-	    <div v-if="condition==1">
-		    <div class="wrapper" v-if="info.bastList.length > 0">
-		      <div class="productList" ref="container">
-			         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-					      <div @click="goDetail(item)" v-for="(item, index) in info.bastList" :key="index" class="item" :title="item.store_name">
-						        <div class="pictrue">
-						          <img :src="item.image"/> 
-						        </div>
-						        <div class="text">
-						          <div class="name pline1">{{ item.store_name }}</div>
-						          <div class="money font-color-red">
-						                                   ￥<span class="num">{{ item.price }}</span>
-						              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-						          </div>
-						        </div>
-					      </div>
-					</div>
-			    </div>
-		    </div>
-		</div>
-	</div>
-	<div id="title4">
-	    <div v-if="condition==4">
-		    <div class="wrapper" v-if="info.netGoodList">
-		      <div class="productList" ref="container">
-			         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-					      <div @click="goDetail(item)" v-for="(item, index) in info.netGoodList" :key="index" class="item" :title="item.store_name">
-						        <div class="pictrue">
-						          <img :src="item.image"/> 
-						        </div>
-						        <div class="text">
-						          <div class="name pline1">{{ item.store_name }}</div>
-						          <div class="money font-color-red">
-						                                   ￥<span class="num">{{ item.price }}</span>
-						              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-						          </div>
-						        </div>
-					      </div>
-					</div>
-			    </div>
-		    </div>
-		</div>
-	</div>
-	<div id="title2">
-		<div v-if="condition==2">
-		    <div class="wrapper" v-if="storeList.length>0">
-		      <div class="goodList">
-				    <div class="item acea-row row-between-wrapper shangjia" @click="goShop(item)" v-for="(item, index) in storeList" :key="index">
-				      <div class="pictrue" style="width:2.0rem;">
-				         <img :src="item.image" class="image">
+    </div>
+    <div v-if="condition==1">
+	    <div class="wrapper" v-if="info.bastList.length > 0">
+	      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in info.bastList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
 				      </div>
-				      <div class="shop_box" style="height:2.0rem">
-				        <div class="text">
-				          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
-				          <Reta :size="48" :score="4.5"></Reta>
-				          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
-				          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
-				        </div>
-				      </div>
-				    </div>
-			 </div>
+				</div>
 		    </div>
 	    </div>
 	</div>
+    <div v-if="condition==4">
+	    <div class="wrapper" v-if="info.netGoodList">
+	      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in info.netGoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+	    </div>
+	</div>
+	<div v-if="condition==2" id="title2">
+	    <div class="wrapper" v-if="storeList.length>0">
+	      <div class="goodList">
+			    <div class="item acea-row row-between-wrapper shangjia" @click="goShop(item)" v-for="(item, index) in storeList" :key="index">
+			      <div class="pictrue" style="width:2.0rem;">
+			         <img :src="item.image" class="image">
+			      </div>
+			      <div class="shop_box" style="height:2.0rem">
+			        <div class="text">
+			          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
+			          <Reta :size="48" :score="4.5"></Reta>
+			          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
+			          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
+			        </div>
+			      </div>
+			    </div>
+		 </div>
+	    </div>
+    </div>
     <Coupon-window
       :coupon-list="couponList"
       v-if="showCoupon"
@@ -469,43 +461,6 @@ export default {
     set_where: function(index) {
       let that = this;
       that.condition = index;
-      
-      let jump = document.querySelector("#title"+index);//定义起跳点div
-      let total = jump.offsetTop;
-      let distance =
-        document.documentElement.scrollTop || document.body.scrollTop;
-      // 平滑滚动，时长500ms，每10ms一跳，共50跳
-      let step = total / 80;
-      if (total > distance) {
-        smoothDown();
-      } else {
-        let newTotal = distance - total;
-        step = newTotal / 80;
-        smoothUp();
-     }
-     function smoothDown() {
-        if (distance < total) {
-          distance += step;
-          document.body.scrollTop = distance;
-          document.documentElement.scrollTop = distance;
-          setTimeout(smoothDown, 10);
-        } else {
-          document.body.scrollTop = total;
-          document.documentElement.scrollTop = total;
-        }
-      }
-      function smoothUp() {
-        if (distance > total) {
-          distance -= step;
-          document.body.scrollTop = distance;
-          document.documentElement.scrollTop = distance;
-          setTimeout(smoothUp, 10);
-        } else {
-          document.body.scrollTop = total;
-          document.documentElement.scrollTop = total;
-        }
-      }
-      
     },
     // 商品详情跳转
     goDetail(item) {
