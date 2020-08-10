@@ -150,6 +150,14 @@
                             <Form-Item>
                                 <Row>
                                     <i-Col span="13">
+                                        <span>营业周期：</span>
+                                        <i-Input placeholder="营业周期" v-model="form.termDate" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
                                         <span>营业时间：</span>
                                         <Time-picker type="timerange" @on-change="changeDayTime" placement="bottom-end" :value="form.day_time" placeholder="选择时间"></Time-picker>
                                     </i-Col>
@@ -359,6 +367,7 @@
                         latlng:storeData.latlng || '',
                         valid_time:storeData.valid_time || [],
                         day_time:storeData.day_time || [],
+                        termDate:storeData.termDate || '',
                     },
                     visible:false,
                     lvisible:false,
@@ -423,6 +432,7 @@
                     if(!that.form.idCardz) return  $eb.message('error','请上传身份证头像页');
                     if(!that.form.idCardf) return  $eb.message('error','请上传身份证国徽页');
                     if(!that.form.valid_time) return  $eb.message('error','请选择核销时效');
+                    if(!that.form.termDate) return  $eb.message('error','请填写营业周期');
                     if(!that.form.day_time) return  $eb.message('error','请选择门店营业时间');
                     if(!that.form.latlng) return  $eb.message('error','请选择门店经纬度！');
                     var index = layer.load(1, {

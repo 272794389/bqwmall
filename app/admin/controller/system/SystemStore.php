@@ -199,6 +199,7 @@ class SystemStore extends AuthController
             ['latlng', ''],
             ['valid_time', []],
             ['day_time', []],
+            ['termDate', ''],
         ]);
         SystemStoreModel::beginTrans();
         try {
