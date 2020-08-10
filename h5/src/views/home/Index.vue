@@ -148,7 +148,7 @@
 	        <div class="nav_box">
 	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
 	          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
-	          <!--<router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>-->
+	          <!--<router-link :to="{ path: '/wgoods_list/'}" class="more_sy">更多</router-link>-->
 	        </div>
        </div>
     </div>
@@ -244,9 +244,12 @@
 			      <div class="shop_box" style="height:2.0rem">
 			        <div class="text">
 			          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
+			          <!--
 			          <Reta :size="48" :score="4.5"></Reta>
-			          <div class="shoptip" style="margin-top:-0.1rem;">{{ item.cate_name }}&nbsp;|&nbsp;{{ item.range }}km<span style="margin-left:0.1rem;color:#999;">已消费{{ item.sales }}笔</span></div>
-			          <div class="shoptip shopaddress">{{item.detailed_address }}</div>
+			          -->
+			          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style">{{ item.range }}km</span></div>
+			          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业：{{ item.termDate }}&nbsp;{{ item.day_time }}</div>
+			          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
 			        </div>
 			      </div>
 			    </div>
@@ -642,7 +645,7 @@ export default {
 .index .wrapper .newProducts .swiper-slide .img-box{height:2.2rem;}
 .index .wrapper .newProducts .swiper-slide .money{padding:0rem;}
 .slider-banner{width: 96%;margin-left:2%;border-radius:0.2rem;}
-
+.cate_style{color: #f00; margin-right: 0.3rem;line-height: 0.5rem;}
 
 
 </style>

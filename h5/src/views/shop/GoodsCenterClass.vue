@@ -32,8 +32,8 @@
             v-for="(child, index) in item.children"
             :key="index"
             :to="{
-              path: '/cgoods_list',
-              query: { id: child.id, title: child.cate_name }
+              path: '/goods_list',
+              query: { sid: child.pid,cid:child.id, title: child.cate_name }
             }"
           >
             <div class="picture"><img :src="child.pic" /></div>

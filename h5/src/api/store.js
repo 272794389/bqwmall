@@ -44,6 +44,14 @@ export function getProducts(q) {
 }
 
 /*
+ * 商品列表
+ * */
+export function getGoodsProducts(q) {
+  return request.get("/goods_products", q, { login: false });
+}
+
+
+/*
  * 购物车数量
  * */
 export function getCartNum() {

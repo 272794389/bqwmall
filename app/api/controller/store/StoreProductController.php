@@ -59,6 +59,33 @@ class StoreProductController
         }
        
     }
+    
+    
+    /**
+     * 商品列表
+     * @param Request $request
+     * @return mixed
+     */
+    public function glst(Request $request)
+    {
+        $data = UtilService::getMore([
+            ['sid', 0],
+            ['cid', 0],
+            ['belong_t',0],
+            ['latitude', ''],
+            ['longitude', ''],
+            ['keyword', ''],
+            ['priceOrder', ''],
+            ['salesOrder', ''],
+            ['news', 0],
+            ['condition', 1],
+            ['page', 0],
+            ['limit', 0],
+            ['type', 0]
+        ], $request);
+        return app('json')->successful(StoreProduct::getGoodsProductList($data, $request->uid())); 
+    }
+    
 
     /**
      * 产品分享二维码 推广员

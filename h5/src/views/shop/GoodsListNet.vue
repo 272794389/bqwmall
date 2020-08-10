@@ -2,9 +2,10 @@
   <div class="productList" ref="container">
     <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="input acea-row row-between-wrapper">
+        <div class="samebox""><span @click="set_where(0)" class="on">选择分类</span></div>
+        <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword" />
+          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
         </div>
         <div
           class="iconfont"
@@ -13,6 +14,18 @@
         ></div>
       </div>
     </form>
+    <div class="aside">
+      <div
+        class="item acea-row row-center-wrapper"
+        :class="item.id === navActive ? 'on' : ''"
+        v-for="(item, index) in category"
+        :key="index"
+        @click="asideTap(item.id)"
+      >
+        <span>{{ item.cate_name }}</span>
+      </div>
+    </div>
+    <!--
     <div class="nav acea-row row-middle">
       <div
         class="item"
@@ -34,6 +47,7 @@
         <img src="@assets/images/down.png" v-if="stock === 2" />
       </div>
     </div>
+    -->
     <div
       class="list acea-row row-between-wrapper"
       :class="Switch === true ? '' : 'on'"
@@ -93,7 +107,7 @@
 
 <script>
 import Recommend from "@components/Recommend";
-import { getProducts } from "@api/store";
+import { getGoodsProducts,getDetailCategory } from "@api/store";
 import debounce from "lodash.debounce";
 import Loading from "@components/Loading";
 
@@ -105,23 +119,26 @@ export default {
   },
   props: {},
   data: function() {
-    const { s = "", id = 0, title = "" } = this.$route.query;
+    const { s = "", sid = 0,cid=0, title = "" } = this.$route.query;
 
     return {
       hostProduct: [],
       productList: [],
+      category: [],
+      navActive: cid,
       Switch: true,
       where: {
         page: 1,
         belong_t:1,
         limit: 8,
         keyword: s,
-        sid: id, //二级分类id
+        sid: sid, //一级分类id
+        cid: cid, //二级分类id
         news: 0,
         priceOrder: "",
         salesOrder: ""
       },
-      title: title && id ? title : "",
+      title: title && cid ? title : "",
       loadTitle: "",
       loading: false,
       loadend: false,
@@ -137,15 +154,16 @@ export default {
     },
     $route(to) {
       if (to.name !== "GoodsList") return;
-      const { s = "", id = 0, title = "" } = to.query;
+      const { s = "", sid = 0,cid=0, title = "" } = this.$route.query;
 
       if (s !== this.where.keyword || id !== this.where.sid) {
         this.where.keyword = s;
         this.loadend = false;
         this.loading = false;
         this.where.page = 1;
-        this.where.sid = id;
-        this.title = title && id ? title : "";
+        this.where.sid = sid;
+        this.where.cid = cid;
+        this.title = title && cid ? title : "";
         this.nows = false;
         this.condition = 0;
         this.$set(this, "productList", []);
@@ -157,12 +175,34 @@ export default {
   },
   mounted: function() {
     this.updateTitle();
+    this.loadCategoryData();
     this.get_product_list();
     this.$scroll(this.$refs.container, () => {
       !this.loading && this.get_product_list();
     });
   },
   methods: {
+     loadCategoryData() {
+      getDetailCategory(this.where.sid).then(res => {
+        this.category = res.data;
+      });
+    },
+    asideTap(index) {
+      let that = this;
+      this.navActive = index;
+      if(this.where.sid>0){
+        this.where.cid=index;
+      }else{
+        this.where.sid=index;
+      }
+      that.$set(that, "category", []);
+      this.loadCategoryData();
+      that.$set(that, "productList", []);
+      that.where.page = 1;
+      that.loadend = false;
+      
+      that.get_product_list();
+    },
     // 商品详情跳转
     goDetail(item) {
       if (item.activity && item.activity.type === "1") {
@@ -196,7 +236,7 @@ export default {
       that.loading = true;
       this.setWhere();
       let q = that.where;
-      getProducts(q).then(res => {
+      getGoodsProducts(q).then(res => {
         that.loading = false;
         that.productList.push.apply(that.productList, res.data);
         that.loadend = res.data.length < that.where.limit; //判断所有数据是否加载完成；
@@ -279,8 +319,45 @@ export default {
 };
 </script>
 <style scoped>
+.productList .list {
+    padding: 0 .2rem;
+    margin-top: 1.9rem;
+}
+.samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox span{float: left; width: 1.6rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
+.samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
   border-top: 3px solid #f5f5f5;
   padding-bottom: 1px;
 }
+.aside {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    height: 1rem;
+    top: .86rem;
+    bottom: 1rem;
+    background-color: #fff;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: auto;
+    overflow-scrolling: touch;
+    white-space: nowrap;
+    display: flex;
+    z-index: 99;
+    }
+.aside .item {
+    float: left;
+    height: 1rem;
+    line-height:1rem;
+    font-size: .26rem;
+    margin-right: 0.3rem;
+    padding-left: 0.1rem;
+}
+.aside .on {
+    text-align: center;
+    color: #e93323;
+    font-weight: 700;
+    border-bottom: 1px solid #e93323;
+    }
 </style>

@@ -206,6 +206,7 @@ Route::group(function () {
     Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情
     Route::get('groom/list/:type', 'store.StoreProductController/groom_list')->name('groomList');//获取首页推荐不同类型产品的轮播图和产品
     Route::get('products', 'store.StoreProductController/lst')->name('products');//产品列表
+    Route::get('goods_products', 'store.StoreProductController/glst')->name('gproducts');//产品列表
     Route::get('product/hot', 'store.StoreProductController/product_hot')->name('productHot');//为你推荐
     Route::get('reply/list/:id', 'store.StoreProductController/reply_list')->name('replyList');//产品评价列表
     Route::get('reply/config/:id', 'store.StoreProductController/reply_config')->name('replyConfig');//产品评价数量和好评度

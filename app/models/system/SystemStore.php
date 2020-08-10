@@ -168,8 +168,13 @@ class SystemStore extends BaseModel
         $model = new self();
         $model = $model->where('is_del', 0);
         $model = $model->where('is_show',1);
-        if($sid>0){
-            $model = $model->where('cat_id',$sid);
+        if($cid>0){
+            $model = $model->where('cat_id',$cid);
+        }
+        if($sid>0){//大分类
+            $model->whereIn('cat_id', function ($query) use ($sid) {
+                $query->name('store_category')->where('pid', $sid)->field('id')->select();
+            });
         }
         if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
         $baseOrder = '';

@@ -8,17 +8,19 @@
       
       <product-con-swiper :img-urls="storeInfo.slider_image"></product-con-swiper>
       <div class="storeBox-box" style="background: #fff;">
+        <!--
         <div class="pingfen">
            <span>评分&nbsp;</span>
            <div class="pingfen_box"><Reta :size="48" :score="4.5"></Reta></div>
         </div>
+        -->
         <div class="pingfen service" v-if="labelList.length > 0">
           <div v-for="(item, index) in labelList" :key="index">
             <span class="service_label">{{ item }}</span>
            </div>
         </div>
         <div class="pingfent ktime" style="height:0.7rem;">
-           营业时间&nbsp;&nbsp;周一至周日&nbsp;&nbsp;{{ storeInfo.day_time}}
+           营业时间&nbsp;&nbsp;{{ storeInfo.termDate}}&nbsp;&nbsp;{{ storeInfo.day_time}}
            <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#f00;"></span ></a>
         </div>
         <div class="pingfent addressUlr" style="height:0.8rem;line-height: 0.8rem;"> <span class="location">{{ storeInfo.detailed_address }}</span> <span  class="daohang" @click.stop="showMaoLocation(storeInfo)"><img  src="http://oss.dshqfsc.com/9f208202008071435308398.png"/></span></div>

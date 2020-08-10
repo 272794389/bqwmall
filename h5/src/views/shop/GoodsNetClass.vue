@@ -33,7 +33,7 @@
             :key="index"
             :to="{
               path: '/wgoods_list',
-              query: { id: child.id, title: child.cate_name }
+              query: { sid: child.pid,cid:child.id, title: child.cate_name }
             }"
           >
             <div class="picture"><img :src="child.pic" /></div>
@@ -51,7 +51,7 @@ import { getCategory } from "@api/store";
 import { trim } from "../../utils";
 
 export default {
-  name: "GoodsNetClass",
+  name: "GoodsCenterClass",
   components: {},
   props: {},
   data: function() {
@@ -98,7 +98,7 @@ export default {
       var val = trim(this.search);
       if (val) {
         this.$router.push({
-          path: "/wgoods_list",
+          path: "/cgoods_list",
           query: { s: val }
         });
         setTimeout(() => (this.search = ""), 500);
@@ -145,28 +145,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.productSort .aside {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    height: 1.3rem;
-    top: .86rem;
-    bottom: 1rem;
-    background-color: #f7f7f7;
-    overflow-y: hidden;
-    overflow-x: scroll;
-    -webkit-overflow-scrolling: auto;
-    overflow-scrolling: touch;
-    white-space: nowrap;
-    display: flex;
-    }
-.productSort .aside .item {
-    float: left;
-    height: .8rem;
-    width: 1.2rem;
-    font-size: .26rem;
-    color: #424242;
-    margin-right: 0.3rem;
-}
-</style>

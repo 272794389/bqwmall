@@ -33,7 +33,7 @@
             :key="index"
             :to="{
               path: '/store_list',
-              query: { id: child.id, title: child.cate_name }
+              query: { sid: child.pid,cid:child.id, title: child.cate_name }
             }"
           >
             <div class="picture"><img :src="child.pic" /></div>

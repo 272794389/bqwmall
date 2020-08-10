@@ -234,6 +234,70 @@ class StoreProduct extends BaseModel
         }
         return self::setLevelPrice($list, $uid);
     }
+    
+    
+    public static function getGoodsProductList($data, $uid)
+    {
+        $sId = $data['sid'];
+        $cId = $data['cid'];
+        $keyword = $data['keyword'];
+        $priceOrder = $data['priceOrder'];
+        $salesOrder = $data['salesOrder'];
+        $news = $data['news'];
+        $belong_t = $data['belong_t'];
+        $condition=$data['condition'];
+        $page = $data['page'];
+        $limit = $data['limit'];
+        $type = $data['type']; // 某些模板需要购物车数量 1 = 需要查询，0 = 不需要
+        $model = self::validWhere();
+        
+        if ($cId) {
+            $model->whereIn('id', function ($query) use ($cId) {
+                $query->name('store_product_cate')->where('cate_id', $cId)->field('product_id')->select();
+            });
+        } elseif ($sId) {
+            $model->whereIn('id', function ($query) use ($sId) {
+                $query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+                    $q->name('store_category')->where('pid', $sId)->field('id')->select();
+                })->field('product_id')->select();
+            });
+        }
+        if (!empty($keyword)) $model->where('keyword|store_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        if ($news != 0) $model->where('is_new', 1);
+        $model->where('belong_t', $belong_t);
+        /*
+         if($condition==1){//周边
+         $model->where('belong_t', 2);
+         }else if($condition==2){//消费积分兑换
+         $model->where('pay_paypoint', '>',0);
+         }else if($condition==3){//重消积分兑换
+         $model->where('pay_repeatpoint', '>',0);
+         }else if($condition==4){//网店商品
+         $model->where('belong_t', 2);
+         }*/
+        $baseOrder = '';
+        if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+        //        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//虚拟销量
+        if ($baseOrder) $baseOrder .= ', ';
+        $model->order($baseOrder . 'sort DESC, add_time DESC');
+        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,stock,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point,belong_t')->select()->each(function ($item) use ($uid, $type) {
+            if ($type) {
+                $item['is_att'] = StoreProductAttrValueModel::where('product_id', $item['id'])->count() ? true : false;
+                if ($uid) $item['cart_num'] = StoreCart::where('is_pay', 0)->where('is_del', 0)->where('is_new', 0)->where('type', 'product')->where('product_id', $item['id'])->where('uid', $uid)->value('cart_num');
+                else $item['cart_num'] = 0;
+                if (is_null($item['cart_num'])) $item['cart_num'] = 0;
+            }
+        });
+            $list = count($list) ? $list->toArray() : [];
+            if (!empty($list)) {
+                foreach ($list as $k => $v) {
+                    $list[$k]['activity'] = self::activity($v['id']);
+                }
+            }
+            return self::setLevelPrice($list, $uid);
+    }
+    
 
     /*
      * 分类搜索
@@ -380,13 +444,21 @@ class StoreProduct extends BaseModel
         return $list;
     }
     
-    public static function getProductWhere($city,$district,$sid,$cid,$keyword,$model, $aler = '', $join = '')
+    public static function getProductWhere($city,$district,$sId,$cid,$keyword,$model, $aler = '', $join = '')
     {
         $model = $model->where($aler.'is_del', 0)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
         $model = $model->where($join . '.city', 'LIKE', "%$city%");
         $model = $model->where($join . '.district', 'LIKE', "%$district%");
-        if($sid>0){
-            $model = $model->where($aler.'cate_id',$sid);
+        if ($cid) {
+            $model->whereIn($aler.'id', function ($query) use ($cid) {
+                $query->name('store_product_cate')->where('cate_id', $cid)->field('product_id')->select();
+            });
+        } elseif ($sId) {
+            $model->whereIn($aler.'id', function ($query) use ($sId) {
+                $query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+                    $q->name('store_category')->where('pid', $sId)->field('id')->select();
+                })->field('product_id')->select();
+            });
         }
         if (!empty($keyword)) $model->where($aler.'store_name', 'LIKE', htmlspecialchars("%$keyword%"));
         return $model;

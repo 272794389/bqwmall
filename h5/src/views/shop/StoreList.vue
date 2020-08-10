@@ -3,12 +3,25 @@
     <div class="storeBox productList" ref="container" style="margin-top:2.6rem;">
      <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="input acea-row row-between-wrapper">
+        <div class="samebox""><span @click="set_where(0)" class="on">选择分类</span></div>
+        <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商家信息" v-model="where.keyword" />
+          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
         </div>
       </div>
     </form>
+    <div class="aside">
+      <div
+        class="item acea-row row-center-wrapper"
+        :class="item.id === navActive ? 'on' : ''"
+        v-for="(item, index) in category"
+        :key="index"
+        @click="asideTap(item.id)"
+      >
+        <span>{{ item.cate_name }}</span>
+      </div>
+    </div>
+    <!--
     <div class="nav acea-row row-middle">
       <div class="condition" @click="set_where(4)" :class="condition==1 ? 'font-color-red' : ''">
                  全城
@@ -41,6 +54,7 @@
         <img src="@assets/images/down.png" v-if="stock === 2" />
       </div>
     </div>
+    -->
     <!--
       <div
         class="storeBox-box"
@@ -56,6 +70,7 @@
           <div class="store-address line1">
                                已消费{{ item.sales }}笔
           </div>
+         
           <span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
           <div class="store-address line1">
             {{item.detailed_address }}
@@ -78,18 +93,21 @@
         
 	 </div>
 	 -->
-	  <div class="wrapper" v-if="storeList.length>0">
+	  <div class="wrapper" v-if="storeList.length>0" style="margin-top:-0.6rem;">
         <div class="goodList">
 		    <div class="item acea-row row-between-wrapper shangjia" @click="goDetail(item)" v-for="(item, index) in storeList" :key="index">
-		      <div class="pictrue" style="width:2.0rem;margin-top:-0.5rem;">
+		      <div class="pictrue" style="width:2.0rem;">
 		         <img :src="item.image" class="image">
 		      </div>
-		      <div class="shop_box" style="height:2.6rem">
+		      <div class="shop_box" style="height:2.2rem">
 		        <div class="text">
 		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
-		          <Reta :size="48" :score="4.5"></Reta>
+		          <!--<Reta :size="48" :score="4.5"></Reta>-->
+		          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style">{{ item.range }}km</span></div>
+		          <!--
 		          <div class="shoptip gui" style="margin-bottom:0.1rem;margin-top:-0.1rem;">{{ item.cate_name }}<span style="float: right;margin-right: 0.2rem;">{{ item.range }}km</span></div>
-		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业时间&nbsp;{{ item.day_time }}<span style="float: right;margin-right: 0.2rem;">已售{{ item.sales }}</span></div>
+		          -->
+		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业：{{ item.termDate }}&nbsp;{{ item.day_time }}</div>
 		          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
 		        </div>
 		      </div>
@@ -138,7 +156,7 @@
 
 <script>
 import Loading from "@components/Loading";
-import { storeListApi } from "@api/store";
+import { storeListApi,getDetailCategory } from "@api/store";
 import { isWeixin } from "@utils/index";
 import Reta from "@components/Star";
 import { wechatEvevt, wxShowLocation } from "@libs/wechat";
@@ -152,7 +170,7 @@ export default {
   components: { Loading ,Reta},
   computed: mapGetters(["goName"]),
   data() {
-   const { s = "", id = 0, title = "" } = this.$route.query;
+   const { s = "", sid = 0,cid=0, title = "" } = this.$route.query;
     return {
       where: {
         page: 1,
@@ -160,14 +178,17 @@ export default {
         latitude:"",
         longitude:"",
         keyword: s,
-        sid: id, //二级分类id
+        sid: sid, //一级分类id
+        cid: cid, //二级分类id
         salesOrder: ""
       },
-      title: title && id ? title : "",
+      title: title && cid ? title : "",
       loaded: false,
       stock: 0,
       loading: false,
       storeList: [],
+      category: [],
+      navActive: cid,
       mapShow: false,
       system_store: {},
       mapKey: cookie.get(MAPKEY),
@@ -178,15 +199,15 @@ export default {
   watch: {
     $route(to) {
       if (to.name !== "storeList") return;
-      const { s = "", id = 0, title = "" } = to.query;
+      const { s = "", sid = 0,cid=0, title = "" } = this.$route.query;
 
-      if (s !== this.where.keyword || id !== this.where.sid) {
+      if (s !== this.where.keyword || cid !== this.where.cid) {
         this.where.keyword = s;
         this.loaded = false;
         this.loading = false;
         this.where.page = 1;
         this.where.sid = id;
-        this.title = title && id ? title : "";
+        this.title = title && cid ? title : "";
         this.condition = 1;
         this.$set(this, "storeList", []);
         this.getList();
@@ -194,6 +215,7 @@ export default {
     }
   },
   mounted() {
+     this.loadCategoryData();
     if (cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
       this.getList();
     } else {
@@ -274,6 +296,26 @@ export default {
           );
         this.mapShow = true;
       }
+    },
+    loadCategoryData() {
+      getDetailCategory(this.where.sid).then(res => {
+        this.category = res.data;
+      });
+    },
+    asideTap(index) {
+      let that = this;
+      this.navActive = index;
+      if(this.where.sid>0){
+        this.where.cid=index;
+      }else{
+        this.where.sid=index;
+        that.$set(that, "category", []);
+        this.loadCategoryData();
+      }
+      that.$set(that, "storeList", []);
+      that.where.page = 1;
+      that.loaded = false;
+      that.getList();
     },
     goDetail(item) {
         this.$router.push({ path: "/sdetail/" + item.id });
@@ -368,7 +410,43 @@ export default {
 </script>
 
 <style scoped>
-
+.samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox span{float: left; width: 1.6rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
+.samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
+.noCommodity {
+  border-top: 3px solid #f5f5f5;
+  padding-bottom: 1px;
+}
+.aside {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    height: 1rem;
+    top: .86rem;
+    bottom: 1rem;
+    background-color: #fff;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: auto;
+    overflow-scrolling: touch;
+    white-space: nowrap;
+    display: flex;
+    z-index: 99;
+    }
+.aside .item {
+    float: left;
+    height: 1rem;
+    line-height:1rem;
+    font-size: .26rem;
+    margin-right: 0.3rem;
+    padding-left: 0.1rem;
+}
+.aside .on {
+    text-align: center;
+    color: #e93323;
+    font-weight: 700;
+    border-bottom: 1px solid #e93323;
+    }
 .geoPage {
   position: fixed;
   width: 100%;
@@ -383,6 +461,7 @@ export default {
 .storeBox-box {
   width: 100%;
   height: auto;
+  margin-top:-0.6rem;
   display: flex;
   align-items: center;
   padding: 0.23rem 0;
@@ -440,4 +519,5 @@ export default {
   align-items: flex-end;
   width: 28%;
 }
+.cate_style{color: #f00; margin-right: 0.3rem;line-height: 0.5rem;}
 </style>
