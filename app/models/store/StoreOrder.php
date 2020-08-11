@@ -550,12 +550,13 @@ class StoreOrder extends BaseModel
             }
             if (!$res2) return self::setErrorInfo('使用积分抵扣失败!', true);
             if ($payPrice <= 0) $payPrice = 0;
+           
             if ($test) {
                 self::rollbackTrans();
                 return [
                     'total_price' => $priceGroup['totalPrice'],
                     //'pay_price' => $payPrice,
-                    'pay_price' => $priceGroup['pay_amount'],
+                    'pay_price' => $priceGroup['pay_amount']-$couponPrice,
                     'give_point' => $priceGroup['give_point'],
                     'pay_point' => $priceGroup['pay_point'],
                     'pay_paypoint' => $priceGroup['pay_paypoint'],
@@ -580,7 +581,7 @@ class StoreOrder extends BaseModel
                 'total_postage' => $priceGroup['storePostage'],
                 'coupon_id' => $couponId,
                 'coupon_price' => $couponPrice,
-                'pay_price' => $priceGroup['pay_amount'],
+                'pay_price' => $priceGroup['pay_amount']-$couponPrice,
                 'give_point' => $priceGroup['give_point'],
                 'pay_point' => $priceGroup['pay_point'],
                 'pay_paypoint' => $priceGroup['pay_paypoint'],

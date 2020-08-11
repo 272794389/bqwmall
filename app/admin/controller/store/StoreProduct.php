@@ -16,6 +16,8 @@ use app\admin\model\store\{
 use app\admin\model\ump\StoreBargain;
 use app\admin\model\ump\StoreCombination;
 use app\admin\model\ump\StoreSeckill;
+use app\admin\model\ump\StoreCoupon;
+use app\admin\model\ump\GoodsCoupon;
 use crmeb\services\{
     JsonService, UtilService as Util, JsonService as Json, FormBuilder as Form
 };
@@ -176,8 +178,9 @@ class StoreProduct extends AuthController
             $menus[] = ['value' => $menu['id'], 'label' => $menu['html'] . $menu['cate_name'], 'disabled' => $menu['pid'] == 0 ? 0 : 1];//,'disabled'=>$menu['pid']== 0];
         }
         $data['tempList'] = ShippingTemplates::order('sort', 'desc')->field(['id', 'name'])->select()->toArray();
+        $data['couponList'] = GoodsCoupon::where('status',1)->where('is_del',0)->order('id', 'desc')->field(['id', 'title'])->select()->toArray();
+        $data['scouponList'] = StoreCoupon::where('status',1)->where('is_del',0)->order('sort', 'desc')->field(['id', 'title'])->select()->toArray();
         $data['storeList'] = SystemStore::order('add_time', 'desc')->field(['id', 'name'])->select()->toArray();
-        
         $data['cateList'] = $menus;
         $data['productInfo'] = [];
         if ($id) {
@@ -199,7 +202,7 @@ class StoreProduct extends AuthController
                 }
                 $productInfo['items'] = $result['attr'];
                 $productInfo['attrs'] = $result['value'];
-                $productInfo['attr'] = ['pic' => '', 'price' => 0, 'cost' => 0, 'ot_price' => 0,'give_point' => 0,'pay_point' => 0,'sett_rate' => 0,'pay_amount' => 0,'pay_paypoint' => 0,'pay_repeatpoint' => 0,'give_rate' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
+                $productInfo['attr'] = ['pic' => '', 'price' => 0, 'cost' => 0, 'ot_price' => 0,'give_point' => 0,'pay_point' => 0,'sett_rate' => 0,'pay_amount' => 0,'pay_paypoint' => 0,'pay_repeatpoint' => 0,'give_rate' => 0,'coupon_price' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
             } else {
                 $result = StoreProductAttrResult::getResult($id);
                 $single = isset($result['value'][0]) ? $result['value'][0] : [];
@@ -217,6 +220,7 @@ class StoreProduct extends AuthController
                     'pay_paypoint' => $single['pay_paypoint'] ?? 0,
                     'pay_repeatpoint' => $single['pay_repeatpoint'] ?? 0,
                     'give_rate' => $single['give_rate'] ?? 0,
+                    'coupon_price' => $single['coupon_price'] ?? 0,
                     'stock' => $single['stock'] ?? 0,
                     'bar_code' => $single['bar_code'] ?? '',
                     'weight' => $single['weight'] ?? 0,
@@ -269,6 +273,8 @@ class StoreProduct extends AuthController
             ['plat_rate', 0],
             ['is_show', 0],
             ['temp_id', 0],
+            ['coupon_id', 0],
+            ['scoupon_id', 0],
             ['store_id', -1],
             ['belong_t', 0],
             ['is_self', 0],
@@ -309,6 +315,7 @@ class StoreProduct extends AuthController
         $data['pay_paypoint'] = min(array_column($detail, 'pay_paypoint'));
         $data['pay_repeatpoint'] = min(array_column($detail, 'pay_repeatpoint'));
         $data['give_rate'] = min(array_column($detail, 'give_rate'));
+        $data['coupon_price'] = min(array_column($detail, 'coupon_price'));
 
         $attr = $data['items'];
         unset($data['items'], $data['video'], $data['attrs']);
@@ -486,6 +493,8 @@ class StoreProduct extends AuthController
             ['sort', 0],
             ['stock', 0],
             ['temp_id', 0],
+            ['coupon_id', 0],
+            ['scoupon_id', 0],
             ['ficti', 100],
             ['give_integral', 0],
             ['is_show', 0],
@@ -547,7 +556,7 @@ class StoreProduct extends AuthController
             sort($item['detail'], SORT_STRING);
             $suk = implode(',', $item['detail']);
             if ($id) {
-                $sukValue = StoreProductAttrValue::where('product_id', $id)->where('type', 0)->where('suk', $suk)->column('bar_code,cost,price,give_point,pay_point,sett_rate,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two', 'suk');
+                $sukValue = StoreProductAttrValue::where('product_id', $id)->where('type', 0)->where('suk', $suk)->column('bar_code,cost,price,give_point,pay_point,sett_rate,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,coupon_price,ot_price,stock,image as pic,weight,volume,brokerage,brokerage_two', 'suk');
                 if (!count($sukValue)) {
                     $sukValue[$suk]['pic'] = '';
                     $sukValue[$suk]['price'] = 0;
@@ -561,6 +570,7 @@ class StoreProduct extends AuthController
                     $sukValue[$suk]['pay_paypoint'] = 0;
                     $sukValue[$suk]['pay_repeatpoint'] = 0;
                     $sukValue[$suk]['give_rate'] = 0;
+                    $sukValue[$suk]['coupon_price'] = 0;
                     
                     $sukValue[$suk]['stock'] = 0;
                     $sukValue[$suk]['bar_code'] = '';
@@ -581,6 +591,7 @@ class StoreProduct extends AuthController
                 $sukValue[$suk]['pay_paypoint'] = 0;
                 $sukValue[$suk]['pay_repeatpoint'] = 0;
                 $sukValue[$suk]['give_rate'] = 0;
+                $sukValue[$suk]['coupon_price'] = 0;
                 $sukValue[$suk]['stock'] = 0;
                 $sukValue[$suk]['bar_code'] = '';
                 $sukValue[$suk]['weight'] = 0;
@@ -610,6 +621,7 @@ class StoreProduct extends AuthController
             $valueNew[$count]['pay_paypoint'] = isset($sukValue[$suk]['pay_paypoint']) ? floatval($sukValue[$suk]['pay_paypoint']) : 0;
             $valueNew[$count]['pay_repeatpoint'] = isset($sukValue[$suk]['pay_repeatpoint']) ? floatval($sukValue[$suk]['pay_repeatpoint']) : 0;
             $valueNew[$count]['give_rate'] = isset($sukValue[$suk]['give_rate']) ? floatval($sukValue[$suk]['give_rate']) : 0;
+            $valueNew[$count]['coupon_price'] = isset($sukValue[$suk]['coupon_price']) ? floatval($sukValue[$suk]['coupon_price']) : 0;
            
             $valueNew[$count]['stock'] = $sukValue[$suk]['stock'] ? intval($sukValue[$suk]['stock']) : 0;
             $valueNew[$count]['bar_code'] = $sukValue[$suk]['bar_code'] ?? '';
@@ -629,7 +641,8 @@ class StoreProduct extends AuthController
         $header[] = ['title' => '支付现金', 'slot' => 'pay_amount', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '支付消费积分', 'slot' => 'pay_paypoint', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '支付重消积分', 'slot' => 'pay_repeatpoint', 'align' => 'center', 'minWidth' => 140];
-        $header[] = ['title' => '支付购物积分比例', 'slot' => 'give_rate', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '支付购物积分', 'slot' => 'give_rate', 'align' => 'center', 'minWidth' => 140];
+        $header[] = ['title' => '抵扣券金额', 'slot' => 'coupon_price', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '库存', 'slot' => 'stock', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '产品编号', 'slot' => 'bar_code', 'align' => 'center', 'minWidth' => 140];
         $header[] = ['title' => '重量(KG)', 'slot' => 'weight', 'align' => 'center', 'minWidth' => 140];

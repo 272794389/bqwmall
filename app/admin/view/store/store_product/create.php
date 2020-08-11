@@ -369,7 +369,8 @@
                                                             <th>支付现金</th>
                                                             <th>支付消费积分</th>
                                                             <th>支付重消积分</th>
-                                                            <th>支付购物积分比例</th>
+                                                            <th>支付购物积分</th>
+                                                            <th>抵扣券金额</th>
                                                             <th>库存<i class="red">*</i></th>
                                                             <th>产品编号</th>
                                                             <th>重量(KG)</th>
@@ -399,6 +400,7 @@
                                                             <td><input type="text" v-model="formData.attr.pay_paypoint" class="layui-input"></td>
                                                             <td><input type="text" v-model="formData.attr.pay_repeatpoint" class="layui-input"></td>
                                                             <td><input type="text" v-model="formData.attr.give_rate" class="layui-input"></td>
+                                                            <td><input type="text" v-model="formData.attr.coupon_price" class="layui-input"></td>
                                                             <td><input type="text" v-model="formData.attr.stock" class="layui-input"></td>
                                                             <td><input type="text" v-model="formData.attr.bar_code" class="layui-input"></td>
                                                             <td><input type="text" v-model="formData.attr.weight" class="layui-input"></td>
@@ -504,7 +506,8 @@
                                                                 <th>支付现金</th>
                                                                 <th>支付消费积分</th>
                                                                 <th>支付重消积分</th>
-                                                                <th>支付购物积分比例</th>
+                                                                <th>支付购物积分</th>
+                                                                <th>抵扣券金额</th>
                                                                 <th>库存<i class="red">*</i></th>
                                                                 <th>产品编号</th>
                                                                 <th>重量(KG)</th>
@@ -535,6 +538,7 @@
                                                                 <td><input type="text" v-model="batchAttr.pay_paypoint" class="layui-input"></td>
                                                                 <td><input type="text" v-model="batchAttr.pay_repeatpoint" class="layui-input"></td>
                                                                 <td><input type="text" v-model="batchAttr.give_rate" class="layui-input"></td>
+                                                                <td><input type="text" v-model="batchAttr.coupon_price" class="layui-input"></td>
                                                                 <td><input type="text" v-model="batchAttr.stock" class="layui-input"></td>
                                                                 <td><input type="text" v-model="batchAttr.bar_code" class="layui-input"></td>
                                                                 <td><input type="text" v-model="batchAttr.weight" class="layui-input"></td>
@@ -589,6 +593,7 @@
                                                                 <td><input type="number" v-model="item.pay_paypoint" class="layui-input"></td>
                                                                 <td><input type="number" v-model="item.pay_repeatpoint" class="layui-input"></td>
                                                                 <td><input type="number" v-model="item.give_rate" class="layui-input"></td>
+                                                                <td><input type="number" v-model="item.coupon_price" class="layui-input"></td>
                                                                 <td><input type="number" v-model="item.stock" class="layui-input"></td>
                                                                 <td><input type="text" v-model="item.bar_code" class="layui-input"></td>
                                                                 <td><input type="number" v-model="item.weight" class="layui-input"></td>
@@ -614,6 +619,32 @@
                                                 <select name="temp_id" lay-filter="temp_id">
                                                     <option value="0">请选择</option>
                                                     <option :value="item.id" v-for="item in tempList" :selected=" item.id == formData.temp_id ? true : false ">{{item.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                    <div class="grid-demo grid-demo-bg1">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">送商品抵扣券</label>
+                                            <div class="layui-input-block">
+                                                <select name="coupon_id" lay-filter="coupon_id">
+                                                    <option value="0">请选择</option>
+                                                    <option :value="item.id" v-for="item in couponList" :selected=" item.id == formData.coupon_id ? true : false ">{{item.title}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                    <div class="grid-demo grid-demo-bg1">
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">送商家抵扣券</label>
+                                            <div class="layui-input-block">
+                                                <select name="scoupon_id" lay-filter="scoupon_id">
+                                                    <option value="0">请选择</option>
+                                                    <option :value="item.id" v-for="item in scouponList" :selected=" item.id == formData.scoupon_id ? true : false ">{{item.title}}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -933,12 +964,18 @@
             tempList: [],
             //商家列表
             storeList: [],
+            //商品抵扣券
+            couponList: [],
+            //商家抵扣券
+            scouponList: [],
             upload:{
                 videoIng:false
             },
             formData: {
                 cate_id: [],
                 temp_id: 0,
+                coupon_id: 0,
+                scoupon_id: 0,
                 store_id: 0,
                 commission:0,
                 store_name: '',
@@ -963,6 +1000,7 @@
                     pay_paypoint: 0,
                     pay_repeatpoint: 0,
                     give_rate: 0,
+                    coupon_price: 0,
                     stock: 0,
                     bar_code: '',
                     weight: 0,
@@ -1010,6 +1048,7 @@
                 pay_paypoint: 0,
                 pay_repeatpoint: 0,
                 give_rate: 0,
+                coupon_price: 0,
                 stock: 0,
                 bar_code: '',
                 weight: 0,
@@ -1128,6 +1167,7 @@
                     pay_paypoint: 0,
                     pay_repeatpoint: 0,
                     give_rate: 0,
+                    coupon_price: 0,
                     stock: 0,
                     bar_code: '',
                     weight: 0,
@@ -1173,6 +1213,10 @@
                     if (that.batchAttr.give_rate > 0){
                         item.give_rate = that.batchAttr.give_rate;
                     }
+
+                    if (that.batchAttr.coupon_price > 0){
+                        item.coupon_price = that.batchAttr.coupon_price;
+                    }
                     
                     if (that.batchAttr.stock > 0){
                         item.stock = that.batchAttr.stock;
@@ -1198,6 +1242,8 @@
                 that.requestGet(that.U({c:"store.StoreProduct",a:'get_product_info',q:{id:that.id}})).then(function (res) {
                     that.$set(that,'cateList',res.data.cateList);
                     that.$set(that,'tempList',res.data.tempList);
+                    that.$set(that,'couponList',res.data.couponList);
+                    that.$set(that,'scouponList',res.data.scouponList);
                     that.$set(that,'storeList',res.data.storeList);
                     var productInfo = res.data.productInfo || {};
                     if(productInfo.id && that.id){
@@ -1457,6 +1503,12 @@
                         that.form.on('select(temp_id)', function (data) {
                             that.$set(that.formData, 'temp_id', data.value);
                         });
+                        that.form.on('select(coupon_id)', function (data) {
+                            that.$set(that.formData, 'coupon_id', data.value);
+                        });
+                        that.form.on('select(scoupon_id)', function (data) {
+                            that.$set(that.formData, 'scoupon_id', data.value);
+                        });
                         that.form.on('select(store_id)', function (data) {
                             that.$set(that.formData, 'store_id', data.value);
                         });
@@ -1586,6 +1638,7 @@
                         pay_paypoint:that.formData.attr.pay_paypoint,
                         pay_repeatpoint:that.formData.attr.pay_repeatpoint,
                         give_rate:that.formData.attr.give_rate,
+                        coupon_price:that.formData.attr.coupon_price,
                         stock:that.formData.attr.stock,
                         bar_code:that.formData.attr.bar_code,
                         volume:that.formData.attr.volume,

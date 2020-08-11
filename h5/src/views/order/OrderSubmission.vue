@@ -86,7 +86,7 @@
                 <span class="integral">
                   当前可抵扣
                   <span class="num font-color-red">
-                    ￥{{ orderPrice.total_price-orderPrice.pay_price || 0 }}
+                    ￥{{ orderPrice.total_price-orderPrice.pay_price-orderPrice.coupon_price || 0 }}
                   </span>
                 </span>
               </label>
