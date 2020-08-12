@@ -247,35 +247,35 @@
       </div>
       <div
         class="item acea-row row-between-wrapper"
-        v-if="orderPrice.give_rate !== undefined"
+        v-if="orderPrice.give_rate !== undefined &&orderPrice.give_rate>0"
       >
         <div>购物积分抵扣：</div>
         <div class="money">￥{{ orderPrice.give_rate }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
-        v-if="orderPrice.pay_paypoint !== undefined"
+        v-if="orderPrice.pay_paypoint !== undefined &&orderPrice.pay_paypoint>0"
       >
         <div>消费积分抵扣：</div>
         <div class="money">￥{{ orderPrice.pay_paypoint }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
-        v-if="orderPrice.pay_repeatpoint !== undefined"
+        v-if="orderPrice.pay_repeatpoint !== undefined &&orderPrice.pay_repeatpoint>0"
       >
         <div>重消积分抵扣：</div>
         <div class="money">￥{{ orderPrice.pay_repeatpoint }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
-        v-if="orderPrice.give_point !== undefined"
+        v-if="orderPrice.give_point !== undefined &&orderPrice.give_point>0"
       >
         <div>赠送购物积分：</div>
         <div class="money">￥{{ orderPrice.give_point }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
-        v-if="orderPrice.pay_point !== undefined"
+        v-if="orderPrice.pay_point !== undefined &&orderPrice.pay_point>0"
       >
         <div>赠送消费积分：</div>
         <div class="money">￥{{ orderPrice.pay_point }}</div>
