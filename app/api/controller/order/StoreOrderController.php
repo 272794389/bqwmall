@@ -55,7 +55,7 @@ class StoreOrderController
         if (!$cartGroup['valid']) return app('json')->fail('请提交购买的商品');
         $cartInfo = $cartGroup['valid'];
         $addr = UserAddress::where('uid', $uid)->where('is_default', 1)->find();
-        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,1);
+        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,1,1);
         if ($priceGroup === false) {
             return app('json')->fail(StoreOrder::getErrorInfo('运费模板不存在'));
         }
@@ -125,9 +125,9 @@ class StoreOrderController
         $uid = $request->uid();
         if (StoreOrder::be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
-        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $shipping_type,$cartIds) = UtilService::postMore([
+        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $shipping_type,$cartIds,$useCoupon) = UtilService::postMore([
             'addressId', 'couponId', ['payType', 'yue'], ['useIntegral', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['formId', ''], ['bargainId', ''],
-            ['shipping_type', 1],['cartIds', ''],
+            ['shipping_type', 1],['cartIds', ''],['useCoupon', 0],
         ], $request, true);
         if(!$cartIds) return app('json')->fail('参数错误!');
         $payType = strtolower($payType);
@@ -154,7 +154,7 @@ class StoreOrderController
         if (!$cartGroup['valid']) return app('json')->fail('请提交购买的商品');
         $cartInfo = $cartGroup['valid'];
         $addr = UserAddress::where('uid', $uid)->where('is_default', 1)->find();
-        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral);
+        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral,$useCoupon);
         if ($priceGroup === false) {
             return app('json')->fail(StoreOrder::getErrorInfo('运费模板不存在'));
         }
@@ -163,7 +163,7 @@ class StoreOrderController
             'integralRatio' => sys_config('integral_ratio')
         ];
         $key = StoreOrder::cacheOrderInfo($uid, $cartInfo, $priceGroup, $other);
-        $priceGroup = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, true, 0, $shipping_type);
+        $priceGroup = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral,(int)$useCoupon, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, true, 0, $shipping_type);
         $priceGroup['key']=$key;
         if ($priceGroup)
             return app('json')->status('NONE', 'ok', $priceGroup);
@@ -187,8 +187,8 @@ class StoreOrderController
         $uid = $request->uid();
         if (StoreOrder::be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
-        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $from, $shipping_type, $real_name, $phone, $storeId) = UtilService::postMore([
-            'addressId', 'couponId', 'payType', ['useIntegral', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['formId', ''], ['bargainId', ''], ['from', 'weixin'],
+        list($addressId, $couponId, $payType, $useIntegral,$useCoupon, $mark, $combinationId, $pinkId, $seckill_id, $formId, $bargainId, $from, $shipping_type, $real_name, $phone, $storeId) = UtilService::postMore([
+            'addressId', 'couponId', 'payType', ['useIntegral', 0],['useCoupon', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['formId', ''], ['bargainId', ''], ['from', 'weixin'],
             ['shipping_type', 1], ['real_name', ''], ['phone', ''], ['store_id', 0]
         ], $request, true);
         $payType = strtolower($payType);
@@ -212,7 +212,7 @@ class StoreOrderController
             $isChannel = 0;
         elseif ($from == 'weixinh5')
             $isChannel = 2;
-        $order = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, false, $isChannel, $shipping_type, $real_name, $phone, $storeId);
+        $order = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral,(int)$useCoupon, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, false, $isChannel, $shipping_type, $real_name, $phone, $storeId);
         if ($order === false) return app('json')->fail(StoreOrder::getErrorInfo('订单生成失败'));
        
         $orderId = $order['order_id'];
@@ -434,7 +434,7 @@ class StoreOrderController
             if (isset($imageInfo['image_type']) && $imageInfo['image_type'] == 1) $url = $siteUrl . $url;
             $order['code'] = $url;
         }
-        if($order['pay_paypoint']>0||$order['pay_repeatpoint']>0||$order['give_rate']>0){
+        if($order['pay_paypoint']>0||$order['pay_repeatpoint']>0||$order['give_rate']>0||$order['coupon_price']>0){
             $cart_id = StoreOrder::where('id',$order['id'])->value('cart_id');
             $result = array();
             preg_match_all("/(?:\[)(.*)(?:\])/i",$cart_id, $result);
@@ -442,7 +442,7 @@ class StoreOrderController
             $cartGroup = StoreCart::getReProductCartList($order['uid'], $cart_id, 1);
             $cartInfo = $cartGroup['valid'];
             $addr = UserAddress::where('uid', $order['uid'])->where('is_default', 1)->find();
-            $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$order['uid'],$order['point_pay']);
+            $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo, $addr,$order['uid'],$order['point_pay'],$order['coupon_pay']);
             //修改订单情况
             StoreOrderCartInfo::where('oid',$order['id'])->delete();
             StoreOrderCartInfo::setCartInfo($order['id'], $cartInfo);
@@ -454,7 +454,8 @@ class StoreOrderController
             $order['pay_paypoint'] = $priceGroup['pay_paypoint'];
             $order['pay_repeatpoint'] = $priceGroup['pay_repeatpoint'];
             $order['give_rate'] = $priceGroup['give_rate'];
-            if(!StoreOrder::updatePay($order['order_id'],$order['pay_price'],$order['pay_paypoint'],$order['pay_repeatpoint'],$order['give_rate'],$order['give_point'],$order['pay_point'])){
+            $order['coupon_price'] = $priceGroup['coupon_price'];
+            if(!StoreOrder::updatePay($order['order_id'],$order['pay_price'],$order['pay_paypoint'],$order['pay_repeatpoint'],$order['give_rate'],$order['give_point'],$order['pay_point'],$order['coupon_price'])){
                 return app('json')->fail('订单不存在');
             }
         }

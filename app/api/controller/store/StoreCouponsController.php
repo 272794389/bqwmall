@@ -7,6 +7,7 @@ use app\models\store\StoreCouponIssue;
 use app\Request;
 use crmeb\services\UtilService;
 use app\models\store\StoreCouponUser;
+use app\models\store\GoodsCouponUser;
 
 /**
  * 优惠券类
@@ -81,6 +82,47 @@ class StoreCouponsController
         return app('json')->successful($list);
     }
 
+    
+    /**
+     * 用户已领取优惠券
+     * @param Request $request
+     * @param $types
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function clist(Request $request, $types)
+    {
+        $list = StoreCouponUser::getUserCouponList($request->uid(),1);
+        foreach ($list as &$v) {
+            $v['add_time'] = date('Y/m/d', $v['add_time']);
+            $v['end_time'] = date('Y/m/d', $v['end_time']);
+        }
+        $dlist = StoreCouponUser::getUserCouponList($request->uid(),0);
+        foreach ($dlist as &$v) {
+            $v['add_time'] = date('Y/m/d', $v['add_time']);
+            $v['end_time'] = date('Y/m/d', $v['end_time']);
+        }
+        
+        $glist = GoodsCouponUser::getUserCouponList($request->uid(),1);
+        foreach ($glist as &$v) {
+            $v['add_time'] = date('Y/m/d', $v['add_time']);
+            $v['end_time'] = date('Y/m/d', $v['end_time']);
+        }
+        $gdlist = GoodsCouponUser::getUserCouponList($request->uid(),0);
+        foreach ($gdlist as &$v) {
+            $v['add_time'] = date('Y/m/d', $v['add_time']);
+            $v['end_time'] = date('Y/m/d', $v['end_time']);
+        }
+        $data['couponsList'] = $list;
+        $data['dcouponsList'] = $dlist;
+        $data['gcouponsList'] = $glist;
+        $data['gdcouponsList'] = $gdlist;
+        return app('json')->successful($data);
+    }
+    
+    
     /**
      * 批量领取优惠券
      * @param Request $request

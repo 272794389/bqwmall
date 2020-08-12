@@ -4,6 +4,7 @@ namespace app\admin\controller\ump;
 
 use app\admin\controller\AuthController;
 use think\facade\Route as Url;
+use app\admin\model\wechat\WechatUser as UserModel;
 use app\admin\model\ump\{GoodsCoupon as CouponModel};
 use crmeb\services\{FormBuilder as Form, UtilService as Util, JsonService as Json};
 /**
@@ -100,5 +101,23 @@ class GoodsCoupon extends AuthController
         $data['add_time'] = time();
         CouponModel::create($data);
         return Json::successful('添加优惠券成功!');
+    }
+    
+    /**
+     * @param $id
+     */
+    public function grant($id)
+    {
+        $where = Util::getMore([
+            ['status', ''],
+            ['title', ''],
+            ['is_del', 0],
+        ], $this->request);
+        $nickname = UserModel::where('uid', 'IN', $id)->column('nickname', 'uid');
+        $this->assign('where', $where);
+        $this->assign('uid', $id);
+        $this->assign('nickname', implode(',', $nickname));
+        $this->assign(CouponModel::systemPageCoupon($where));
+        return $this->fetch();
     }
 }

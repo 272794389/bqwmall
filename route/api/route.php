@@ -97,6 +97,7 @@ Route::group(function () {
     Route::post('coupon/receive', 'store.StoreCouponsController/receive')->name('couponReceive'); //领取优惠券
     Route::post('coupon/receive/batch', 'store.StoreCouponsController/receive_batch')->name('couponReceiveBatch'); //批量领取优惠券
     Route::get('coupons/user/:types', 'store.StoreCouponsController/user')->name('couponsUser');//用户已领取优惠券
+    Route::get('coupons/list/:types', 'store.StoreCouponsController/clist')->name('couponsList');//用户已领取优惠券
     Route::get('coupons/order/:price', 'store.StoreCouponsController/order')->name('couponsOrder');//优惠券 订单列表
     //购物车类
     Route::get('cart/list', 'store.StoreCartController/lst')->name('cartList'); //购物车列表

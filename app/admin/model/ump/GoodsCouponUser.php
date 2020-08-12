@@ -64,7 +64,7 @@ class GoodsCouponUser extends BaseModel
             $data[$k]['uid'] = $v;
             $data[$k]['title'] = $coupon['title'];
             $data[$k]['coupon_price'] = $coupon['coupon_price'];
-            
+            $data[$k]['type'] = '后台发放';
             $data[$k]['add_time'] = time();
             $data[$k]['end_time'] = $data[$k]['add_time'] + $coupon['coupon_time'] * 86400;
         }

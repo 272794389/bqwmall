@@ -59,4 +59,20 @@ class GoodsCoupon extends BaseModel
         return $res;
 
     }
+    
+    /**
+     * @param $where
+     * @return array
+     */
+    public static function systemPageCoupon($where)
+    {
+        $model = new self;
+        if ($where['status'] != '') $model = $model->where('status', $where['status']);
+        if ($where['title'] != '') $model = $model->where('title', 'LIKE', "%$where[title]%");
+        //        if($where['is_del'] != '')  $model = $model->where('is_del',$where['is_del']);
+        $model = $model->where('is_del', 0);
+        $model = $model->where('status', 1);
+        $model = $model->order('id desc');
+        return self::page($model, $where);
+    }
 }

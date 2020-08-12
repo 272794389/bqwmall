@@ -205,7 +205,8 @@
                     <div class="layui-btn-group conrelTable">
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-danger" type="button" data-type="set_status_f"><i class="fa fa-ban"></i>封禁</button>-->
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_status_j"><i class="fa fa-check-circle-o"></i>解封</button>-->
-                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_grant"><i class="fa fa-check-circle-o"></i>发送优惠券</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_grant"><i class="fa fa-check-circle-o"></i>发送商家抵扣券</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_ggrant"><i class="fa fa-check-circle-o"></i>发送商品抵扣券</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_custom"><i class="fa fa-check-circle-o"></i>发送客服图文消息</button>
                         <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_group"><i class="fa fa-check-circle-o" ></i>批量设置分组</button>
 <!--                        <button class="layui-btn layui-btn-sm layui-btn-normal" type="button" data-type="set_template"><i class="fa fa-check-circle-o"></i>发送模板消息</button>-->
@@ -470,6 +471,15 @@
             if(ids.length){
                 var str = ids.join(',');
                 $eb.createModalFrame('发送优惠券',layList.Url({c:'ump.store_coupon',a:'grant',p:{id:str}}),{'w':800});
+            }else{
+                layList.msg('请选择要发送优惠券的会员');
+            }
+        },
+        set_ggrant:function () {
+            var ids=layList.getCheckData().getIds('uid');
+            if(ids.length){
+                var str = ids.join(',');
+                $eb.createModalFrame('发送优惠券',layList.Url({c:'ump.goods_coupon',a:'grant',p:{id:str}}),{'w':800});
             }else{
                 layList.msg('请选择要发送优惠券的会员');
             }

@@ -55,7 +55,7 @@
                                               支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.pay_point }}个消费积分
             </div>
             <div class="vip" v-if="storeInfo.give_rate > 0">
-                                              支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.give_rate }}购物积分
+                                              支付￥{{ storeInfo.pay_amount }}元现金+{{ storeInfo.give_rate }}购物积分
             </div>
         </div>
         <div class="label acea-row row-between-wrapper">

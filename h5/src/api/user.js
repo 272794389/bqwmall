@@ -68,6 +68,10 @@ export function getCouponsUser(type) {
   return request.get("/coupons/user/" + type);
 }
 
+export function getCouponsList(type) {
+	  return request.get("/coupons/list/" + type);
+	}
+
 /*
  * 个人中心
  * */

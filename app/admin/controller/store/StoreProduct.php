@@ -203,6 +203,7 @@ class StoreProduct extends AuthController
                 $productInfo['items'] = $result['attr'];
                 $productInfo['attrs'] = $result['value'];
                 $productInfo['attr'] = ['pic' => '', 'price' => 0, 'cost' => 0, 'ot_price' => 0,'give_point' => 0,'pay_point' => 0,'sett_rate' => 0,'pay_amount' => 0,'pay_paypoint' => 0,'pay_repeatpoint' => 0,'give_rate' => 0,'coupon_price' => 0, 'stock' => 0, 'bar_code' => '', 'weight' => 0, 'volume' => 0, 'brokerage' => 0, 'brokerage_two' => 0];
+               
             } else {
                 $result = StoreProductAttrResult::getResult($id);
                 $single = isset($result['value'][0]) ? $result['value'][0] : [];

@@ -98,6 +98,7 @@ class StoreProductAttr extends BaseModel
                 'pay_repeatpoint' => $value['pay_repeatpoint']?? 0,
                 'pay_paypoint' => $value['pay_paypoint']?? 0,
                 'give_rate' => $value['give_rate']?? 0,
+                'coupon_price' => $value['coupon_price']?? 0,
                 'stock' => $value['stock'],
                 'unique' => StoreProductAttrValue::uniqueId($productId . $suk . uniqid(true)),
                 'image' => $value['pic'],

@@ -55,6 +55,25 @@ class StoreCouponUser extends BaseModel
         $couponList = self::where('uid', $uid)->order('is_fail ASC,status ASC,add_time DESC')->select()->toArray();
         return self::tidyCouponList($couponList);
     }
+    
+    /**
+     * TODO 获取用户优惠券（全部）
+     * @param $uid
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public static function getUserCouponList($uid,$status)
+    {
+        self::checkInvalidCoupon();
+        if($status==1){//有效可使用
+            $couponList = self::where('uid', $uid)->where('status',0)->where('is_fail',0)->order('is_fail ASC,status ASC,add_time DESC')->select()->toArray();
+        }else{//失效已过期
+            $couponList = self::where('uid', $uid)->where('status','<>',0)->order('is_fail ASC,status ASC,add_time DESC')->select()->toArray();
+        }
+        return self::tidyCouponList($couponList);
+    }
 
     /**
      * 获取用户优惠券（未使用）

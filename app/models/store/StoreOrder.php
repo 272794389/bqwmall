@@ -76,7 +76,7 @@ class StoreOrder extends BaseModel
      * @param $cartInfo
      * @return array
      */
-    public static function getOrderPriceGroup($cartInfo, $addr,$uid,$point_pay)
+    public static function getOrderPriceGroup($cartInfo, $addr,$uid,$point_pay,$useCoupon)
     {
         $storeFreePostage = floatval(sys_config('store_free_postage')) ?: 0;//满额包邮
         $totalPrice = self::getOrderSumPrice($cartInfo, 'truePrice');//获取订单总金额
@@ -84,14 +84,14 @@ class StoreOrder extends BaseModel
         $vipPrice = self::getOrderSumPrice($cartInfo, 'vip_truePrice');//获取订单会员优惠金额
         
         //计算需支付的总现金、总购物积分、消费积分、重消积分，赠送总的消费积分、购物积分
-        $priceGroup = self::getOrderSumAmount($cartInfo,$uid,$point_pay);
+        $priceGroup = self::getOrderSumAmount($cartInfo,$uid,$point_pay,$useCoupon);
         $give_point = $priceGroup['give_point'];//赠送购物积分
         $pay_point = $priceGroup['pay_point'];//赠送消费积分
         $pay_amount = $priceGroup['pay_amount'];//支付现金总额
         $pay_paypoint = $priceGroup['pay_paypoint'];//支付消费积分总额
         $pay_repeatpoint = $priceGroup['pay_repeatpoint'];//支付重消积分总额
         $give_rate = $priceGroup['give_rate'];//支付购物积分
-        
+        $coupon_price = $priceGroup['coupon_price'];//抵扣金额
         
         //如果满额包邮等于0
         if (!$storeFreePostage) {
@@ -162,7 +162,7 @@ class StoreOrder extends BaseModel
             }
             if ($storeFreePostage <= $totalPrice) $storePostage = 0;//如果总价大于等于满额包邮 邮费等于0
         }
-        return compact('storePostage', 'storeFreePostage', 'totalPrice', 'costPrice', 'vipPrice','give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate');
+        return compact('storePostage', 'storeFreePostage', 'totalPrice', 'costPrice', 'vipPrice','give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate','coupon_price');
     }
     
     /**获取某个字段总金额
@@ -170,14 +170,18 @@ class StoreOrder extends BaseModel
      * @param $key 键名
      * @return int|string
      */
-    public static function getOrderSumAmount($cartInfo,$uid,$point_pay)
+    public static function getOrderSumAmount($cartInfo,$uid,$point_pay,$useCoupon)
     {
         $userInfo = User::getUserInfo($uid);
         //客户账户余额情况
         $ugive_point = $userInfo['give_point'];
         $upay_point = $userInfo['pay_point'];
         $repeat_point = $userInfo['repeat_point'];
-        
+        $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+        $mcouponAmount = 0;
+        if($couponMap){
+            $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
+        }
         //统计支付及赠送
         $give_point = 0;//赠送购物积分
         $pay_point = 0;//赠送消费积分
@@ -185,11 +189,13 @@ class StoreOrder extends BaseModel
         $pay_paypoint = 0;//支付消费积分总额
         $pay_repeatpoint = 0;//支付重消积分总额
         $give_rate = 0;//支付购物积分
+        $coupon_price = 0;//抵扣券抵扣金额
         foreach ($cartInfo as $cart) {
             $payAmount=0;//支付现金部分
             $huokuan = 0;
             $profit = 0;
             $sett_rate = 0;
+            $dikouAmount=0;//抵扣券部分
             //判断商品类型
             if($cart['belong_t']==0){//商品中心商品结算
               if($point_pay==1){//积分支付
@@ -202,20 +208,62 @@ class StoreOrder extends BaseModel
                                 $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
                                 $payAmount = bcadd($payAmount, $cart['pay_amount'], 2);
                             }else{//现金支付
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }  
+                                }else{//不使用抵扣
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['give_point']>0){//判断是否赠送购物积分
+                                        $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                }
+                            } 
+                        }
+                    }else{//现金支付
+                        for($i=0;$i<$cart['cart_num'];$i++){
+                            if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                if($cart['coupon_price']<$mcouponAmount){
+                                    $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                    $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                    $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                    $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                }else{
+                                    $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                    $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                    $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                    $mcouponAmount = 0;
+                                }
+                            }else{
                                 $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
                                 if($cart['give_point']>0){//判断是否赠送购物积分
                                     $give_point = bcadd($give_point, $cart['give_point'], 2);
                                 }
-                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
-                            } 
-                        }
-                    }else{//现金支付
-                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                        if($cart['give_point']>0){//判断是否赠送购物积分
-                            $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
-                        }
-                        $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                    } 
+                                $payAmount = bcadd($payAmount,$cart['truePrice'], 2);
+                            }
+                    }  
+                  }
                 }else if($cart['pay_paypoint']>0){//消费积分支付
                     if($upay_point>0&&($upay_point>$cart['pay_paypoint']||$upay_point==$cart['pay_paypoint'])){
                         for($i=0;$i<$cart['cart_num'];$i++){
@@ -225,33 +273,119 @@ class StoreOrder extends BaseModel
                                 $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
                                 $payAmount = bcadd($payAmount, $cart['pay_amount'], 2);
                             }else{//现金支付
-                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
-                                if($cart['give_point']>0){//判断是否赠送购物积分
-                                    $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }
+                                }else{//不使用抵扣
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['give_point']>0){//判断是否赠送购物积分
+                                        $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
                                 }
-                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
                             }
                         }
                     }else{//现金支付
-                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                        if($cart['give_point']>0){//判断是否赠送购物积分
-                            $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
-                        }
-                        $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                        for($i=0;$i<$cart['cart_num'];$i++){
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }
+                                }else{
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['give_point']>0){//判断是否赠送购物积分
+                                        $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount,$cart['truePrice'], 2);
+                                }
+                        }  
                     } 
                 }else{//纯现金支付
-                    $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2); 
-                    if($cart['give_point']>0){//判断是否赠送购物积分
-                        $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
-                    }
-                    $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                       for($i=0;$i<$cart['cart_num'];$i++){
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }
+                                }else{
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['give_point']>0){//判断是否赠送购物积分
+                                        $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount,$cart['truePrice'], 2);
+                                }
+                       }  
                 }
               }else{
-                  $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                  if($cart['give_point']>0){//判断是否赠送购物积分
-                      $give_point = bcadd($give_point, bcmul($cart['cart_num'], $cart['give_point'], 2), 2);
-                  }
-                  $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                       for($i=0;$i<$cart['cart_num'];$i++){
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }
+                                }else{
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['give_point']>0){//判断是否赠送购物积分
+                                        $give_point = bcadd($give_point, $cart['give_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount,$cart['truePrice'], 2);
+                                }
+                       }  
               }
             }else if($cart['belong_t']==1||$cart['belong_t']==2){//网店及周边的套餐商品结算
               if($point_pay==1){//积分支付
@@ -264,34 +398,119 @@ class StoreOrder extends BaseModel
                                 $pay_amount = bcadd($pay_amount, $cart['pay_amount'], 2);
                                 $payAmount = bcadd($payAmount, $cart['pay_amount'], 2);
                             }else{//现金支付
-                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
-                                if($cart['pay_point']>0){//判断是否赠送消费积分
-                                    $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                                if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                    if($cart['coupon_price']<$mcouponAmount){
+                                        $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                        $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                        $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                    }else{
+                                        $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                        $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                        $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                        $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                        $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                        $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                        $mcouponAmount = 0;
+                                    }
+                                }else{//不使用抵扣
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    if($cart['pay_point']>0){//判断是否赠送消费积分
+                                        $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                                    }
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
                                 }
-                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
                             }
                         }
                     }else{//现金支付
-                        $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                        if($cart['pay_point']>0){//判断是否赠送购物积分
-                            $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
-                        }
-                        $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                        for($i=0;$i<$cart['cart_num'];$i++){
+                            if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                                if($cart['coupon_price']<$mcouponAmount){
+                                    $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                    $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                    $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                    $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                                }else{
+                                    $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                    $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                    $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                    $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                    $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                    $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                    $mcouponAmount = 0;
+                                }
+                            }else{
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                if($cart['pay_point']>0){//判断是否赠送购物积分
+                                    $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                                }  
+                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                            }
+                        }  
                     }
-                    
                 }else{//纯现金支付
-                    $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                    if($cart['pay_point']>0){//判断是否赠送购物积分
-                        $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
-                    }  
-                    $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                    for($i=0;$i<$cart['cart_num'];$i++){
+                        if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                            if($cart['coupon_price']<$mcouponAmount){
+                                $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                            }else{
+                                $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                $mcouponAmount = 0;
+                            }
+                        }else{
+                            $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                            if($cart['pay_point']>0){//判断是否赠送购物积分
+                                $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                            }  
+                            $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                        }
+                    }
                 }
               }else{
-                  $pay_amount = bcadd($pay_amount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
-                  if($cart['pay_point']>0){//判断是否赠送购物积分
-                      $pay_point = bcadd($pay_point, bcmul($cart['cart_num'], $cart['pay_point'], 2), 2);
-                  }
-                  $payAmount = bcadd($payAmount, bcmul($cart['cart_num'], $cart['truePrice'], 2), 2);
+                  for($i=0;$i<$cart['cart_num'];$i++){
+                        if($mcouponAmount>0&&$cart['coupon_price']>0&&$useCoupon==1){//使用抵扣
+                            if($cart['coupon_price']<$mcouponAmount){
+                                $coupon_price = bcadd($coupon_price, $cart['coupon_price'], 2);
+                                $mcouponAmount = bcsub($mcouponAmount,$cart['coupon_price'],2);
+                                $dikouAmount = bcadd($dikouAmount, $cart['coupon_price'], 2);
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                $pay_amount = bcsub($pay_amount, $cart['coupon_price'], 2);
+                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                $payAmount = bcsub($payAmount, $cart['coupon_price'], 2);
+                            }else{
+                                $coupon_price = bcadd($coupon_price, $mcouponAmount, 2);
+                                $dikouAmount = bcadd($dikouAmount, $mcouponAmount, 2);
+                                $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                                $pay_amount = bcsub($pay_amount, $mcouponAmount, 2);
+                                $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                                $payAmount = bcsub($payAmount, $mcouponAmount, 2);
+                                $mcouponAmount = 0;
+                            }
+                        }else{
+                            $pay_amount = bcadd($pay_amount, $cart['truePrice'], 2);
+                            if($cart['pay_point']>0){//判断是否赠送购物积分
+                                $pay_point = bcadd($pay_point, $cart['pay_point'], 2);
+                            }  
+                            $payAmount = bcadd($payAmount, $cart['truePrice'], 2);
+                        }
+                    }
               }
             }
             
@@ -301,9 +520,9 @@ class StoreOrder extends BaseModel
             }
             
             //更改cart表的实际支付金额
-            StoreCart::where('id',$cart['id'])->update(['payAmount'=>$payAmount,'huokuan'=>$huokuan,'profit'=>$profit]);  
+            StoreCart::where('id',$cart['id'])->update(['payAmount'=>$payAmount,'huokuan'=>$huokuan,'profit'=>$profit,'coupon_price'=>$dikouAmount]);  
         }
-        return compact('give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate');
+        return compact('give_point', 'pay_point', 'pay_amount', 'pay_paypoint', 'pay_repeatpoint', 'give_rate','coupon_price');
     }
 
 
@@ -427,7 +646,7 @@ class StoreOrder extends BaseModel
      * @throws \think\exception\DbException
      */
 
-    public static function cacheKeyCreateOrder($uid, $key, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckill_id = 0, $bargain_id = 0, $test = false, $isChannel = 0, $shipping_type = 1, $real_name = '', $phone = '', $storeId = 0)
+    public static function cacheKeyCreateOrder($uid, $key, $addressId, $payType, $useIntegral = false,$useCoupon = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckill_id = 0, $bargain_id = 0, $test = false, $isChannel = 0, $shipping_type = 1, $real_name = '', $phone = '', $storeId = 0)
     {
         self::beginTrans();
         try {
@@ -449,7 +668,7 @@ class StoreOrder extends BaseModel
             if ($payType == 'offline' && sys_config('offline_postage') == 1) {
                 $payPostage = 0;
             } else {
-                $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral)['storePostage'];
+                $payPostage = self::getOrderPriceGroup($cartInfo, $addr,$uid,$useIntegral,$useCoupon)['storePostage'];
             }
             if ($shipping_type === 1) {
                 if (!$test && !$addressId) return self::setErrorInfo('请选择收货地址!', true);
@@ -464,7 +683,6 @@ class StoreOrder extends BaseModel
                 $addressInfo['district'] = '';
                 $addressInfo['detail'] = '';
             }
-
             $cartIds = [];
             $totalNum = 0;
             $gainIntegral = 0;
@@ -556,14 +774,14 @@ class StoreOrder extends BaseModel
                 return [
                     'total_price' => $priceGroup['totalPrice'],
                     //'pay_price' => $payPrice,
-                    'pay_price' => $priceGroup['pay_amount']-$couponPrice,
+                    'pay_price' => $priceGroup['pay_amount'],
                     'give_point' => $priceGroup['give_point'],
                     'pay_point' => $priceGroup['pay_point'],
                     'pay_paypoint' => $priceGroup['pay_paypoint'],
                     'pay_repeatpoint' => $priceGroup['pay_repeatpoint'],
                     'give_rate' => $priceGroup['give_rate'],
                     'pay_postage' => $payPostage,
-                    'coupon_price' => $couponPrice,
+                    'coupon_price' => $priceGroup['coupon_price'],
                     'deduction_price' => $deductionPrice,
                     'SurplusIntegral' => $SurplusIntegral,
                 ];
@@ -580,7 +798,7 @@ class StoreOrder extends BaseModel
                 'total_price' => $priceGroup['totalPrice'],
                 'total_postage' => $priceGroup['storePostage'],
                 'coupon_id' => $couponId,
-                'coupon_price' => $couponPrice,
+                'coupon_price' => $priceGroup['coupon_price'],
                 'pay_price' => $priceGroup['pay_amount']-$couponPrice,
                 'give_point' => $priceGroup['give_point'],
                 'pay_point' => $priceGroup['pay_point'],
@@ -604,6 +822,7 @@ class StoreOrder extends BaseModel
                 'add_time' => time(),
                 'unique' => $key,
                 'point_pay' => $useIntegral,
+                'coupon_pay' => $useCoupon,
                 'shipping_type' => $shipping_type,
             ];
             if ($shipping_type === 2) {
@@ -730,7 +949,7 @@ class StoreOrder extends BaseModel
     }
     
     
-    public static function updatePay($order_id, $pay_price, $pay_paypoint,$pay_repeatpoint,$give_rate,$give_point,$pay_point)
+    public static function updatePay($order_id, $pay_price, $pay_paypoint,$pay_repeatpoint,$give_rate,$give_point,$pay_point,$coupon_price)
     {
         $orderInfo = self::where('order_id', $order_id)->find();
         $orderInfo->pay_price = $pay_price;
@@ -739,6 +958,7 @@ class StoreOrder extends BaseModel
         $orderInfo->give_rate = $give_rate;
         $orderInfo->give_point = $give_point;
         $orderInfo->pay_point = $pay_point;
+        $orderInfo->coupon_price = $coupon_price;
         return $orderInfo->save();
     }
 
@@ -864,6 +1084,45 @@ class StoreOrder extends BaseModel
       
         if($res1){//订单拆分及奖励提成核算
             $res1 = self::orderSplit($order['id']);
+        }
+        
+        if($order['coupon_price']>0){//如果使用了抵扣券
+            $coupon_price = $order['coupon_price'];
+            $couponList = GoodsCouponUser::getCouponList($uid);
+            foreach ($couponList as $coupon){
+                $amount = bcsub($coupon['coupon_price'],$coupon['hamount'],2);
+                if($amount>0&&$amount>$coupon_price&&$coupon_price>0){//该次抵扣券足够抵扣
+                    //更改已使用金额
+                    $pamount = bcadd($coupon['hamount'],$coupon_price,2);
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $pamount]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $order['order_id'],
+                        'coupon_price' => $coupon_price,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=0;
+                    break;
+                }else if($amount>0&&($amount<$coupon_price||$amount==$coupon_price)){//该次抵扣券不足以抵扣
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $coupon['coupon_price']]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $order['order_id'],
+                        'coupon_price' => $amount,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=bcsub($coupon_price,$amount,2);
+                }
+                if($coupon_price==0){
+                    break;
+                }
+            }
         }
         $resPink = true;
         $res1 = self::where('order_id', $orderId)->update(['paid' => 1, 'pay_type' => $paytype, 'pay_time' => time()]);//订单改为支付

@@ -94,6 +94,25 @@
           </div>
         </div>
       </div>
+      <div class="item acea-row row-between-wrapper">
+        <div>抵扣券抵扣</div>
+        <div class="discount">
+          <div class="select-btn">
+            <div class="checkbox-wrapper">
+              <label class="well-check">
+                <input type="checkbox" v-model="useCoupon" />
+                <i class="icon"></i>
+                <span class="integral">
+                  当前可抵扣
+                  <span class="num font-color-red">
+                                                      ￥{{orderPrice.coupon_price || 0 }}
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="
@@ -449,6 +468,7 @@ export default {
       usableCoupon: {},
       addressLoaded: false,
       useIntegral: true,
+      useCoupon: true,
       orderPrice: {
         pay_price: "计算中"
       },
@@ -464,6 +484,9 @@ export default {
   },
   watch: {
     useIntegral() {
+      this.computedPrice();
+    },
+    useCoupon() {
       this.computedPrice();
     },
     $route(n) {
@@ -528,6 +551,7 @@ export default {
       postOrderComputed(this.orderGroupInfo.orderKey, {
         addressId: this.addressInfo.id,
         useIntegral: this.useIntegral ? 1 : 0,
+        useCoupon: this.useCoupon ? 1 : 0,
         couponId: this.usableCoupon.id || 0,
         shipping_type: parseInt(shipping_type) + 1,
         payType: this.active,
@@ -627,6 +651,7 @@ export default {
         phone: this.contactsTel,
         addressId: this.addressInfo.id,
         useIntegral: this.useIntegral ? 1 : 0,
+        useCoupon: this.useCoupon ? 1 : 0,
         couponId: this.usableCoupon.id || 0,
         payType: this.active,
         pinkId: this.pinkId,
