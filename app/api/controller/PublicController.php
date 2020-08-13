@@ -375,6 +375,23 @@ class PublicController
         return app('json')->successful($data);
     }
     
+    public function computedOrder(Request $request){
+        $uid = $request->uid();
+        list($useIntegral,$useCoupon,$orderid) = UtilService::postMore([
+           ['useIntegral', 0],['useCoupon', 0],['orderid', 0],
+        ], $request, true);
+        if (!$orderid || !($orderinfo = StorePayOrder::getPayOrder($request->uid(),$orderid))) return app('json')->fail('订单不存在');
+        StorePayOrder::computerOrder($orderid,$useIntegral,$useCoupon);//创建消费订单
+        
+        $order = StorePayOrder::getPayOrder($request->uid(),$orderid);
+        $data['orderinfo'] = $order;
+        return app('json')->successful($data);
+    }
+    
+    
+    
+    
+    
     public function pay_order(Request $request){
         $uid = $request->uid();
         list($order_id, $payType, $formId,$from) = UtilService::postMore([['order_id', 0],'payType', ['formId', ''],['from', 'weixin'] ], $request, true);

@@ -94,6 +94,8 @@ class StoreCouponsController
      */
     public function clist(Request $request, $types)
     {
+        $list = GoodsCouponUser::getUserCouponList($request->uid());
+        /*
         $list = StoreCouponUser::getUserCouponList($request->uid(),1);
         foreach ($list as &$v) {
             $v['add_time'] = date('Y/m/d', $v['add_time']);
@@ -119,7 +121,8 @@ class StoreCouponsController
         $data['dcouponsList'] = $dlist;
         $data['gcouponsList'] = $glist;
         $data['gdcouponsList'] = $gdlist;
-        return app('json')->successful($data);
+        */
+        return app('json')->successful($list);
     }
     
     

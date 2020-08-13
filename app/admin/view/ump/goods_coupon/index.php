@@ -9,7 +9,7 @@
     <div class="col-sm-12">
         <div class="ibox">
             <div class="ibox-title">
-                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}?type=0')">添加优惠券</button>
+                <button type="button" class="btn btn-w-m btn-primary" onclick="$eb.createModalFrame(this.innerText,'{:Url('create')}?type=0')">添加抵扣券</button>
                 <div class="ibox-tools">
 
                 </div>
@@ -24,8 +24,13 @@
                                 <option value="1" {eq name="where.status" value="1"}selected="selected"{/eq}>开启</option>
                                 <option value="0" {eq name="where.status" value="0"}selected="selected"{/eq}>关闭</option>
                             </select>
+                            <select name="is_flag" aria-controls="editable" class="form-control input-sm">
+                                <option value="">抵扣券类型</option>
+                                <option value="1" {eq name="where.is_flag" value="1"}selected="selected"{/eq}>商家抵扣券</option>
+                                <option value="0" {eq name="where.is_flag" value="0"}selected="selected"{/eq}>商品抵扣券</option>
+                            </select>
                             <div class="input-group">
-                                <input type="text" name="title" value="{$where.title}" placeholder="请输入优惠券名称" class="input-sm form-control">
+                                <input type="text" name="title" value="{$where.title}" placeholder="请输入抵扣券名称" class="input-sm form-control">
                                 <span class="input-group-btn">
                                     <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i>搜索</button> </span>
                             </div>
@@ -37,11 +42,11 @@
                     <table class="table table-striped  table-bordered">
                         <thead>
                         <tr>
-
                             <th class="text-center">编号</th>
-                            <th class="text-center">优惠券名称</th>
-                            <th class="text-center">优惠券面值</th>
-                            <th class="text-center">优惠券有效期限</th>
+                            <th class="text-center">抵扣券名称</th>
+                            <th class="text-center">抵扣券类型</th>
+                            <th class="text-center">抵扣券面值</th>
+                            <th class="text-center">抵扣券有效期限</th>
                             <th class="text-center">是否有效</th>
                             <th class="text-center">添加时间</th>
                             <th class="text-center" width="10%">操作</th>
@@ -55,6 +60,13 @@
                             </td>
                             <td class="text-center">
                                 {$vo.title}
+                            </td>
+                            <td class="text-center">
+                                {if condition="$vo['is_flag']"}
+                                  商家抵扣券
+                                {else}
+                                商品抵扣券
+                                {/if}
                             </td>
                             
                             <td class="text-center">
@@ -126,7 +138,7 @@
             }).catch(function(err){
                 $eb.$swal('error',err);
             });
-        },{'title':'您确定要修改优惠券的状态吗？','text':'修改后将无法恢复并且已发出的优惠券将失效,请谨慎操作！','confirm':'是的，我要修改'})
+        },{'title':'您确定要修改抵扣券的状态吗？','text':'修改后将无法恢复并且已发出的抵扣券将失效,请谨慎操作！','confirm':'是的，我要修改'})
     });
     $('.delstor').on('click',function(){
         window.t = $(this);
@@ -142,7 +154,7 @@
             }).catch(function(err){
                 $eb.$swal('error',err);
             });
-        },{'title':'您确定要删除优惠券吗？','text':'删除后将无法恢复,请谨慎操作！','confirm':'是的，我要删除'})
+        },{'title':'您确定要删除抵扣券吗？','text':'删除后将无法恢复,请谨慎操作！','confirm':'是的，我要删除'})
     });
     $(".open_image").on('click',function (e) {
         var image = $(this).data('image');

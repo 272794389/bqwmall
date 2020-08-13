@@ -81,4 +81,11 @@ export default {
   width: 100%;
   height: 100%;
 }
+.checkbox-wrapper .icon {
+    right: 0;
+    left: unset;
+}
+.integral {
+    margin-right: .4rem;
+}
 </style>

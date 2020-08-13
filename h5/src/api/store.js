@@ -146,6 +146,8 @@ export function postOrderProduct(unique) {
   return request.post("/order/product", { unique }, { login: false });
 }
 
+
+
 /**
  * 提交评价页面；
  */
@@ -170,7 +172,15 @@ export function shopPay(data) {
 export function getOrder(id) {
 	  return request.get("get_order/"+id, {}, { login: false });
 	}
-
+/**
+ * 计算订单金额
+ * @param key
+ * @param data
+ * @returns {*}
+ */
+export function postPayOrderComputed(data) {
+  return request.post("computed", data);
+}
 
 export function payOrder(data) {
 	  return request.post("pay_order", data || {});

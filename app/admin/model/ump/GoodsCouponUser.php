@@ -65,6 +65,7 @@ class GoodsCouponUser extends BaseModel
             $data[$k]['title'] = $coupon['title'];
             $data[$k]['coupon_price'] = $coupon['coupon_price'];
             $data[$k]['type'] = '后台发放';
+            $data[$k]['is_flag'] = $coupon['is_flag'];
             $data[$k]['add_time'] = time();
             $data[$k]['end_time'] = $data[$k]['add_time'] + $coupon['coupon_time'] * 86400;
         }
@@ -76,5 +77,25 @@ class GoodsCouponUser extends BaseModel
         }
         self::checkTrans($res);
         return $res;
+    }
+    
+    /**
+     * 给用户发放优惠券
+     * @param $coupon
+     * @param $user
+     * @return int|string
+     */
+    public static function setGoodsCoupon($coupon, $uid)
+    {
+            $data['cid'] = $coupon['id'];
+            $data['uid'] = $uid;
+            $data['title'] = $coupon['title'];
+            $data['coupon_price'] = $coupon['coupon_price'];
+            $data['type'] = '购买商品赠送';
+            $data['is_flag'] = $coupon['is_flag'];
+            $data['add_time'] = time();
+            $data['end_time'] = $data['add_time'] + $coupon['coupon_time'] * 86400;
+            $res = self::create($data);
+            return $res;
     }
 }

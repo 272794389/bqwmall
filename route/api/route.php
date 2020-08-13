@@ -269,6 +269,7 @@ Route::group(function () {
     Route::post('shoppay', 'PublicController/shoppay')->name('shoppay');// 商家消费
     //消费订单详情
     Route::get('get_order/:id', 'PublicController/get_order')->name('get_order');
+    Route::post('computed', 'PublicController/computedOrder')->name('computedPayOrder'); //计算订单金额
     
     Route::post('pay_order', 'PublicController/pay_order')->name('pay_order'); //订单创建
 

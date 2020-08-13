@@ -178,8 +178,8 @@ class StoreProduct extends AuthController
             $menus[] = ['value' => $menu['id'], 'label' => $menu['html'] . $menu['cate_name'], 'disabled' => $menu['pid'] == 0 ? 0 : 1];//,'disabled'=>$menu['pid']== 0];
         }
         $data['tempList'] = ShippingTemplates::order('sort', 'desc')->field(['id', 'name'])->select()->toArray();
-        $data['couponList'] = GoodsCoupon::where('status',1)->where('is_del',0)->order('id', 'desc')->field(['id', 'title'])->select()->toArray();
-        $data['scouponList'] = StoreCoupon::where('status',1)->where('is_del',0)->order('sort', 'desc')->field(['id', 'title'])->select()->toArray();
+        $data['couponList'] = GoodsCoupon::where('status',1)->where('is_del',0)->where('is_flag',0)->order('id', 'desc')->field(['id', 'title'])->select()->toArray();
+        $data['scouponList'] = GoodsCoupon::where('status',1)->where('is_del',0)->where('is_flag',1)->order('id', 'desc')->field(['id', 'title'])->select()->toArray();
         $data['storeList'] = SystemStore::order('add_time', 'desc')->field(['id', 'name'])->select()->toArray();
         $data['cateList'] = $menus;
         $data['productInfo'] = [];

@@ -56,13 +56,50 @@
         <div>消费总额：</div>
         <div class="money">￥{{ orderPrice.total_amount}}</div>
       </div>
-      <div class="item acea-row row-between-wrapper" >
-        <div>优惠券抵扣：</div>
-        <div class="money">-￥{{ orderPrice.coupon_amount }}</div>
+      
+      <div class="item acea-row row-between-wrapper">
+        <div>使用积分抵扣</div>
+        <div class="discount">
+          <div class="select-btn">
+            <div class="checkbox-wrapper">
+              <label class="well-check">
+                <input type="checkbox" v-model="useIntegral" />
+                <i class="icon" style="right: 0;left: unset;"></i>
+                <span class="integral" style="margin-right:0.4rem;">
+                  当前可抵扣
+                  <span class="num font-color-red">
+                    ￥{{ orderPrice.pay_give || 0 }}
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="item acea-row row-between-wrapper">
+        <div>抵扣券抵扣</div>
+        <div class="discount">
+          <div class="select-btn">
+            <div class="checkbox-wrapper">
+              <label class="well-check">
+                <input type="checkbox" v-model="useCoupon" />
+                <i class="icon" style="right: 0;left: unset;"></i>
+                <span class="integral" style="margin-right:0.4rem;">
+                  当前可抵扣
+                  <span class="num font-color-red">
+                                                      ￥{{orderPrice.coupon_amount || 0 }}
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+     
       <div class="item acea-row row-between-wrapper" >
-        <div>支付购物积分：</div>
-        <div class="money">-￥{{ orderPrice.pay_give }}</div>
+        <div>赠送消费积分：</div>
+        <div class="money">{{ orderPrice.pay_pointer }}</div>
       </div>
     </div>
     <div style="height:1.2rem"></div>
@@ -100,7 +137,7 @@
 }
 </style>
 <script>
-import { getOrder,payOrder } from "@api/store";
+import { getOrder,payOrder,postPayOrderComputed } from "@api/store";
 import { getUser } from "@api/user";
 import { pay } from "@libs/wechat";
 import { isWeixin } from "@utils";
@@ -113,6 +150,8 @@ export default {
       offlinePayStatus: 2,
       from: _isWeixin ? "weixin" : "weixinh5",
       deduction: true,
+      useIntegral: true,
+      useCoupon: false,
       isWeixin: _isWeixin,
       active: _isWeixin ? "weixin" : "yue",
       orderPrice: {
@@ -128,6 +167,27 @@ export default {
         this.id = n.params.id;
         this.getUserInfo();
       }
+    },
+    useIntegral() {
+     if(this.useIntegral==true){
+        this.useCoupon=false;
+      }
+      this.computedPrice();
+    },
+    useCoupon() {
+      if(this.useCoupon==true){
+        this.useIntegral=false;
+      }
+      this.computedPrice();
+    },
+    $route(n) {
+      if (n.name === NAME) {
+        this.getUserInfo();
+        this.getCartInfo();
+      }
+    },
+    shipping_type() {
+      this.computedPrice();
     }
   },
   mounted: function() {
@@ -153,6 +213,18 @@ export default {
           that.$router.go(-1);
         });
    },
+   computedPrice() {
+      let that = this;
+      postPayOrderComputed({
+        orderid: this.id ,
+        useIntegral: this.useIntegral ? 1 : 0,
+        useCoupon: this.useCoupon ? 1 : 0
+      }).then(res => {
+          that.$set(that, "orderPrice", res.data.orderinfo);
+        }).catch(res => {
+          this.$dialog.error(res.msg);
+        });
+    },
     payItem: function(index) {
       this.active = index;
     },

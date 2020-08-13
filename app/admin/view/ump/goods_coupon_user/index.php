@@ -19,7 +19,7 @@
                                 <input type="text" name="nickname" value="{$where.nickname}" placeholder="请输入发放人姓名" class="input-sm form-control"> <span class="input-group-btn">
                             </div>
                             <div class="input-group">
-                                <input type="text" name="coupon_title" value="{$where.coupon_title}" placeholder="请输入优惠券名称" class="input-sm form-control"> <span class="input-group-btn">
+                                <input type="text" name="coupon_title" value="{$where.coupon_title}" placeholder="请输入抵扣券名称" class="input-sm form-control"> <span class="input-group-btn">
                                     <button type="submit" class="btn btn-sm btn-primary"> <i class="fa fa-search" ></i>搜索</button> </span>
                             </div>
                         </form>
@@ -32,11 +32,13 @@
                         <tr>
 
                             <th class="text-center">编号</th>
-                            <th class="text-center">优惠券名称</th>
-                            <th class="text-center">发放人</th>
-                            <th class="text-center">优惠券面值</th>
-                            <th class="text-center">优惠券开始使用时间</th>
-                            <th class="text-center">优惠券结束使用时间</th>
+                            <th class="text-center">抵扣券名称</th>
+                            <th class="text-center">抵扣券类型</th>
+                            <th class="text-center">领取人</th>
+                            <th class="text-center">抵扣券面值</th>
+                            <th class="text-center">已使用金额</th>
+                            <th class="text-center">抵扣券开始使用时间</th>
+                            <th class="text-center">抵扣券结束使用时间</th>
                             <th class="text-center">获取放方式</th>
                             <th class="text-center">是否有效</th>
                         </tr>
@@ -48,13 +50,23 @@
                                 {$vo.id}
                             </td>
                             <td class="text-center">
-                                {$vo.coupon_title}
+                                {$vo.title}
+                            </td>
+                            <td class="text-center">
+                                {if condition="$vo['is_flag']"}
+                                  商家抵扣券
+                                {else}
+                                商品抵扣券
+                                {/if}
                             </td>
                             <td class="text-center">
                                 {$vo.nickname}
                             </td>
                             <td class="text-center">
                                 {$vo.coupon_price}
+                            </td>
+                             <td class="text-center">
+                                {$vo.hamount}
                             </td>
                             <td class="text-center">
                                 {$vo.add_time|date='Y-m-d H:i:s'}

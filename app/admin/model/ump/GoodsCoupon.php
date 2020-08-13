@@ -41,6 +41,7 @@ class GoodsCoupon extends BaseModel
     {
         $model = new self;
         if ($where['status'] != '') $model = $model->where('status', $where['status']);
+        if ($where['is_flag'] != '') $model = $model->where('is_flag', $where['is_flag']);
         if ($where['title'] != '') $model = $model->where('title', 'LIKE', "%$where[title]%");
 //        if($where['is_del'] != '')  $model = $model->where('is_del',$where['is_del']);
         $model = $model->where('is_del', 0);
@@ -68,6 +69,7 @@ class GoodsCoupon extends BaseModel
     {
         $model = new self;
         if ($where['status'] != '') $model = $model->where('status', $where['status']);
+        $model = $model->where('is_flag', $where['is_flag']);
         if ($where['title'] != '') $model = $model->where('title', 'LIKE', "%$where[title]%");
         //        if($where['is_del'] != '')  $model = $model->where('is_del',$where['is_del']);
         $model = $model->where('is_del', 0);

@@ -9,6 +9,10 @@ namespace app\models\store;
 
 use app\admin\model\system\ShippingTemplatesFree;
 use app\admin\model\system\ShippingTemplatesRegion;
+use app\admin\model\ump\GoodsCoupon as GoodsCouponModel;
+use app\admin\model\ump\GoodsCouponUser as CouponUserModel;
+
+
 use crmeb\basic\BaseModel;
 use think\facade\Cache;
 use crmeb\traits\ModelTrait;
@@ -177,11 +181,12 @@ class StoreOrder extends BaseModel
         $ugive_point = $userInfo['give_point'];
         $upay_point = $userInfo['pay_point'];
         $repeat_point = $userInfo['repeat_point'];
-        $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+        $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
         $mcouponAmount = 0;
         if($couponMap){
             $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
         }
+       // echo "mcouponAmount".$mcouponAmount;
         //统计支付及赠送
         $give_point = 0;//赠送购物积分
         $pay_point = 0;//赠送消费积分
@@ -1088,7 +1093,7 @@ class StoreOrder extends BaseModel
         
         if($order['coupon_price']>0){//如果使用了抵扣券
             $coupon_price = $order['coupon_price'];
-            $couponList = GoodsCouponUser::getCouponList($uid);
+            $couponList = GoodsCouponUser::getCouponList($uid,0);
             foreach ($couponList as $coupon){
                 $amount = bcsub($coupon['coupon_price'],$coupon['hamount'],2);
                 if($amount>0&&$amount>$coupon_price&&$coupon_price>0){//该次抵扣券足够抵扣
@@ -1819,6 +1824,25 @@ class StoreOrder extends BaseModel
                 }
             } 
         }
+        
+        //判断是否有赠送抵扣券
+        foreach ($productList as $product){
+            $cart =  $productMap[$product['id']];
+            $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
+            if($product['coupon_id']>0){//赠送商品抵扣券
+                $coupon = GoodsCouponModel::get($product['coupon_id'])->toArray();
+                for($i=0;$i<$carinfo['cart_num'];$i++){
+                   CouponUserModel::setGoodsCoupon($coupon, $order['uid']);
+                } 
+            }
+            if($product['scoupon_id']>0){//赠送商品抵扣券
+                $coupon = GoodsCouponModel::get($product['scoupon_id'])->toArray();
+                for($i=0;$i<$carinfo['cart_num'];$i++){
+                    CouponUserModel::setGoodsCoupon($coupon, $order['uid']);
+                }
+            }
+        }
+        
        //给客户发送消费通知
         WechatTemplateService::sendTemplate(WechatUser::where('uid', $order['uid'])->value('openid'), WechatTemplateService::PAYORDER_SUCCESS, [
             'first' => '尊敬的客户您好，您在佰仟万平台完成了一笔交易',

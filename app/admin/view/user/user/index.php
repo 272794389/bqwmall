@@ -470,18 +470,18 @@
             var ids=layList.getCheckData().getIds('uid');
             if(ids.length){
                 var str = ids.join(',');
-                $eb.createModalFrame('发送优惠券',layList.Url({c:'ump.store_coupon',a:'grant',p:{id:str}}),{'w':800});
+                $eb.createModalFrame('发送抵扣券',layList.Url({c:'ump.goods_coupon',a:'grants',p:{id:str}}),{'w':800});
             }else{
-                layList.msg('请选择要发送优惠券的会员');
+                layList.msg('请选择要发送抵扣券的会员');
             }
         },
         set_ggrant:function () {
             var ids=layList.getCheckData().getIds('uid');
             if(ids.length){
                 var str = ids.join(',');
-                $eb.createModalFrame('发送优惠券',layList.Url({c:'ump.goods_coupon',a:'grant',p:{id:str}}),{'w':800});
+                $eb.createModalFrame('发送抵扣券',layList.Url({c:'ump.goods_coupon',a:'grant',p:{id:str}}),{'w':800});
             }else{
-                layList.msg('请选择要发送优惠券的会员');
+                layList.msg('请选择要发送抵扣券的会员');
             }
         },
         set_template:function () {

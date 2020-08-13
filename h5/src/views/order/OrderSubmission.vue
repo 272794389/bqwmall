@@ -64,6 +64,7 @@
     </div>
     <OrderGoods :evaluate="0" :cartInfo="orderGroupInfo.cartInfo"></OrderGoods>
     <div class="wrapper">
+    <!--
       <div
         class="item acea-row row-between-wrapper"
         @click="couponTap"
@@ -75,6 +76,7 @@
           <span class="iconfont icon-jiantou"></span>
         </div>
       </div>
+      -->
       <div class="item acea-row row-between-wrapper">
         <div>使用积分抵扣</div>
         <div class="discount">

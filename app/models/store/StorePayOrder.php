@@ -74,10 +74,100 @@ class StorePayOrder extends BaseModel
         }else{
             $pay_give= $give_amount;
         }
-        $pay_amount = $total_amount - $pay_give;
-        
+        $pay_amount = bcsub($total_amount,$pay_give,2);
+       
         //计算优惠券优惠金额
-        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','pay_give','add_time'));
+        //判断该商家是否支持抵扣券抵扣
+        $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
+        ->whereFindinSet('product_id', $store_id)
+        ->field('*')
+        ->order('coupon_price', 'DESC')
+        ->select();
+        $coupon_price=0;
+        $coupon_amount=0;
+        if(count($couponList)>0){
+            $coupon = $couponList[0];
+            $coupon_amount = $coupon['coupon_price'];
+        }
+        if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
+            $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+            $mcouponAmount = 0;
+            if($couponMap){
+                $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
+            }
+            if(!$mcouponAmount>$coupon_amount){
+                $coupon_amount = $mcouponAmount;
+            }
+        }
+        if($pay_give==0){
+            $pay_amount = bcsub($total_amount,$coupon_amount,2);
+        }
+        $pay_pointer = 0;
+        if($pay_amount==$total_amount){
+            $pay_pointer =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
+            
+        }
+        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','coupon_amount','pay_give','add_time','pay_pointer'));
+    }
+    
+    //计算积分抵扣或抵扣券抵扣的金额
+    public static function computerOrder($orderid,$useIntegral,$useCoupon)
+    {
+        $orderinfo = self::get($orderid);
+        $order_id = $orderid;
+        
+        $storeInfo = SystemStore::getStoreDispose($orderinfo['store_id']);//获取商家信息
+        $userInfo = User::getUserInfo($orderinfo['uid']);
+        $pay_point=0;
+        $pay_give=0;
+        $coupon_amount=0;
+        $total_amount = $orderinfo['total_amount'];
+        $pay_amount = $orderinfo['total_amount'];
+        if($useIntegral==1){
+            //计算商家购物积分支付金额
+            $give_amount = round( $storeInfo['give_rate']*$total_amount/100,2);
+            $give_point = $userInfo['give_point'];
+           //购物积分支付金额
+            if($give_point<$give_amount){
+                $pay_give = $give_point;
+            }else{
+                $pay_give= $give_amount;
+            }
+            $pay_amount = bcsub($total_amount,$pay_give,2);
+        }
+        if($useCoupon==1&&$pay_give==0){
+            //计算优惠券优惠金额
+            //判断该商家是否支持抵扣券抵扣
+            $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
+            ->whereFindinSet('product_id', $orderinfo['store_id'])
+            ->field('*')
+            ->order('coupon_price', 'DESC')
+            ->select();
+            
+            if(count($couponList)>0){
+                $coupon = $couponList[0];
+                $coupon_amount = $coupon['coupon_price'];
+            }
+           
+            if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
+                $couponMap = GoodsCouponUser::where('uid',$orderinfo['uid'])->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+                $mcouponAmount = 0;
+                if($couponMap){
+                    $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
+                }
+                if(!$mcouponAmount>$coupon_amount){
+                    $coupon_amount = $mcouponAmount;
+                }
+            }
+            if($pay_give==0){
+                $pay_amount = bcsub($total_amount,$coupon_amount,2);
+            }
+        }
+        if($pay_amount==$total_amount){
+            $pay_point =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
+            
+        }
+        return self::where('id',$orderid)->update(['pay_amount'=>$pay_amount,'pay_give'=>$pay_give,'coupon_amount'=>$coupon_amount,'pay_pointer'=>$pay_point]);
     }
     
     /*
@@ -167,13 +257,53 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, -$orderInfo['pay_give'], 0,0,0, '微信支付' . floatval($orderInfo['pay_amount']) . '元商家消费');
             }
-        }else if($storeInfo['pay_rate']>0){//判断是否有赠送积分
-            $pay_point = $orderInfo['total_amount']*$storeInfo['pay_rate']/100;
-            $res = false !== User::bcInc($uid, 'pay_point', $pay_point, 'uid');
+        }else if($orderInfo['pay_pointer']>0){//判断是否有赠送积分
+            $res = false !== User::bcInc($uid, 'pay_point',$orderInfo['pay_pointer'], 'uid');
             if($res){
-                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0, $pay_point,0,0, '商家消费赠送消费积分');
+                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0, $orderInfo['pay_pointer'],0,0, '商家消费赠送消费积分');
             }
         }
+        
+        if($orderInfo['coupon_amount']>0){//有使用抵扣券
+            $coupon_price = $orderInfo['coupon_amount'];
+            $couponList = GoodsCouponUser::getAllCouponList($uid,0);
+            foreach ($couponList as $coupon){
+                $amount = bcsub($coupon['coupon_price'],$coupon['hamount'],2);
+                if($amount>0&&$amount>$coupon_price&&$coupon_price>0){//该次抵扣券足够抵扣
+                    //更改已使用金额
+                    $pamount = bcadd($coupon['hamount'],$coupon_price,2);
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $pamount]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $orderInfo['order_id'],
+                        'coupon_price' => $coupon_price,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=0;
+                    break;
+                }else if($amount>0&&($amount<$coupon_price||$amount==$coupon_price)){//该次抵扣券不足以抵扣
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $coupon['coupon_price']]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $orderInfo['order_id'],
+                        'coupon_price' => $amount,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=bcsub($coupon_price,$amount,2);
+                }
+                if($coupon_price==0){
+                    break;
+                }
+            }  
+        }
+        
+        
         //给商家结算货款
         $amount = $orderInfo['total_amount']*(100-$storeInfo['sett_rate'])/100;
         if($res){
