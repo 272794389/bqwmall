@@ -25,48 +25,11 @@
         <span>{{ item.cate_name }}</span>
       </div>
     </div>
-    <!--
-    <div class="nav acea-row row-middle">
-      <div class="condition" @click="set_where(4)" :class="condition==1 ? 'font-color-red' : ''">
-                 周边
-      </div>
-      <div class="condition" @click="set_where(5)" :class="condition==2 ? 'font-color-red' : ''">
-                 消费积分兑换
-      </div>
-      <div class="condition" @click="set_where(6)" :class="condition==3 ? 'font-color-red' : ''">
-                        重消积分兑换
-      </div>
-      <div  class="condition" @click="set_where(7)" :class="condition==4 ? 'font-color-red' : ''">
-                          现金支付
-      </div>
-    </div>
-    <div class="nav acea-row row-middle" style="margin-top:0.82rem;">
-      <div
-        class="item"
-        :class="title ? 'font-color-red' : ''"
-        @click="set_where(0)"
-      >
-        {{ title ? title : "默认" }}
-      </div>
-      <div class="item" @click="set_where(1)">
-        价格
-        <img src="@assets/images/horn.png" v-if="price === 0" />
-        <img src="@assets/images/up.png" v-if="price === 1" />
-        <img src="@assets/images/down.png" v-if="price === 2" />
-      </div>
-      <div class="item" @click="set_where(2)">
-        销量
-        <img src="@assets/images/horn.png" v-if="stock === 0" />
-        <img src="@assets/images/up.png" v-if="stock === 1" />
-        <img src="@assets/images/down.png" v-if="stock === 2" />
-      </div>
-    </div>
-    -->
     <div
       class="list acea-row row-between-wrapper"
       :class="Switch === true ? '' : 'on'"
       ref="container"
-      style="margin-top:0.86rem;"
+      style="margin-top:1.86rem;"
     >
       <div
         @click="goDetail(item)"
@@ -83,26 +46,12 @@
           <div class="name pline1">{{ item.store_name }}</div>
           <div class="money font-color-red" :class="Switch === true ? '' : 'on'">
                                       ￥<span class="num">{{ item.price }}</span>
-               <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+               <span class="shou">原价{{ item.ot_price }}</span>
           </div>
-          <!--
-          <div class="vip acea-row row-between-wrapper" :class="Switch === true ? '' : 'on'">
-             <div v-if="item.belong_t == 0">
-	            <div class="vip" v-if="item.pay_paypoint > 0"  style="width:3.3rem;">
-	               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;" />{{ item.pay_paypoint || 0}}积分+￥{{ item.pay_amount || 0}}
-	            </div>
-	            <div class="vip" v-if="item.pay_repeatpoint > 0" style="width:3.3rem;">
-	               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;"/>{{ item.pay_repeatpoint || 0}}个重消积分+￥{{ item.pay_amount || 0}}
-	            </div>
-	            <div class="vip" v-if="item.pay_repeatpoint ==0&&item.pay_paypoint==0"  style="width:3.3rem;">
-	               <img src="@assets/images/fu.png" class="image" style="width:0.35rem;"/>￥{{ item.pay_amount || 0}}
-	            </div>
-	         </div>
-             <div class="vip-money" v-else>
-                 <img src="@assets/images/give.png" style="width: 0.35rem;"/>￥{{ item.pay_point }}消费积分
-             </div>
+          <div class="money">
+              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
           </div>
-          -->
         </div>
       </div>
     </div>

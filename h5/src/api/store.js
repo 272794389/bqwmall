@@ -7,7 +7,6 @@ export function getCategory() {
   return request.get("/category", {}, { login: false });
 }
 
-
 /*
  * 商品小分类
  * */

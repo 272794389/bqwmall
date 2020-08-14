@@ -178,13 +178,17 @@
 					          <div class="name pline1">{{ item.store_name }}</div>
 					          <div class="money font-color-red">
 					                                   ￥<span class="num">{{ item.price }}</span>
-					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
 					          </div>
 					        </div>
 				      </div>
 				</div>
 		    </div>
-		    <div class="morestyle"><router-link :to="'/cgoods_list/'" >去看更多积分兑换商品&nbsp;></router-link></div>
+		    <div class="morestyle"><router-link :to="'/goods_list/'" >去看更多积分兑换商品&nbsp;></router-link></div>
 	    </div>
 	</div>
     <div v-if="condition==4">
@@ -199,7 +203,11 @@
 					          <div class="name pline1">{{ item.store_name }}</div>
 					          <div class="money font-color-red">
 					                                   ￥<span class="num">{{ item.price }}</span>
-					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
 					          </div>
 					        </div>
 				      </div>

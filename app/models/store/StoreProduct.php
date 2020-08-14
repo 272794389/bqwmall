@@ -281,7 +281,7 @@ class StoreProduct extends BaseModel
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//虚拟销量
         if ($baseOrder) $baseOrder .= ', ';
         $model->order($baseOrder . 'sort DESC, add_time DESC');
-        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,price,stock,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point,belong_t')->select()->each(function ($item) use ($uid, $type) {
+        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,ot_price,price,stock,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point,belong_t,coupon_price,unit_name')->select()->each(function ($item) use ($uid, $type) {
             if ($type) {
                 $item['is_att'] = StoreProductAttrValueModel::where('product_id', $item['id'])->count() ? true : false;
                 if ($uid) $item['cart_num'] = StoreCart::where('is_pay', 0)->where('is_del', 0)->where('is_new', 0)->where('type', 'product')->where('product_id', $item['id'])->where('uid', $uid)->value('cart_num');
