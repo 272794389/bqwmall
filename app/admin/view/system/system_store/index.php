@@ -82,6 +82,9 @@
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑商家
                         </button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='shop_qrcode'>
+                                                                  下载收款码
+                        </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='upload'>
                             上传轮播图
                         </button>
@@ -185,6 +188,11 @@
             case 'upload':
             	location.href = layList.U({a:'upload',q:{id:data.id}});
                 break;
+            case 'shop_qrcode':
+            	$eb.createModalFrame('商家二维码',layList.U({a:'shop_qrcode',q:{id:data.id}}));
+                break;
+                break;
+                
         }
     })
 </script>
