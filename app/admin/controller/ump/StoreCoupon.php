@@ -44,6 +44,7 @@ class StoreCoupon extends AuthController
         $f[] = Form::input('title', '优惠券名称');
         //不同类型不同字段
         $formbuider = [];
+        /*
         switch ($data['type']) {
             case 1://品类券
                 $formbuider = CouponModel::createClassRule($tab_id);
@@ -51,14 +52,15 @@ class StoreCoupon extends AuthController
             case 2://商品券
                 $formbuider = CouponModel::createProductRule($tab_id);
                 break;
-        }
+        }*/
+        $formbuider = CouponModel::createStoreRule($tab_id);
         //后面通用字段
         $formbuiderfoot = array();
         $formbuiderfoot[] = Form::number('coupon_price', '优惠券面值', 0)->min(0);
         $formbuiderfoot[] = Form::number('use_min_price', '最低消费')->min(0);
         $formbuiderfoot[] = Form::number('coupon_time', '有效期限')->min(0);
         $formbuiderfoot[] = Form::number('sort', '排序');
-        $formbuiderfoot[] = Form::hidden('type', $data['type']);
+        $formbuiderfoot[] = Form::hidden('type', 2);
         $formbuiderfoot[] = Form::radio('status', '状态', 0)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]])->value(1);
         $formbuiders = array_merge($f, $formbuider, $formbuiderfoot);
         $form = Form::make_post_form('添加优惠券', $formbuiders, Url::buildUrl('save'));
@@ -72,6 +74,15 @@ class StoreCoupon extends AuthController
      * @param int $id
      */
     public function select()
+    {
+        return $this->fetch();
+    }
+    
+    /**
+     * 选择商家
+     * @param int $id
+     */
+    public function shopselect()
     {
         return $this->fetch();
     }

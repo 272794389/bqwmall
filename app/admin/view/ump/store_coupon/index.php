@@ -26,9 +26,11 @@
                             </select>
                             <select name="type" aria-controls="editable" class="form-control input-sm">
                                 <option value="">类型</option>
+                                <!-- 
                                 <option value="0" {eq name="where.type" value="0"}selected="selected"{/eq}>通用券</option>
                                 <option value="1" {eq name="where.type" value="1"}selected="selected"{/eq}>品类券</option>
-                                <option value="2" {eq name="where.type" value="2"}selected="selected"{/eq}>商品券</option>
+                                 -->
+                                <option value="2" {eq name="where.type" value="2"}selected="selected"{/eq}>商家消费券</option>
                             </select>
 
                             <div class="input-group">
@@ -67,13 +69,7 @@
                                 {$vo.title}
                             </td>
                             <td class="text-center">
-                                {if $vo.type eq 0}
-                                通用券
-                                {elseif $vo.type eq 1}
-                                品类券
-                                {else/}
-                                商品券
-                                {/if}
+                                                                                         商家消费券
                             </td>
                             <td class="text-center">
                                 {$vo.coupon_price}
@@ -107,11 +103,13 @@
                                                     <i class="fa  fa-yelp"></i> 立即失效
                                                 </a>
                                             </li>
+                                            <!-- 
                                             <li>
                                                 <a href="javascript:void(0);" onclick="$eb.createModalFrame(this.innerText+' [{$vo.title}] 优惠劵','{:Url('issue',['id'=>$vo['id']])}')">
                                                     <i class="fa  fa-male"></i> 发布
                                                 </a>
                                             </li>
+                                             -->
                                             {/if}
                                             <li>
                                                 <a href="javascript:void(0);" class="delstor" data-url="{:Url('delete',array('id'=>$vo['id']))}">

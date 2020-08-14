@@ -25,9 +25,11 @@
 <body>
 <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
     <ul class="layui-tab-title">
+    <!-- 
         <li {if condition="$get['type'] eq 0"}class="layui-this"{/if}><a href="{:Url('create',array('tab_id'=>$Request.param.tab_id,'type'=>0))}">通用券</a> </li>
         <li {if condition="$get['type'] eq 1"}class="layui-this"{/if}><a href="{:Url('create',array('tab_id'=>$Request.param.tab_id,'type'=>1))}">品类券</a> </li>
-        <li {if condition="$get['type'] eq 2"}class="layui-this"{/if}><a href="{:Url('create',array('tab_id'=>$Request.param.tab_id,'type'=>2))}">商品券</a></li>
+       -->
+        <li {if condition="$get['type'] eq 2"}class="layui-this"{/if}><a href="{:Url('create',array('tab_id'=>$Request.param.tab_id,'type'=>2))}">商家消费券</a></li>
 
     </ul>
     <div class="layui-tab-content" style="height: 100px;">

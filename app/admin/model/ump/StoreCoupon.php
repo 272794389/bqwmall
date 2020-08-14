@@ -111,4 +111,18 @@ class StoreCoupon extends BaseModel
         $formbuider[] = Form::hidden('product_id', 0);
         return $formbuider;
     }
+    
+    /**
+     * 商家券
+     * @param $tab_id
+     * @return array
+     * @throws \FormBuilder\exception\FormBuilderException
+     */
+    public static function createStoreRule($tab_id)
+    {
+        $formbuider = [];
+        $formbuider[] = Form::frameImages('image', '选择商家', Url::buildUrl('admin/ump.StoreCoupon/shopselect', array('fodder' => 'image')))->icon('plus')->width('100%')->height('500px');
+        $formbuider[] = Form::hidden('product_id', 0);
+        return $formbuider;
+    }
 }
