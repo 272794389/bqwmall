@@ -14,16 +14,22 @@
            <div class="pingfen_box"><Reta :size="48" :score="4.5"></Reta></div>
         </div>
         -->
+        <div class="pingfen" v-if="couponList.length > 0">
+	       <div v-for="(item, index) in couponList" :key="index">
+	           <span class="activity">满{{item.use_min_price}}元抵{{item.coupon_price}}元</span>
+	       </div>
+        </div>
         <div class="pingfen service" v-if="labelList.length > 0">
           <div v-for="(item, index) in labelList" :key="index">
             <span class="service_label">{{ item }}</span>
            </div>
         </div>
+        
         <div class="pingfent ktime" style="height:0.7rem;">
            营业时间&nbsp;&nbsp;{{ storeInfo.termDate}}&nbsp;&nbsp;{{ storeInfo.day_time}}
-           <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#f00;"></span ></a>
+           <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#666;"></span ></a>
         </div>
-        <div class="pingfent addressUlr" style="height:0.8rem;line-height: 0.8rem;"> <span class="location">{{ storeInfo.detailed_address }}</span> <span  class="daohang" @click.stop="showMaoLocation(storeInfo)"><img  src="http://oss.dshqfsc.com/9f208202008071435308398.png"/></span></div>
+        <div class="pingfent addressUlr" style="height:0.8rem;line-height: 0.6rem;"> <span class="location">{{ storeInfo.detailed_address }}</span> <span  class="daohang" @click.stop="showMaoLocation(storeInfo)"><div class="iconfont icon-jiantou"></div></span></div>
        
      </div>
      <div class="pay_btn" @click="goPay(storeInfo)">点击向商家付款</div>
@@ -154,6 +160,7 @@ export default {
       storeInfo: {},
       goodList: [],
       labelList: [],
+      couponList:[],
       lock: false,
       opacity: 0
     };
@@ -321,6 +328,7 @@ export default {
           that.$set(that, "storeInfo", res.data.storeInfo);
           that.$set(that, "labelList", res.data.label_list || []);
           that.$set(that, "goodList", res.data.good_list || []);
+          that.$set(that, "couponList", res.data.coupon_list || []);
          that.mapKey = res.data.mapKey;
         })
         .catch(res => {
@@ -381,7 +389,7 @@ export default {
     padding-bottom: 0.2rem;}
 .pingfen span{float:left;}
 .pingfen_box{float:left;wdith:80%;margin-left:0.1rem;margin-top: 0.05rem;}
-.daohang{float:right;margin-right:0.1rem;color:#f00;width:7%;}
+.daohang{float:right;color:#666;width:7%;}
 .daohang img{width:0.5rem;}
 .location{float:left;width:90%;line-height: 0.6rem;}
 
@@ -405,5 +413,40 @@ export default {
   float: left;
 }
 .store-phone{float:right;margin-left:0.1rem;}
-
+.activity {
+    height: .4rem;
+    padding: 0 .2rem;
+    border: 1px solid #f2857b;
+    color: #e93323;
+    font-size: .24rem;
+    line-height: .4rem;
+    position: relative;
+    margin: 0rem .15rem .1rem 0;
+}
+.activity:before {
+    content: " ";
+    position: absolute;
+    width: .07rem;
+    height: .1rem;
+    border-radius: 0 .07rem .07rem 0;
+    border: 1px solid #f2857b;
+    background-color: #fff;
+    bottom: 50%;
+    left: -.02rem;
+    margin-bottom: -.07rem;
+    border-left-color: #fff;
+}
+.activity:after {
+    content: " ";
+    position: absolute;
+    width: .07rem;
+    height: .1rem;
+    border-radius: .07rem 0 0 .07rem;
+    border: 1px solid #f2857b;
+    background-color: #fff;
+    right: -.02rem;
+    bottom: 50%;
+    margin-bottom: -.05rem;
+    border-right-color: #fff;
+}
 </style>

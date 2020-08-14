@@ -63,22 +63,10 @@
           <div>库存:{{ storeInfo.stock }}{{ storeInfo.unit_name }}</div>
           <div>销量:{{ storeInfo.fsales }}{{ storeInfo.unit_name }}</div>
         </div>
-        <div
-          class="coupon acea-row row-between-wrapper"
-          @click="couponTap"
-          v-if="couponList.length"
-        >
+        <div class="coupon acea-row row-between-wrapper" v-if="storeInfo.coupon_price>0">
           <div class="hide line1 acea-row">
-            优惠券：
-            <div
-              class="activity"
-              v-for="(item, index) in couponList"
-              :key="index"
-            >
-              满{{ item.use_min_price }}减{{ item.coupon_price }}
-            </div>
+                                   抵扣券：<div  class="activity">抵扣券抵扣{{storeInfo.coupon_price}}元</div>
           </div>
-          <div class="iconfont icon-jiantou"></div>
         </div>
         <div class="coupon acea-row row-between-wrapper" v-if="activity.length">
           <div class="line1 acea-row">

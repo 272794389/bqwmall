@@ -7,6 +7,7 @@ use app\models\store\StoreCategory;
 use app\models\store\StoreCouponIssue;
 use app\models\store\StoreProduct;
 use app\models\store\StoreService;
+use app\models\store\StoreCoupon;
 use app\models\system\Express;
 use app\models\system\SystemCity;
 use app\models\system\SystemStore;
@@ -346,6 +347,14 @@ class PublicController
         $data['storeInfo'] = $storeInfo;
         $data['mapKey'] = sys_config('tengxun_map_key');
         $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');
+        //获取商家抵扣券
+        $couponList = StoreCoupon::where('status',1)->where('is_del',0)
+        ->whereFindinSet('product_id', $id)
+        ->field('*')
+        ->order('coupon_price', 'DESC')
+        ->select();
+        $couponList = count($couponList) ? $couponList->toArray() : [];
+        $data['coupon_list'] = $couponList;
         return app('json')->successful($data);
     }
     

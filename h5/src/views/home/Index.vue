@@ -91,13 +91,6 @@
 		   -->
        </swiper>
     </div>
-    <!--
-    <div class="ad_tong" v-if="article.title">
-        <marquee direction="left" class="marqstyle">
-        <router-link :to="'/news_detail/' + article.id" class="acea-row row-middle"
-          >{{ article.title }}</router-link></marquee>
-    </div>
-    -->
     <div class="wrapper jinpbox" v-if="info.hostList.length > 0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
@@ -133,47 +126,21 @@
             <div class="nav_box">
 	          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
 	          <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">吃喝玩乐</span>
-	          <!--<router-link :to="{ path: '/tgoods_list/'}" class="more_sy">更多</router-link>-->
 	        </div>
 	        <div class="nav_box">
 	          <span :class="condition==2 ? 'nav_title_font' : 'nav_title'"  @click="set_where(2)">周边的店</span>
 	          <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
-	          <!--<router-link :to="{ path: '/store_list/'}" class="more_sy">更多</router-link>-->
 	        </div>
 	        <div class="nav_box">
 	          <span :class="condition==1 ? 'nav_title_font' : 'nav_title'"  @click="set_where(1)">商品中心</span>
 	          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
-	          <!--<router-link :to="{ path: '/cgoods_list/'}" class="more_sy">更多</router-link>-->
 	        </div>
 	        <div class="nav_box">
 	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
 	          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
-	          <!--<router-link :to="{ path: '/wgoods_list/'}" class="more_sy">更多</router-link>-->
 	        </div>
        </div>
     </div>
-    <!--
-    <div class="specialArea acea-row row-between-wrapper">
-      <router-link :to="'/cgoods_list/'" class="assemble" style="background: rgb(9,197,15);">
-        <div class="sp">
-	          <div class="name">商品中心</div>
-	          <div class="infor">各种实惠的商品</div>
-	        </div>
-      </router-link>
-      <router-link :to="'/store_list/'" class="assemble" style="background: rgb(44,176,126);">
-        <div class="sp">
-	        <div class="text">
-	          <div class="name">周边的店</div>
-	          <div class="infor">本地吃喝玩乐商家</div>
-	        </div>
-        </div>
-      </router-link>
-      <router-link :to="'/tgoods_list/'"  class="assemble" style="background: rgb(23,162,229);" >
-          <div class="name">本地特惠</div>
-          <div class="infor">商家产品优惠套餐</div>
-      </router-link>
-    </div>
-    -->
     <div v-if="condition==3">
 	    <div class="wrapper" v-if="nearGoodList.length>0">
 		      <div class="productList" ref="container">
@@ -186,12 +153,17 @@
 					          <div class="name pline1">{{ item.store_name }}</div>
 					          <div class="money font-color-red">
 					                                   ￥<span class="num">{{ item.price }}</span>
-					              <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
 					          </div>
 					        </div>
 				      </div>
 				</div>
 		    </div>
+		    <div class="morestyle"><router-link :to="'/tgoods_list/'" >去看更多本地优惠套餐&nbsp;></router-link></div>
 	    </div>
     </div>
     <div v-if="condition==1">
@@ -212,6 +184,7 @@
 				      </div>
 				</div>
 		    </div>
+		    <div class="morestyle"><router-link :to="'/cgoods_list/'" >去看更多积分兑换商品&nbsp;></router-link></div>
 	    </div>
 	</div>
     <div v-if="condition==4">
@@ -232,6 +205,7 @@
 				      </div>
 				</div>
 		    </div>
+		    <div class="morestyle"><router-link :to="'/wgoods_list/'" >去看更多精挑细选商品&nbsp;></router-link></div>
 	    </div>
 	</div>
 	<div v-if="condition==2" id="title2">
@@ -254,6 +228,7 @@
 			      </div>
 			    </div>
 		 </div>
+		 <div class="morestyle"><router-link :to="'/store_list/'" >去看更多周边优惠商家&nbsp;></router-link></div>
 	    </div>
     </div>
     <Coupon-window
@@ -646,6 +621,43 @@ export default {
 .index .wrapper .newProducts .swiper-slide .money{padding:0rem;}
 .slider-banner{width: 96%;margin-left:2%;border-radius:0.2rem;}
 .cate_style{color: #f00; margin-right: 0.3rem;line-height: 0.5rem;}
-
-
+.morestyle{width: 96%;margin-left: 2%; text-align: center;line-height: 1rem;background: #fff;margin-top: 0.2rem;}
+.morestyle a{color: #14adfb;font-weight: 700;}
+.activity {
+    height: .4rem;
+    padding: 0 .2rem;
+    border: 1px solid #f2857b;
+    color: #e93323;
+    font-size: .24rem;
+    line-height: .4rem;
+    position: relative;
+    margin: 0.1rem .15rem .1rem 0;
+    float:left;
+}
+.activity:before {
+    content: " ";
+    position: absolute;
+    width: .07rem;
+    height: .1rem;
+    border-radius: 0 .07rem .07rem 0;
+    border: 1px solid #f2857b;
+    background-color: #fff;
+    bottom: 50%;
+    left: -.02rem;
+    margin-bottom: -.07rem;
+    border-left-color: #fff;
+}
+.activity:after {
+    content: " ";
+    position: absolute;
+    width: .07rem;
+    height: .1rem;
+    border-radius: .07rem 0 0 .07rem;
+    border: 1px solid #f2857b;
+    background-color: #fff;
+    right: -.02rem;
+    bottom: 50%;
+    margin-bottom: -.05rem;
+    border-right-color: #fff;
+}
 </style>
