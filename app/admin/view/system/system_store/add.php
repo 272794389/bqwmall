@@ -345,7 +345,7 @@
                     catList:catList,
                     form:{
                     	mer_name:storeData.mer_name || '',
-                    	mer_name:storeData.label || '',
+                    	label:storeData.label || '',
                         name:storeData.name || '',
                         user_id:storeData.user_id || '',
                         cat_id:storeData.cat_id || 0,
