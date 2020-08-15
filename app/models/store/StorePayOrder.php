@@ -302,8 +302,6 @@ class StorePayOrder extends BaseModel
                 }
             }  
         }
-        
-        
         //给商家结算货款
         $amount = $orderInfo['total_amount']*(100-$storeInfo['sett_rate'])/100;
         if($res){
@@ -348,7 +346,7 @@ class StorePayOrder extends BaseModel
                     if($i==0&&$feeRate['rec_f']>0){//第一代推荐人
                         $use_amount = $runamount*$feeRate['rec_f']/100;
                     }else if($i==1&&$feeRate['rec_s']>0){//第二代推荐人
-                        $use_amount = $runamount*$feeRate['rec_f']/100;
+                        $use_amount = $runamount*$feeRate['rec_s']/100;
                     }else if($i==2&&$feeRate['rec_t']>0){//第三代推荐人
                         $use_amount = $runamount*$feeRate['rec_t']/100;
                     }
