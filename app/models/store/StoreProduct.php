@@ -439,7 +439,7 @@ class StoreProduct extends BaseModel
         $model = self::getProductWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
         ->order($baseOrder);
        
-        if ($limit) $model->limit($limit);
+        if ($limit) $model->page($page, $limit);
         $list = $model->select();
         return $list;
     }
