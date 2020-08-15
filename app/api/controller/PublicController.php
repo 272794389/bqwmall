@@ -6,7 +6,6 @@ use app\admin\model\system\SystemAttachment;
 use app\models\store\StoreCategory;
 use app\models\store\StoreCouponIssue;
 use app\models\store\StoreProduct;
-use app\models\store\StoreCart;
 use app\models\store\StoreService;
 use app\models\store\StoreCoupon;
 use app\models\system\Express;
@@ -340,8 +339,6 @@ class PublicController
     
     public function store_detail(Request $request, $id, $type = 0){
         if (!$id || !($storeInfo = SystemStore::getValidStore($id))) return app('json')->fail('商户不存在或已下架');
-        $uid = $request->uid();
-        StoreCart::getUserCartNum($request->uid(), 'product', 1);
         $storeInfo['cate_name'] = StoreCategory::where('id',$storeInfo['cat_id'])->value('cate_name');
         if($storeInfo['label']){
             $label_list = explode(',',$storeInfo['label']);

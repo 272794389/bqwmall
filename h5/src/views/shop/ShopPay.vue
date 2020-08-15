@@ -8,9 +8,10 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
-
+import { getUser } from "@api/user";
 import { validatorDefaultCatch } from "@utils/dialog";
 import { shopPay,getStoreDetail } from "@api/store";
+import { isWeixin } from "@utils";
 import { VUE_APP_API_URL } from "@utils";
 
 export default {
@@ -21,6 +22,7 @@ export default {
     return {
       amount: 0, //消费金额
       id: 0,
+      isWeixin: false,
       storeInfo: {}
     };
   },
@@ -29,14 +31,24 @@ export default {
     $route(n) {
       if (n.name === NAME) {
         this.id = n.params.id;
+        if (n.name === NAME) this.User();
       }
     }
   },
   mounted: function() {
    this.id = this.$route.params.id;
    this.getStoreInfo();
+   this.User();
+   this.isWeixin = isWeixin();
   },
   methods: {
+     User: function() {
+      let that = this;
+      getUser().then(res => {
+        that.userInfo = res.data;
+        that.orderStatusNum = res.data.orderStatusNum;
+      });
+    },
      //商家详情接口；
     getStoreInfo: function() {
       let that = this;
