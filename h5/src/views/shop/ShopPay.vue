@@ -117,7 +117,7 @@ export default {
       if (n.name === NAME) {
         this.id = n.params.id;
         this.storeInfo.slider_image = [];
-        //this.productCon();
+        this.productCon();
       }
     }
   },
@@ -126,12 +126,12 @@ export default {
   },
   mounted: function() {
     document.addEventListener("scroll", this.onScroll, false);
-    /*this.id = this.$route.params.id;
+    this.id = this.$route.params.id;
     this.storeInfo.slider_image = [];
     this.productCon();
     this.coupons();
     window.addEventListener("scroll", this.handleScroll);
-    this.getList();*/
+    this.getList();
   },
   methods: {
     // 商品详情跳转
