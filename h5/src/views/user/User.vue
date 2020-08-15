@@ -160,11 +160,11 @@
 		 </router-link>
 	  </div>
 	  <div class="title">
-		 <router-link :to="'/customer/list'" class="title1">
-		  <div class="title1-1"><img src="@assets/images/coupon.png" /></div>
+		 <a href="tel:08596888801" class="title1">
+		  <div class="title1-1"><img src="@assets/images/customer.png" /></div>
 		  <div class="title1-2">联系客服</div>
 		  <div class="title1-3"><span class="iconfont icon-jiantou"></span></div>
-		 </router-link>
+		 </a>
 	  </div>
 	<div class="foot">
 	  <div class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</div>
