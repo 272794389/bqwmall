@@ -32,7 +32,7 @@
 		 </router-link>
 	  </div>
 	  <div class="title">
-		 <router-link :to="'/order/order_cancellation'" class="title1">
+		 <router-link :to="'#'" class="title1">
 		  <div class="title1-2">我的股权</div>
 		  <div class="title1-3" style="color: #16ac57;">{{ userInfo.stockAmount || 0 }}</div>
 		 </router-link>

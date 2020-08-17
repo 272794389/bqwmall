@@ -1168,7 +1168,7 @@ class StoreOrder extends BaseModel
             $product = $productList[0];
             $carinfo = StoreCart::where('id',$cart['cartInfo']['id'])->find();
             $storeInfo = SystemStore::where('id',$product['store_id'])->find();
-            
+            self::where('id', $id)->update(['store_id' => $product['store_id'],]);//订单改为支付
             //给商家结算货款
             $res = true;
             if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
