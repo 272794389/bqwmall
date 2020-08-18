@@ -165,6 +165,11 @@
 		    </div>
 		    <div class="morestyle"><router-link :to="'/tgoods_list/'" >去看更多本地优惠套餐&nbsp;></router-link></div>
 	    </div>
+	    <div class="noCommodity" v-else  v-cloak  style="background-color: #fff; margin-top: 0.3rem;padding-bottom: 2rem;">
+	      <div class="noPictrue">
+	        <img src="@assets/images/noGood.png" class="image" />
+	      </div>
+	    </div>
     </div>
     <div v-if="condition==1">
 	    <div class="wrapper" v-if="info.bastList.length > 0">
@@ -189,6 +194,11 @@
 				</div>
 		    </div>
 		    <div class="morestyle"><router-link :to="'/goods_list/'" >去看更多积分兑换商品&nbsp;></router-link></div>
+	    </div>
+	    <div class="noCommodity" v-else  v-cloak  style="background-color: #fff; margin-top: 0.3rem;padding-bottom: 2rem;">
+	      <div class="noPictrue">
+	        <img src="@assets/images/noGood.png" class="image" />
+	      </div>
 	    </div>
 	</div>
     <div v-if="condition==4">
@@ -215,6 +225,11 @@
 		    </div>
 		    <div class="morestyle"><router-link :to="'/wgoods_list/'" >去看更多精挑细选商品&nbsp;></router-link></div>
 	    </div>
+	    <div class="noCommodity" v-else  v-cloak  style="background-color: #fff; margin-top: 0.3rem;padding-bottom: 2rem;">
+	      <div class="noPictrue">
+	        <img src="@assets/images/noGood.png" class="image" />
+	      </div>
+	    </div>
 	</div>
 	<div v-if="condition==2" id="title2">
 	    <div class="wrapper" v-if="storeList.length>0">
@@ -237,6 +252,11 @@
 			    </div>
 		 </div>
 		 <div class="morestyle"><router-link :to="'/store_list/'" >去看更多周边优惠商家&nbsp;></router-link></div>
+	    </div>
+	    <div class="noCommodity" v-else  v-cloak  style="background-color: #fff; margin-top: 0.3rem;padding-bottom: 2rem;">
+	      <div class="noPictrue">
+	        <img src="@assets/images/noGood.png" class="image" />
+	      </div>
 	    </div>
     </div>
     <Coupon-window

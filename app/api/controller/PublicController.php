@@ -273,9 +273,15 @@ class PublicController
             ['salesOrder', ''],
             ['condition', 1]
         ], $request, true);
-        $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
-        if (!$list) $list = [];
-        $data['list'] = $list;
+        if($condition==1){//同城
+          $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
+          if (!$list) $list = [];
+          $data['list'] = $list;
+        }else{//查询网店
+            $list = SystemStore::netlst($page, $limit,$sid,$cid,$keyword,$salesOrder);
+            if (!$list) $list = [];
+            $data['list'] = $list;
+        }
         $data['tengxun_map_key'] = sys_config('tengxun_map_key');
         return app('json')->successful($data);
     }

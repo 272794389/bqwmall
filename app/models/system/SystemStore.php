@@ -160,7 +160,7 @@ class SystemStore extends BaseModel
     }
 
     /**
-     * 门店列表
+     * 同城门店列表
      * @return mixed
      */
     public static function lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition)
@@ -210,6 +210,38 @@ class SystemStore extends BaseModel
         }
         return $list;
     }
+    
+    /**
+     * 网店列表
+     * @return mixed
+     */
+    public static function netlst($page, $limit,$sid,$cid,$keyword,$salesOrder)
+    {
+        $model = new self();
+        $model = $model->where('is_del', 0);
+        $model = $model->where('is_show',1);
+        if($cid>0){
+            $model = $model->where('cat_id',$cid);
+        }
+        if($sid>0){//大分类
+            $model->whereIn('cat_id', function ($query) use ($sid) {
+                $query->name('store_category')->where('pid', $sid)->field('id')->select();
+            });
+        }
+        if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        $baseOrder = '';
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+         
+        $model = $model->where('belong_t',1);
+        
+        $list = $model->page((int)$page, (int)$limit)
+        ->select()
+        ->hidden(['is_show', 'is_del'])
+        ->toArray();
+        return $list;
+    }
+    
+    
     
     public static function getStoreList($merId){
         return self::where('mer_id',  $merId)->select();

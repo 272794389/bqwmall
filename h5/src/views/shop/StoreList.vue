@@ -3,7 +3,7 @@
     <div class="storeBox productList" ref="container" style="margin-top:2.6rem;">
      <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(0)" class="on">选择分类</span></div>
+        <div class="samebox""><span @click="set_where(0)">分类</span><span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span><span @click="set_where(2)" :class="condition==2 ? 'on' : ''">网店</span></div>
         <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
           <span class="iconfont icon-sousuo"></span>
           <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
@@ -21,78 +21,6 @@
         <span>{{ item.cate_name }}</span>
       </div>
     </div>
-    <!--
-    <div class="nav acea-row row-middle">
-      <div class="condition" @click="set_where(4)" :class="condition==1 ? 'font-color-red' : ''">
-                 全城
-      </div>
-      <div class="condition" @click="set_where(5)" :class="condition==2 ? 'font-color-red' : ''">
-        1km
-      </div>
-      <div class="condition" @click="set_where(6)" :class="condition==3 ? 'font-color-red' : ''">
-        5km
-      </div>
-      <div  class="condition" @click="set_where(7)" :class="condition==4 ? 'font-color-red' : ''">
-        10km
-      </div>
-      <div  class="condition" @click="set_where(8)" :class="condition==5 ? 'font-color-red' : ''">
-        20km
-      </div>
-    </div>
-    <div class="nav acea-row row-middle" style="margin-top:0.82rem;">
-      <div
-        class="item"
-        :class="title ? 'font-color-red' : ''"
-        @click="set_where(0)"
-      >
-        {{ title ? title : "默认" }}
-      </div>
-      <div class="item" @click="set_where(2)">
-                  消费笔数
-        <img src="@assets/images/horn.png" v-if="stock === 0" />
-        <img src="@assets/images/up.png" v-if="stock === 1" />
-        <img src="@assets/images/down.png" v-if="stock === 2" />
-      </div>
-    </div>
-    -->
-    <!--
-      <div
-        class="storeBox-box"
-        v-for="(item, index) in storeList"
-        :key="index"
-        @click="goDetail(item)"
-      >
-      
-        <div class="store-img"><img :src="item.image" lazy-load="true" /></div>
-        <div class="store-cent-left" style="width:5">
-          <div class="store-name">{{ item.name }}</div>
-          <Reta :size="48" :score="4.5"></Reta>
-          <div class="store-address line1">
-                               已消费{{ item.sales }}笔
-          </div>
-         
-          <span style="color:#1495E7;margin-left:0.2rem;">营业：{{ item.day_time }}</span>
-          <div class="store-address line1">
-            {{item.detailed_address }}
-          </div>
-        </div>
-        <div class="row-right">
-          <div>
-            <a class="store-phone" :href="'tel:' + item.phone"
-              ><span class="iconfont icon-dadianhua01"></span
-            ></a>
-          </div>
-          <div class="store-distance" @click.stop="showMaoLocation(item)">
-            <span class="addressTxt" v-if="item.range"
-              >距{{ item.range }}KM</span
-            >
-            <span class="addressTxt" v-else>查看地图</span>
-            <span class="iconfont icon-youjian"></span>
-          </div>
-        </div>
-        
-	 </div>
-	 -->
 	  <div class="wrapper" v-if="storeList.length>0" style="margin-top:-0.6rem;">
         <div class="goodList">
 		    <div class="item acea-row row-between-wrapper shangjia" @click="goDetail(item)" v-for="(item, index) in storeList" :key="index">
@@ -103,10 +31,8 @@
 		        <div class="text">
 		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
 		          <!--<Reta :size="48" :score="4.5"></Reta>-->
-		          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style">{{ item.range }}km</span></div>
-		          <!--
-		          <div class="shoptip gui" style="margin-bottom:0.1rem;margin-top:-0.1rem;">{{ item.cate_name }}<span style="float: right;margin-right: 0.2rem;">{{ item.range }}km</span></div>
-		          -->
+		          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style" v-if="belong_t==2">{{ item.range }}km</span></div>
+		          
 		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业：{{ item.termDate }}&nbsp;{{ item.day_time }}</div>
 		          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
 		        </div>
@@ -116,6 +42,18 @@
         
       </div>
       <Loading :loaded="loaded" :loading="loading"></Loading>
+      <div
+      class="noCommodity"
+      v-cloak
+      style="background-color: #fff; margin-top: -0.6rem;"
+      v-if="storeList.length === 0 && where.page > 1"
+    >
+      <div class="noPictrue">
+        <img src="@assets/images/noGood.png" class="image" />
+      </div>
+    </div>
+    <Recommend v-if="storeList.length === 0 && where.page > 1"></Recommend>
+  </div>
     </div>
     <div>
       <iframe
@@ -217,10 +155,14 @@ export default {
   mounted() {
      this.loadCategoryData();
     if (cookie.get(LONGITUDE) && cookie.get(LATITUDE)) {
-      this.getList();
+	      this.getList();
+	      if(this.condition==1&&this.storeList.length==0){
+		       this.getList();
+	      }
     } else {
       this.selfLocation();
     }
+    
     this.$scroll(this.$refs.container, () => {
       !this.loading && this.getList();
     });
@@ -333,17 +275,13 @@ export default {
       this.loading = true;
       this.setWhere();
       let q = this.where;
-      /*
-      let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
-        page: this.page,
-        limit: this.limit
-      };*/
       storeListApi(q).then(res => {
           this.loading = false;
           this.loaded = res.data.list.length < this.where.limit;
           this.storeList.push.apply(this.storeList, res.data.list);
+          
+          
+          
           this.where.page = this.where.page + 1;
         }).catch(err => {
           this.$dialog.error(err.msg);
@@ -363,27 +301,11 @@ export default {
       switch (index) {
         case 0:
           return that.$router.push({ path: "/spcategory" });
-        case 2:
-          if (that.stock === 0) that.stock = 1;
-          else if (that.stock === 1) that.stock = 2;
-          else if (that.stock === 2) that.stock = 0;
-          break;
-        case 4:
+        case 1:
           that.condition = 1;
           break;
-        case 5:
+        case 2:
           that.condition = 2;
-          break;
-        case 6:
-          that.condition = 3;
-          break;
-        case 7:
-          that.condition = 4;
-          break;
-        case 8:
-          that.condition = 5;
-          break;
-        default:
           break;
       }
       that.$set(that, "storeList", []);
@@ -410,8 +332,8 @@ export default {
 </script>
 
 <style scoped>
-.samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
-.samebox span{float: left; width: 1.6rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
+.samebox{width: 2.8rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox span{float: left; width: 0.7rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
   border-top: 3px solid #f5f5f5;
