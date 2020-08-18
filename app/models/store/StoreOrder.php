@@ -3116,6 +3116,9 @@ class StoreOrder extends BaseModel
                     break;
             }
         }
+        
+        if (isset($where['store_id']) && $where['store_id'] != '') $model = $model->where($aler . 'store_id', $where['store_id']);
+        
 
         if (isset($where['real_name']) && $where['real_name'] != '')
             $model = $model->where($aler . 'order_id|' . $aler . 'real_name|' . $aler . 'user_phone' . ($join ? '|' . $join . '.nickname|' . $join . '.uid' : ''), 'LIKE', "%$where[real_name]%");
