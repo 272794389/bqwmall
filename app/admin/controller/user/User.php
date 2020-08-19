@@ -326,6 +326,7 @@ class User extends AuthController
         if (!$user) return Json::fail('数据不存在!');
         $f = array();
         $f[] = Form::input('uid', '用户编号', $user->getData('uid'))->disabled(1);
+        $f[] = Form::input('spread_uid', '推荐人id', $user->getData('spread_uid'));
         $f[] = Form::input('real_name', '真实姓名', $user->getData('real_name'));
         $f[] = Form::text('phone', '手机号', $user->getData('phone'));
         $f[] = Form::date('birthday', '生日', $user->getData('birthday') ? date('Y-m-d', $user->getData('birthday')) : 0);
@@ -345,6 +346,7 @@ class User extends AuthController
             ['is_promoter', 1],
             ['real_name', ''],
             ['phone', 0],
+            ['spread_uid', 0],
             ['card_id', ''],
             ['birthday', ''],
             ['mark', ''],
@@ -410,6 +412,7 @@ class User extends AuthController
         $edit['real_name'] = $data['real_name'];
         $edit['phone'] = $data['phone'];
         $edit['card_id'] = $data['card_id'];
+        $edit['spread_uid'] = $data['spread_uid'];
         $edit['birthday'] = strtotime($data['birthday']);
         $edit['mark'] = $data['mark'];
         $edit['is_promoter'] = $data['is_promoter'];
