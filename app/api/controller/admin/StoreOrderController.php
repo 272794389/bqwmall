@@ -11,7 +11,7 @@ use crmeb\repositories\ShortLetterRepositories;
 use crmeb\services\{
     MiniProgramService, UtilService, WechatService
 };
-use app\models\system\SystemStore;
+
 use app\models\store\{
     StoreCart, StoreOrder, StoreOrderStatus, StorePink, StoreService
 };
@@ -73,8 +73,8 @@ class StoreOrderController
         if (!StoreService::orderServiceStatus($uid))
             return app('json')->fail('权限不足');
         
-        $storeInfo = SystemStore::where('user_id',$uid)->find();
-            
+        //$storeInfo = StoreService::where('uid',$uid)->find();
+        $merList =   StoreService::getAdminMerList($uid);
         $where = UtilService::getMore([
             ['status', ''],
             ['is_del', 0],
@@ -84,7 +84,7 @@ class StoreOrderController
             ['page', 0],
             ['limit', 0]
         ], $request);
-        $where['store_id'] = $storeInfo['id'];
+        $where['store_id'] = $merList;
         if (!$where['limit']) return app('json')->successful([]);
         return app('json')->successful(StoreOrder::orderList($where));
     }

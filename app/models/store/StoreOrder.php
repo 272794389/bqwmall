@@ -3117,7 +3117,7 @@ class StoreOrder extends BaseModel
             }
         }
         
-        if (isset($where['store_id']) && $where['store_id'] != '') $model = $model->where($aler . 'store_id', $where['store_id']);
+        if (isset($where['store_id']) && $where['store_id'] != '') $model = $model->where($aler . 'store_id','in', $where['store_id']);
         
 
         if (isset($where['real_name']) && $where['real_name'] != '')
