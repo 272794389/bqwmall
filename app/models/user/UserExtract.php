@@ -62,6 +62,9 @@ class UserExtract extends BaseModel
             return self::setErrorInfo('提现方式不存在');
         $userInfo = User::get($userInfo['uid']);
         $extractPrice = $userInfo['now_money'];
+        if(!isset($data['bank_address'])){
+            return self::setErrorInfo('请填写支行名称'.$data['money']);
+        }
         if($extractPrice < 0) return self::setErrorInfo('提现金额不足'.$data['money']);
         if($data['money'] > $extractPrice) return self::setErrorInfo('提现金额不足'.$data['money']);
         if($data['money'] <= 0) return self::setErrorInfo('提现金额大于0');
@@ -84,7 +87,10 @@ class UserExtract extends BaseModel
         else $insertData['real_name'] = $userInfo['nickname'];
         if(isset($data['cardnum'])) $insertData['bank_code'] = $data['cardnum'];
         else $insertData['bank_code'] = '';
-        if(isset($data['bankname'])) $insertData['bank_address']=$data['bankname'];
+        if(isset($data['bankname'])) {
+            $insertData['bank_name']=$data['bankname'];
+            $insertData['bank_address']=$data['bank_address'];
+        }
         else $insertData['bank_address']='';
         if(isset($data['weixin'])) $insertData['wechat'] = $data['weixin'];
         else $insertData['wechat'] = $userInfo['nickname'];
@@ -135,6 +141,9 @@ class UserExtract extends BaseModel
             return self::setErrorInfo('提现方式不存在');
             $userInfo = User::get($userInfo['uid']);
             $extractPrice = $userInfo['huokuan'];
+            if(!isset($data['bank_address'])){
+                return self::setErrorInfo('请填写支行名称'.$data['money']);
+            }
             if($extractPrice < 0) return self::setErrorInfo('提现金额不足'.$data['money']);
             if($data['money'] > $extractPrice) return self::setErrorInfo('提现金额不足'.$data['money']);
             if($data['money'] <= 0) return self::setErrorInfo('提现金额大于0');
@@ -154,7 +163,10 @@ class UserExtract extends BaseModel
             else $insertData['real_name'] = $userInfo['nickname'];
             if(isset($data['cardnum'])) $insertData['bank_code'] = $data['cardnum'];
             else $insertData['bank_code'] = '';
-            if(isset($data['bankname'])) $insertData['bank_address']=$data['bankname'];
+            if(isset($data['bankname'])) {
+                    $insertData['bank_name']=$data['bankname'];
+                    $insertData['bank_address']=$data['bank_address'];
+                }
             else $insertData['bank_address']='';
             if(isset($data['weixin'])) $insertData['wechat'] = $data['weixin'];
             else $insertData['wechat'] = $userInfo['nickname'];

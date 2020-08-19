@@ -74,6 +74,7 @@ class UserExtractController
             ['money', 0],
             ['name', ''],
             ['bankname', ''],
+            ['bank_address', ''],
             ['cardnum', ''],
             ['weixin', ''],
         ], $request);
@@ -100,6 +101,7 @@ class UserExtractController
             ['money', 0],
             ['name', ''],
             ['bankname', ''],
+            ['bank_address', ''],
             ['cardnum', ''],
             ['weixin', ''],
         ], $request);

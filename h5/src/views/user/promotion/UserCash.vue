@@ -21,6 +21,27 @@
     <div class="wrapper">
       <div :hidden="currentTab !== 0" class="list">
         <div class="item acea-row row-between-wrapper">
+          <div class="name">银行</div>
+          <div class="input">
+            <input  v-model="post.bankname" disabled="disabled"/>
+            <!--
+            <select v-model="post.bankname">
+              <option value="">请选择银行</option>
+              <option value="中国银行">中国银行</option>
+              <option value="中国工商银行">中国工商银行</option>
+              <option value="中国农业银行">中国农业银行</option>
+              <option value="中国建设银行">中国建设银行</option>
+            </select>
+            -->
+          </div>
+        </div>
+        <div class="item acea-row row-between-wrapper">
+          <div class="name">支行名称</div>
+          <div class="input">
+            <input placeholder="请输入支行名称" v-model="post.bank_address" />
+          </div>
+        </div>
+        <div class="item acea-row row-between-wrapper">
           <div class="name">持卡人</div>
           <div class="input">
             <input placeholder="请输入持卡人姓名" v-model="post.name" />
@@ -32,26 +53,7 @@
             <input placeholder="请填写卡号" v-model="post.cardnum" />
           </div>
         </div>
-        <div class="item acea-row row-between-wrapper">
-          <div class="name">银行</div>
-          <div class="input">
-            <select v-model="post.bankname">
-              <option value="">请选择银行</option>
-              <option value="中国银行">中国银行</option>
-              <option value="中国工商银行">中国工商银行</option>
-              <option value="中国农业银行">中国农业银行</option>
-              <option value="中国建设银行">中国建设银行</option>
-              <!--
-              <option
-                v-for="(item, index) in banks"
-                :key="index"
-                value="item"
-                >{{ item }}</option
-              >
-              -->
-            </select>
-          </div>
-        </div>
+        
         <div class="item acea-row row-between-wrapper">
           <div class="name">提现</div>
           <div class="input">
@@ -125,17 +127,23 @@ export default {
   props: {},
   data: function() {
     return {
+    /*
       navList: [
         { name: "银行卡", type: "bank", icon: "icon-yinhangqia" },
         { name: "微信", type: "weixin", icon: "icon-weixin2" },
         { name: "支付宝", type: "alipay", icon: "icon-icon34" }
+      ],
+      */
+      navList: [
+        { name: "银行卡", type: "bank", icon: "icon-yinhangqia" }
       ],
       post: {
         extract_type: "bank",
         alipay_code: "",
         money: "",
         name: "",
-        bankname: "",
+        bankname: "中国农业银行",
+        bank_address:"",
         cardnum: "",
         weixin: ""
       },
@@ -174,6 +182,7 @@ export default {
         money = this.post.money,
         name = this.post.name,
         cardnum = this.post.cardnum,
+        bank_address = this.post.bank_address,
         weixin = this.post.weixin,
         that = this;
       if (
@@ -195,6 +204,7 @@ export default {
             let save = {
               extract_type: that.post.extract_type,
               bankname: bankname,
+              bank_address: bank_address,
               cardnum: cardnum,
               name: name,
               money: money

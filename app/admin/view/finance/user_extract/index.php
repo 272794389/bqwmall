@@ -124,10 +124,10 @@
                             </td>
                             <td class="text-left">
                                 {if condition="$vo['extract_type'] eq 'bank'"}
-                                姓名：{$vo.real_name}<br>
+                                 姓名：{$vo.real_name}<br>
                                  银行卡号：{$vo.bank_code}
                                 <br/>
-                                 银行开户地址:{$vo.bank_address}
+                                 开户行:{$vo.bank_name}-{$vo.bank_address}
                                 {elseif condition="$vo['extract_type'] eq 'weixin'"/}
                                 昵称：{$vo.nickname}<br>
                                 微信号：{$vo.wechat}
