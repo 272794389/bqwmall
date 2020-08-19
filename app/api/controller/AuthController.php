@@ -8,6 +8,8 @@ use app\admin\model\sms\SmsRecord;
 use app\http\validates\user\RegisterValidates;
 use app\models\user\User;
 use app\models\user\UserToken;
+use app\admin\model\ump\GoodsCoupon;
+use app\admin\model\ump\GoodsCouponUser;
 use app\models\user\WechatUser;
 use app\Request;
 use crmeb\jobs\TestJob;
@@ -388,9 +390,12 @@ class AuthController
             $userInfo->account = $phone;
             $userInfo->phone = $phone;
         }
-        if ($userInfo->save() || $userPhone == $phone)
+        if ($userInfo->save() || $userPhone == $phone){
+            //发送抵扣券
+            $coupon = GoodsCoupon::get(2)->toArray();
+            GoodsCouponUser::setGoodsCoupon($coupon,$request->uid());
             return app('json')->success('绑定成功');
-        else
+        } else
             return app('json')->fail('绑定失败');
     }
 }

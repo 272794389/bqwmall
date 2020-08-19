@@ -92,9 +92,15 @@ class UserExtract extends BaseModel
         $status = -1;
         $User = User::where('uid', $uid)->find()->toArray();
         UserBill::income('提现失败', $uid, 'now_money', 'extract', $extract_number, $id, bcadd($User['now_money'], $extract_number, 2), $mark);
-        StorePayLog::expend($uid,$id, 2, $extract_number, 0, 0, 0,0,0, $mark);
         
-        User::bcInc($uid, 'now_money', $extract_number, 'uid');
+        if($data['belong_t']==1){
+            StorePayLog::expend($uid,$id, 2, $extract_number, 0, 0, 0,0,0, $mark);
+            User::bcInc($uid, 'now_money', $extract_number, 'uid');
+        }else if($data['belong_t']==2){//货款
+            StorePayLog::expend($uid,$id, 2, 0, $extract_number, 0, 0,0,0, $mark);
+            User::bcInc($uid, 'huokuan', $extract_number, 'uid');
+        }
+        
         $extract_type = '未知方式';
         switch ($data['extract_type']) {
             case 'alipay':
