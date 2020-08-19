@@ -55,6 +55,7 @@
             {type: 'checkbox'},
             {field: 'id', title: 'ID', sort: true,event:'id'},
             {field: 'image', title: '商家门头',templet:'#image'},
+            {field: 'sett_rate', title: '分润比例',templet:'#sett_rate'},
             {field: 'name', title: '商家名称',templet:'#name'},
         ]
     });
