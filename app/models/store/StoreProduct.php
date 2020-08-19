@@ -436,6 +436,8 @@ class StoreProduct extends BaseModel
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC'; 
         
         if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+        
+        $baseOrder = 'sort desc';
         $model = self::getProductWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
         ->order($baseOrder);
        

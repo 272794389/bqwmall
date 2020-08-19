@@ -45,7 +45,7 @@
         :class="fixedState === true ? 'on' : ''"
       >
         <div class="sortItem" @click="sort('childCount')">
-          团队排序
+         市场排序
           <img src="@assets/images/sort1.png" v-if="childCount == 1" />
           <img src="@assets/images/sort2.png" v-if="childCount == 2" />
           <img src="@assets/images/sort3.png" v-if="childCount == 3" />

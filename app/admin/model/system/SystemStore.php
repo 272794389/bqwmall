@@ -88,7 +88,7 @@ class SystemStore extends BaseModel
             $model = $model->where($data);
         }
         $count = $model->count();
-        $data = $model->page((int)$where['page'], (int)$where['limit'])->select();
+        $data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
         if ($where['excel'] == 1) {
             $export = [];
             foreach ($data as $index => $item) {

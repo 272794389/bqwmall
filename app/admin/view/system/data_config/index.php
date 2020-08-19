@@ -265,7 +265,7 @@
                                     <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label" style="width:180px;">城市代理商奖励比例%</label>
+                                                <label class="layui-form-label" style="width:180px;">城市总监奖励比例%</label>
                                                 <div class="layui-input-block">
                                                     <input style="width: 40%" type="text" name="inspect_city" lay-verify="title" autocomplete="off"
                                                            placeholder="请输入值" class="layui-input" v-model="formData.inspect_city">
@@ -276,10 +276,21 @@
                                     <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label" style="width:180px;">地区代理商奖励比例%</label>
+                                                <label class="layui-form-label" style="width:180px;">地区总监奖励比例%</label>
                                                 <div class="layui-input-block">
                                                     <input style="width: 40%" type="text" name="inspect_district" lay-verify="title" autocomplete="off"
                                                            placeholder="请输入值" class="layui-input" v-model="formData.inspect_district">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+                                        <div class="grid-demo grid-demo-bg1">
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label" style="width:180px;">社区服务中心%</label>
+                                                <div class="layui-input-block">
+                                                    <input style="width: 40%" type="text" name="plat_rate" lay-verify="title" autocomplete="off"
+                                                           placeholder="请输入值" class="layui-input" value="10">
                                                 </div>
                                             </div>
                                         </div>
@@ -298,7 +309,7 @@
                                     <div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label" style="width:180px;">平台预留比例%</label>
+                                                <label class="layui-form-label" style="width:180px;">进货成本比例%</label>
                                                 <div class="layui-input-block">
                                                     <input style="width: 40%" type="text" name="plat_rate" lay-verify="title" autocomplete="off"
                                                            placeholder="请输入值" class="layui-input" v-model="formData.plat_rate">
