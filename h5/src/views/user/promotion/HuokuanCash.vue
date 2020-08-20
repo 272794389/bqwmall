@@ -165,7 +165,7 @@ export default {
       getBank().then(
         res => {
           that.banks = res.data.extractBank;
-          that.minPrice = res.data.minPrice;
+          that.minPrice = 10;
           that.commissionCount = res.data.huokuan;
         },
         function(err) {

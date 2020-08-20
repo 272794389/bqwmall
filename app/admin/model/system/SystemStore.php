@@ -3,6 +3,7 @@
 
 namespace app\admin\model\system;
 
+use app\admin\model\user\User;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use crmeb\services\PHPExcelService;
@@ -88,24 +89,57 @@ class SystemStore extends BaseModel
             $model = $model->where($data);
         }
         $count = $model->count();
-        $data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
+        if ($where['excel'] == 0) $model = $model->page((int)$where['page'], (int)$where['limit']);
+        $data = ($data = $model->order('id desc')->select()) && count($data) ? $data->toArray() : [];
+        
+       
+        //$data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
         if ($where['excel'] == 1) {
+            foreach ($data as &$item) {
+                if($item['belong_t']==0){
+                    $item['belong_name'] = "商品中心";
+                }else if($item['belong_t']==1){
+                    $item['belong_name'] = "网店";
+                }else if($item['belong_t']==2){
+                    $item['belong_name'] = "周边套餐";
+                }else if($item['belong_t']==3){
+                    $item['belong_name'] = "服务中心";
+                }
+                $shopuser = User::where('uid',$item['user_id'])->find();
+                if($shopuser['spread_uid']>0){
+                    $spreadInfo = User::where('uid',$shopuser['spread_uid'])->find();
+                    $item['yewu']="业务员id:【".$shopuser['spread_uid']."】,姓名：【".$spreadInfo['real_name']."】,电话：【".$spreadInfo['phone']."】";
+                }else{
+                    $item['yewu']="无业务员";
+                }
+            }
             $export = [];
             foreach ($data as $index => $item) {
                 $export[] = [
                     $item['name'],
-                    $item['phone'],
+                    $item['link_name'],
+                    $item['link_phone'],
                     $item['address'] .= ' ' . $item['detailed_address'],
-                    $item['introduction'],
-                    $item['day_time'],
-                    $item['valid_time']
+                    $item['city'],
+                    $item['district'],
+                    $item['sett_rate'].'%',
+                    $item['give_rate'].'%',
+                    $item['pay_rate'].'%',
+                    $item['belong_name'],
+                    $item['sales'],
+                    $item['label'],
+                    $item['termDate'].= ' ' . $item['day_time'],
+                    date('Y-m-d',$item['add_time']),
+                    $item['yewu']
                 ];
             }
-            PHPExcelService::setExcelHeader(['门店名称', '门店电话', '门店地址', '门店简介', '营业时间', '核销日期'])
-                ->setExcelTile('门店导出', '门店信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time()))
+            PHPExcelService::setExcelHeader(['商户名称', '联系人', '联系电话', '详细地址', '所在城市', '所在地区', '分成比例', '购物积分支付比例'
+                , '赠送消费积分比例', '商户类型', '已消费笔数', '标签', '营业时间', '上线时间', '业务员'])
+                ->setExcelTile('佰仟万平台入驻商户台账', '商户信息' . time(), ' 生成台账时间：' . date('Y-m-d H:i:s', time()))
                 ->setExcelContent($export)
                 ->ExcelSave();
         }
+        
         return compact('count', 'data');
     }
 

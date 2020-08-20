@@ -36,6 +36,10 @@
                                       <input type="text" name="nireid" value="{$where.nireid}" placeholder="客户名称/电话号码" class="input-sm form-control" size="38"/>
                                       <input type="text" name="shopname" value="{$where.shopname}" placeholder="商户名称" class="input-sm form-control" size="38"/>
                                       <button type="submit" class="btn btn-sm btn-primary"> 搜索</button>
+                                      <button name="excel" type="button"
+                                                class="layui-btn layui-btn-warm layui-btn-sm export" type="button">
+                                            <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出
+                                        </button>
                                   </span>
                             </div>
                         </form>

@@ -11,6 +11,7 @@ use app\models\store\StoreCart;
 use crmeb\services\PHPExcelService;
 use crmeb\traits\ModelTrait;
 use app\admin\model\order\StoreOrder;
+use app\admin\model\system\SystemStore;
 use app\admin\model\store\StoreCategory as CategoryModel;
 use app\admin\model\ump\{StoreBargain, StoreCombination, StoreSeckill};
 
@@ -180,6 +181,17 @@ class StoreProduct extends BaseModel
             $item['stock_attr'] = self::getStock($item['id']) > 0 ? true : false;//库存
             $item['sales_attr'] = self::getSales($item['id']);//属性销量
             $item['visitor']    = StoreVisit::where('product_id', $item['id'])->where('product_type', 'product')->count();
+            $storeInfo = SystemStore::where('id',$item['store_id'])->find();
+            $item['storename'] =$storeInfo['name'];
+            if($item['belong_t']==0){
+                $item['belong_name'] = "商品中心";
+            }else if($item['belong_t']==1){
+                $item['belong_name'] = "网店";
+            }else if($item['belong_t']==2){
+                $item['belong_name'] = "周边套餐";
+            }else if($item['belong_t']==3){
+                $item['belong_name'] = "服务中心";
+            }
         }
         unset($item);
         if ($where['excel'] == 1) {
@@ -187,17 +199,29 @@ class StoreProduct extends BaseModel
             foreach ($data as $index => $item) {
                 $export[] = [
                     $item['store_name'],
-                    $item['store_info'],
                     $item['cate_name'],
                     '￥' . $item['price'],
-                    $item['stock'],
+                    $item['unit_name'],
                     $item['sales'],
+                    $item['belong_name'],
+                    $item['give_point'],
+                    $item['pay_point'],
+                    $item['sett_rate'].'%' ,
+                    $item['plat_rate'].'%' ,
+                    '￥' . $item['pay_amount'],
+                    $item['pay_paypoint'],
+                    $item['pay_repeatpoint'],
+                    $item['give_rate'],
+                    $item['stock'],
                     $item['like'],
-                    $item['collect']
+                    $item['collect'],
+                    $item['storename']
                 ];
             }
-            PHPExcelService::setExcelHeader(['产品名称', '产品简介', '产品分类', '价格', '库存', '销量', '点赞人数', '收藏人数'])
-                ->setExcelTile('产品导出', '产品信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time()))
+            PHPExcelService::setExcelHeader(['产品名称',  '产品分类', '价格','单位', '销量', '分类','赠送购物积分','赠送消费积分','分成比例','进货成本比例',  
+                
+                '支付现金','支付消费积分','支付重消积分','支付购物积分','剩余库存','点赞人数', '收藏人数', '商户名称'])
+                ->setExcelTile('佰仟万平台线上销售商品台账', '产品信息' . time(), ' 生成台账时间：' . date('Y-m-d H:i:s', time()))
                 ->setExcelContent($export)
                 ->ExcelSave();
         }
