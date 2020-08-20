@@ -55,7 +55,7 @@
             </div>
           </div>
           <div class="right">
-            <div>{{ val.orderCount }} 单</div>
+            <div>{{ val.orderCount? val.orderCount : 0  }} 单</div>
             <div>{{ val.numberCount ? val.numberCount : 0 }} 元</div>
           </div>
         </div>
