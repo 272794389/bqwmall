@@ -260,8 +260,12 @@ HTML;
                 $goodsName,
                 $item['total_price'],
                 $item['pay_price'],
-                $item['pay_postage'],
-                $item['coupon_price'],
+                $item['pay_paypoint'],
+                $item['pay_repeatpoint'],
+                $item['give_rate'],
+                $item['give_point'],
+                $item['pay_point'],
+                
                 $item['pay_type_name'],
                 $item['pay_time'] > 0 ? date('Y/m-d H:i', $item['pay_time']) : '暂无',
                 $item['status_name'],
@@ -270,8 +274,8 @@ HTML;
             ];
         }
         PHPExcelService::setExcelHeader(['订单号', '性别', '电话', '收货人姓名', '收货人电话', '收货地址', '商品信息',
-            '总价格', '实际支付', '邮费', '优惠金额', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注'])
-            ->setExcelTile('订单导出' . date('YmdHis', time()), '订单信息' . time(), ' 生成时间：' . date('Y-m-d H:i:s', time()))
+            '应付总额', '实际支付','消费积分支付', '重消积分支付','购物积分支付','赠送购物积分', '赠送消费积分', '支付状态', '支付时间', '订单状态', '下单时间', '用户备注'])
+            ->setExcelTile('佰仟万平台商品订单统计台账' . date('YmdHis', time()), '订单信息' . time(), ' 生成台账时间：' . date('Y-m-d H:i:s', time()))
             ->setExcelContent($export)
             ->ExcelSave();
     }

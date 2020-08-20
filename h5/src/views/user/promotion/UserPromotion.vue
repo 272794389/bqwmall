@@ -35,14 +35,15 @@
         <span class="iconfont icon-tongji"></span>
         <div>推广人统计</div>
       </router-link>
-      <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"
-        :to="'/user/commission'"
+        :to="'/user/shoppromoter_list'"
       >
         <span class="iconfont icon-qiandai"></span>
-        <div>佣金明细</div>
+        <div>推广商家统计</div>
       </router-link>
+      
+      <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"
         :to="'/user/promoter_order'"

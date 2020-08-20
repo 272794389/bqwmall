@@ -78,6 +78,33 @@ class UserBillController
         $data['totalLevel'] = User::getSpreadLevelCount($uid);
         return app('json')->successful($data);
     }
+    
+    
+    /**
+     * 推荐商户
+     * @param Request $request
+     * @return mixed
+     *
+     *
+     * keyword 会员名称查询
+     *
+     * sort     numberCount ASC/DESC  金额排序  orderCount  ASC/DESC  订单排序
+     */
+    public function spread_shop(Request $request)
+    {
+        $spreadInfo = UtilService::postMore([
+            ['page', 1],
+            ['limit', 20],
+            ['keyword', ''],
+            ['sort', ''],
+        ], $request);
+        $uid = $request->uid();
+        $data['list'] = User::getUserSpreadShop($uid, $spreadInfo['sort'], $spreadInfo['keyword'], $spreadInfo['page'], $spreadInfo['limit']);
+        $data['total'] = User::getSpreadShopCount($uid);
+        return app('json')->successful($data);
+    }
+    
+    
 
     /**
      * 推广订单

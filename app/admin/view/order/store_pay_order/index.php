@@ -11,7 +11,7 @@
             <div class="ibox-content">
                 <div class="row">
                     <div class="m-b m-l">
-                        <form action="" class="form-inline">
+                        <form action="" id="form" class="form-inline">
                             <div class="search-item" data-name="date">
                                 <span>选择时间：</span>
                                 <button type="button" class="btn btn-outline btn-link" data-value="">全部</button>
@@ -35,8 +35,9 @@
                                   <span class="input-group-btn">
                                       <input type="text" name="nireid" value="{$where.nireid}" placeholder="客户名称/电话号码" class="input-sm form-control" size="38"/>
                                       <input type="text" name="shopname" value="{$where.shopname}" placeholder="商户名称" class="input-sm form-control" size="38"/>
+                                      <input type="hidden" id="dexcel"; name="export" value="0" placeholder="商户名称" class="input-sm form-control" size="38"/>
                                       <button type="submit" class="btn btn-sm btn-primary"> 搜索</button>
-                                      <button name="excel" type="button"
+                                      <button id="excel" type="button"
                                                 class="layui-btn layui-btn-warm layui-btn-sm export" type="button">
                                             <i class="fa fa-floppy-o" style="margin-right: 3px;"></i>导出
                                         </button>
@@ -195,6 +196,15 @@
             dom.eq(0).removeClass('btn-outline btn-link').addClass('btn-primary btn-sm')
                 .siblings().addClass('btn-outline btn-link').removeClass('btn-primary btn-sm')
         });
+
+        $("#excel").click(function(){
+        	var form = $('#form');
+        	$("#dexcel").val(1);
+        	form.submit();
+           });
+
+
+        
     })
     $('.j-fail').on('click',function(){
         var url = $(this).data('url');

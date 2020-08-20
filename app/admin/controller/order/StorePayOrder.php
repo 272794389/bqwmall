@@ -31,6 +31,7 @@ class StorePayOrder extends AuthController
             ['extract_type', ''],
             ['nireid', ''],
             ['date', ''],
+            ['export', 0],
         ], $this->request);
         $limitTimeList = [
             'today' => implode(' - ', [date('Y/m/d'), date('Y/m/d', strtotime('+1 day'))]),
@@ -51,6 +52,11 @@ class StorePayOrder extends AuthController
         $this->assign('limitTimeList', $limitTimeList);
         $this->assign(StorePayOrderModel::payStatistics());
         $this->assign(StorePayOrderModel::systemPage($where));
+        if($where['export']==1){
+            StorePayOrderModel::exportList($where);
+        }
+        
+        
         return $this->fetch();
     }
 }

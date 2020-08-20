@@ -6,6 +6,8 @@ namespace app\models\system;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use app\models\store\StoreCategory;
+use app\models\user\StorePayLog;
+
 
 /**
  * 门店自提 model
@@ -168,6 +170,7 @@ class SystemStore extends BaseModel
         $model = new self();
         $model = $model->where('is_del', 0);
         $model = $model->where('is_show',1);
+        $model = $model->where('status', 1);
         if($cid>0){
             $model = $model->where('cat_id',$cid);
         }
@@ -220,6 +223,7 @@ class SystemStore extends BaseModel
         $model = new self();
         $model = $model->where('is_del', 0);
         $model = $model->where('is_show',1);
+        $model = $model->where('status', 1);
         if($cid>0){
             $model = $model->where('cat_id',$cid);
         }
@@ -240,6 +244,36 @@ class SystemStore extends BaseModel
         ->toArray();
         return $list;
     }
+    
+    
+    /**
+     * 获取商户信息
+     * @param $uid
+     * @param string $orderBy
+     * @param string $keyword
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
+    public static function getShopSpreadCountList($uid, $orderBy = '', $keyword = '', $page = 0, $limit = 20)
+    {
+        $model = new self;
+        if ($orderBy === '') $orderBy = 'u.add_time desc';
+        $model = $model->alias(' u');
+        $sql = StorePayLog::where('o.order_id','>', 0)->where('o.huokuan', '>', 0)->group('o.uid')->field(['SUM(o.huokuan) as numberCount,count(1) as orderCount', 'o.uid','o.huokuan', 'o.order_id'])
+        ->alias('o')->fetchSql(true)->select();
+        $model = $model->join("(" . $sql . ") p", 'u.user_id = p.uid', 'LEFT');
+        $model = $model->where('u.user_id', 'IN', $uid);
+        $model = $model->field("u.user_id,u.mer_name,u.image,from_unixtime(u.add_time,'%Y/%m/%d') as time,p.numberCount,p.orderCount");
+        if (strlen(trim($keyword))) $model = $model->where('u.mer_name', 'like', "%$keyword%");
+        $model = $model->group('u.user_id');
+        $model = $model->order($orderBy);
+        $model = $model->page($page, $limit);
+        $list = $model->select();
+        if ($list) return $list->toArray();
+        else return [];
+    }
+    
     
     
     

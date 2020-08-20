@@ -101,7 +101,7 @@ class SystemStore extends BaseModel
                 }else if($item['belong_t']==1){
                     $item['belong_name'] = "网店";
                 }else if($item['belong_t']==2){
-                    $item['belong_name'] = "周边套餐";
+                    $item['belong_name'] = "周边的店";
                 }else if($item['belong_t']==3){
                     $item['belong_name'] = "服务中心";
                 }

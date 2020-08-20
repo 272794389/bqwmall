@@ -5,6 +5,7 @@ namespace app\models\user;
 
 use app\models\store\StoreOrder;
 use app\models\store\StoreProduct;
+use app\models\system\SystemStore;
 use crmeb\services\SystemConfigService;
 use think\facade\Session;
 use crmeb\traits\ModelTrait;
@@ -417,6 +418,23 @@ class User extends BaseModel
         if (!count($uidSubordinate)) return 0;
         return self::where('spread_uid', 'IN', implode(',', $uidSubordinate))->count();
     }
+    
+    
+    /**
+     * TODO 获取商户推荐数量
+     * @param int $uid
+     * @return bool|int|string
+     */
+    public static function getSpreadShopCount($uid = 0)
+    {
+        if (!$uid) return false;
+        $uidSubordinate = self::where('spread_uid', $uid)->column('uid');
+        if (!count($uidSubordinate)) return 0;
+        return SystemStore::where('user_id', 'IN', implode(',', $uidSubordinate))->count();
+    }
+    
+    
+    
 
     /**
      * 获取用户下级推广人
@@ -438,6 +456,24 @@ class User extends BaseModel
         if ($grade == 0) return self::getUserSpreadCountList(implode(',', $userStair), $orderBy, $keyword, $page, $limit);
         $userSecondary = self::where('spread_uid', 'in', implode(',', $userStair))->column('uid');
         return self::getUserSpreadCountList(implode(',', $userSecondary), $orderBy, $keyword, $page, $limit);
+    }
+    
+    
+    /**
+     * 获取用户推荐人商家
+     * @param int $uid 当前用户
+     * @param string $orderBy 排序
+     * @param string $keyword
+     * @param int $page
+     * @param int $limit
+     * @return array|bool
+     */
+    public static function getUserSpreadShop($uid = 0,  $orderBy = '', $keyword = '', $page = 0, $limit = 20)
+    {
+        if (!$uid) return [];
+        $userStair = self::where('spread_uid', $uid)->column('uid');
+        if (!count($userStair)) return [];
+        return SystemStore::getShopSpreadCountList(implode(',', $userStair), $orderBy, $keyword, $page, $limit);
     }
 
     /**

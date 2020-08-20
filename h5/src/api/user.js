@@ -213,6 +213,13 @@ export function getSpreadUser(screen) {
 }
 
 /*
+ * 推广商户列表
+ * */
+export function getSpreadShop(screen) {
+  return request.post("/spread/shop", screen);
+}
+
+/*
  * 推广人订单
  * */
 export function getSpreadOrder(where) {

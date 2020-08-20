@@ -77,7 +77,7 @@ class SystemStore extends AuthController
         $ermaImg = $erma_url;
         if(!$erma_url){
             //$siteUrl = sysConfig('site_url');
-            $siteUrl = "https://bqw.dshqfsc.com";
+            $siteUrl = "https://www.dshqfsc.com";
             $codeUrl = UtilService::setHttpType($siteUrl, 1)."/shoppay/".$store_id."?spread=".$uid;//二维码链接
             $name = date("Y-m-d")."-order-sale-".time().".jpg";
             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
