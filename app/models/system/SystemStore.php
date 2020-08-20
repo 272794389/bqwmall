@@ -260,7 +260,7 @@ class SystemStore extends BaseModel
         $model = new self;
         if ($orderBy === '') $orderBy = 'u.add_time desc';
         $model = $model->alias(' u');
-        $sql = StorePayLog::where('o.order_id','>', 0)->where('o.huokuan', '>', 0)->group('o.uid')->field(['SUM(o.huokuan) as numberCount,count(1) as orderCount', 'o.uid','o.huokuan', 'o.order_id'])
+        $sql = StorePayLog::where('o.order_id','>', 0)->where('o.huokuan', '>', 0)->where('o.belong_t', '<', 2)->group('o.uid')->field(['SUM(o.huokuan) as numberCount,count(1) as orderCount', 'o.uid','o.huokuan', 'o.order_id'])
         ->alias('o')->fetchSql(true)->select();
         $model = $model->join("(" . $sql . ") p", 'u.user_id = p.uid', 'LEFT');
         $model = $model->where('u.user_id', 'IN', $uid);
