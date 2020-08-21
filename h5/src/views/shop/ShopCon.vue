@@ -18,6 +18,7 @@
 	       <div v-for="(item, index) in couponList" :key="index">
 	           <span class="activity">满{{item.use_min_price}}元抵{{item.coupon_price}}元</span>
 	       </div>
+	       <div class="iconfont icon-jiantou" @click="moreCoupon" style="float:right;"></div>
         </div>
         <div class="pingfen service" v-if="labelList.length > 0">
           <div v-for="(item, index) in labelList" :key="index">
@@ -272,6 +273,9 @@ export default {
     // 商品详情跳转
     goDetail(item) {
         this.$router.push({ path: "/detail/" + item.id });
+    },
+    moreCoupon(){
+        this.$router.push({ path: "/more_coupon/" + this.id });
     },
     onScroll: debounce(function() {
       if (this.lock) {

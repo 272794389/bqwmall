@@ -357,10 +357,19 @@ class PublicController
         $couponList = StoreCoupon::where('status',1)->where('is_del',0)
         ->whereFindinSet('product_id', $id)
         ->field('*')
-        ->order('coupon_price', 'DESC')
+        ->order('coupon_price', 'asc')
+        ->limit(2)
+        ->select();
+        //获取商家抵扣券
+        $acouponList = StoreCoupon::where('status',1)->where('is_del',0)
+        ->whereFindinSet('product_id', $id)
+        ->field('*')
+        ->order('coupon_price', 'asc')
         ->select();
         $couponList = count($couponList) ? $couponList->toArray() : [];
+        $acouponList = count($acouponList) ? $acouponList->toArray() : [];
         $data['coupon_list'] = $couponList;
+        $data['acoupon_List'] = $acouponList;
         return app('json')->successful($data);
     }
     

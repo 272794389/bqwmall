@@ -242,6 +242,9 @@ class SystemStore extends BaseModel
         ->select()
         ->hidden(['is_show', 'is_del'])
         ->toArray();
+        foreach ($list as &$value) {
+            $value['cate_name'] = StoreCategory::where('id',$value['cat_id'])->value('cate_name');
+        }
         return $list;
     }
     

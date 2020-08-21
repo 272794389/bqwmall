@@ -182,6 +182,15 @@ const router = new Router({
       component: () => import("@views/shop/GoodsCon.vue")
     },
     {
+        path: "/more_coupon/:id",
+        name: "CouponCon",
+        meta: {
+          title: "商家优惠列表",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/CouponCon.vue")
+      },
+    {
         path: "/sdetail/:id",
         name: "ShopCon",
         meta: {
