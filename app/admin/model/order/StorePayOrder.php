@@ -107,6 +107,21 @@ class StorePayOrder extends BaseModel
             }else{
                 $item['pay_type']='微信';
             }
+            
+            if($item['pay_flag']==0){
+                $item['pay_give'] = 0;
+                $item['coupon_amount'] = 0;
+                $item['pay_point'] = 0;
+            }else if($item['pay_flag']==1){
+                $item['coupon_amount'] = 0;
+                $item['pay_point'] = 0;
+            }else if($item['pay_flag']==2){
+                $item['coupon_amount'] = 0;
+                $item['pay_give'] = 0;
+            }else if($item['pay_flag']==3){
+                $item['pay_point'] = 0;
+                $item['pay_give'] = 0;
+            }
             $export[] = [
                 $item['order_id'],
                 ' 用户昵称:'.$item['nickname'] .=' /用户id:'. $item['uid'],
@@ -114,12 +129,13 @@ class StorePayOrder extends BaseModel
                 '￥'.$item['total_amount'],
                 '￥'.$item['pay_amount'],
                 $item['pay_give'],
+                $item['pay_point'],
                 $item['coupon_amount'],
                 $item['pay_type'],
                 date('Y-m-d',$item['add_time'])
             ];
         }
-        PHPExcelService::setExcelHeader(['订单号', '用户信息', '商户名称', '消费总额', '实际支付', '购物积分支付', '抵扣券抵扣', '支付方式'
+        PHPExcelService::setExcelHeader(['订单号', '用户信息', '商户名称', '消费总额', '实际支付', '购物积分抵扣','消费积分抵扣', '抵扣券抵扣', '支付方式'
             , '消费时间'])
             ->setExcelTile('佰仟万平台用户消费台账', '消费信息' . time(), ' 生成台账时间：' . date('Y-m-d H:i:s', time()))
             ->setExcelContent($export)

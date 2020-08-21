@@ -401,12 +401,11 @@ class PublicController
     
     public function computedOrder(Request $request){
         $uid = $request->uid();
-        list($useIntegral,$useCoupon,$orderid) = UtilService::postMore([
-           ['useIntegral', 0],['useCoupon', 0],['orderid', 0],
+        list($useIntegral,$useCoupon,$usePayIntegral,$orderid) = UtilService::postMore([
+           ['useIntegral', 0],['useCoupon', 0],['usePayIntegral', 0],['orderid', 0],
         ], $request, true);
         if (!$orderid || !($orderinfo = StorePayOrder::getPayOrder($request->uid(),$orderid))) return app('json')->fail('订单不存在');
-        StorePayOrder::computerOrder($orderid,$useIntegral,$useCoupon);//创建消费订单
-        
+        StorePayOrder::computerOrder($orderid,$useIntegral,$useCoupon,$usePayIntegral);//创建消费订单
         $order = StorePayOrder::getPayOrder($request->uid(),$orderid);
         $data['orderinfo'] = $order;
         return app('json')->successful($data);

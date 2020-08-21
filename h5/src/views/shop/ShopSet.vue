@@ -57,8 +57,8 @@
         <div class="money">￥{{ orderPrice.total_amount}}</div>
       </div>
       
-      <div class="item acea-row row-between-wrapper">
-        <div>使用积分抵扣</div>
+      <div class="item acea-row row-between-wrapper" v-if="orderPrice.pay_give>0">
+        <div>购物积分抵扣</div>
         <div class="discount">
           <div class="select-btn">
             <div class="checkbox-wrapper">
@@ -76,7 +76,26 @@
           </div>
         </div>
       </div>
-      <div class="item acea-row row-between-wrapper">
+      <div class="item acea-row row-between-wrapper" v-if="orderPrice.pay_point>0">
+        <div>消费积分抵扣</div>
+        <div class="discount">
+          <div class="select-btn">
+            <div class="checkbox-wrapper">
+              <label class="well-check">
+                <input type="checkbox" v-model="usePayIntegral" />
+                <i class="icon" style="right: 0;left: unset;"></i>
+                <span class="integral" style="margin-right:0.4rem;">
+                  当前可抵扣
+                  <span class="num font-color-red">
+                    ￥{{ orderPrice.pay_point || 0 }}
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="item acea-row row-between-wrapper" v-if="orderPrice.coupon_amount>0">
         <div>抵扣券抵扣</div>
         <div class="discount">
           <div class="select-btn">
@@ -95,8 +114,6 @@
           </div>
         </div>
       </div>
-      
-     
       <div class="item acea-row row-between-wrapper" >
         <div>赠送消费积分：</div>
         <div class="money">{{ orderPrice.pay_pointer }}</div>
@@ -150,8 +167,9 @@ export default {
       offlinePayStatus: 2,
       from: _isWeixin ? "weixin" : "weixinh5",
       deduction: true,
-      useIntegral: true,
+      useIntegral: false,
       useCoupon: false,
+      usePayIntegral:false,
       isWeixin: _isWeixin,
       active: _isWeixin ? "weixin" : "yue",
       orderPrice: {
@@ -171,12 +189,21 @@ export default {
     useIntegral() {
      if(this.useIntegral==true){
         this.useCoupon=false;
+        this.usePayIntegral=false;
       }
       this.computedPrice();
     },
     useCoupon() {
       if(this.useCoupon==true){
         this.useIntegral=false;
+        this.usePayIntegral=false;
+      }
+      this.computedPrice();
+    },
+    usePayIntegral() {
+      if(this.usePayIntegral==true){
+        this.useIntegral=false;
+        this.useCoupon=false;
       }
       this.computedPrice();
     },
@@ -218,7 +245,8 @@ export default {
       postPayOrderComputed({
         orderid: this.id ,
         useIntegral: this.useIntegral ? 1 : 0,
-        useCoupon: this.useCoupon ? 1 : 0
+        useCoupon: this.useCoupon ? 1 : 0,
+        usePayIntegral: this.usePayIntegral ? 1 : 0
       }).then(res => {
           that.$set(that, "orderPrice", res.data.orderinfo);
         }).catch(res => {

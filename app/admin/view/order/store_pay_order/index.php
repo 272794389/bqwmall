@@ -100,7 +100,8 @@
                                 <th class="text-center">商户名称</th>
                                 <th class="text-center">消费金额</th>
                                 <th class="text-center">实际支付</th>
-                                <th class="text-center">购物积分支付</th>
+                                <th class="text-center">购物积分抵扣</th>
+                                <th class="text-center">消费积分支付</th>
                                 <th class="text-center">抵扣券抵扣</th>
                                 <th class="text-center">支付方式</th>
                                 <th class="text-center">状态</th>
@@ -129,10 +130,25 @@
                                 {$vo.pay_amount}
                             </td>
                             <td class="text-center" style="color: #00aa00;">
+                             {if condition="$vo['pay_flag'] eq 1"}
                                 {$vo.pay_give}
+                             {else}
+                                0
+                              {/if}
                             </td>
                             <td class="text-center" style="color: #00aa00;">
-                                {$vo.coupon_amount}
+                             {if condition="$vo['pay_flag'] eq 2"}
+                                {$vo.pay_point}
+                             {else}
+                                0
+                              {/if}
+                            </td>
+                            <td class="text-center" style="color: #00aa00;">
+                                {if condition="$vo['pay_flag'] eq 3"}
+                                  {$vo.coupon_amount}
+                                {else}
+                                   0
+                                {/if}
                             </td>
                             <td class="text-center">
                                 {if condition="$vo['paid'] eq 1"}

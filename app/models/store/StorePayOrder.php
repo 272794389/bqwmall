@@ -68,13 +68,16 @@ class StorePayOrder extends BaseModel
         //计算商家购物积分支付金额
         $give_amount = round( $storeInfo['give_rate']*$total_amount/100,2);
         $give_point = $userInfo['give_point'];
+        $pay_points = $userInfo['pay_point'];
         $pay_give=0;//购物积分支付金额
+        $pay_point=0;//消费积分支付金额
         if($give_point<$give_amount){
             $pay_give = $give_point;
         }else{
             $pay_give= $give_amount;
         }
-        $pay_amount = bcsub($total_amount,$pay_give,2);
+        $pay_amount = $total_amount;
+       // $pay_amount = bcsub($total_amount,$pay_give,2);
        
         //计算优惠券优惠金额
         //判断该商家是否支持抵扣券抵扣
@@ -98,31 +101,50 @@ class StorePayOrder extends BaseModel
             if(!$mcouponAmount>$coupon_amount){
                 $coupon_amount = $mcouponAmount;
             }
-        }
-        if($pay_give==0){
-            $pay_amount = bcsub($total_amount,$coupon_amount,2);
+            
+            //计算消费积分抵扣
+            if($pay_points>0){
+                if($pay_points>$coupon_amount){
+                    $pay_point = $coupon_amount; 
+                }else{
+                    $pay_point = $pay_point;
+                }
+            }
         }
         $pay_pointer = 0;
         if($pay_amount==$total_amount){
             $pay_pointer =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
-            
         }
-        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','coupon_amount','pay_give','add_time','pay_pointer'));
+        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','coupon_amount','pay_give','pay_point','add_time','pay_pointer'));
     }
     
     //计算积分抵扣或抵扣券抵扣的金额
-    public static function computerOrder($orderid,$useIntegral,$useCoupon)
+    public static function computerOrder($orderid,$useIntegral,$useCoupon,$usePayIntegral)
     {
         $orderinfo = self::get($orderid);
         $order_id = $orderid;
         
         $storeInfo = SystemStore::getStoreDispose($orderinfo['store_id']);//获取商家信息
         $userInfo = User::getUserInfo($orderinfo['uid']);
-        $pay_point=0;
-        $pay_give=0;
-        $coupon_amount=0;
+        $pay_flag=0;
+        $pay_point=$orderinfo['pay_point'];
+        $pay_pointer=0;
+        $pay_give=$orderinfo['pay_give'];
+        $coupon_amount=$orderinfo['coupon_amount'];
         $total_amount = $orderinfo['total_amount'];
         $pay_amount = $orderinfo['total_amount'];
+        //计算优惠券优惠金额
+        //判断该商家是否支持抵扣券抵扣
+        $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
+        ->whereFindinSet('product_id', $orderinfo['store_id'])
+        ->field('*')
+        ->order('coupon_price', 'DESC')
+        ->select();
+        
+        if(count($couponList)>0){
+            $coupon = $couponList[0];
+            $coupon_amount = $coupon['coupon_price'];
+        }
         if($useIntegral==1){
             //计算商家购物积分支付金额
             $give_amount = round( $storeInfo['give_rate']*$total_amount/100,2);
@@ -134,21 +156,10 @@ class StorePayOrder extends BaseModel
                 $pay_give= $give_amount;
             }
             $pay_amount = bcsub($total_amount,$pay_give,2);
-        }
-        if($useCoupon==1&&$pay_give==0){
-            //计算优惠券优惠金额
-            //判断该商家是否支持抵扣券抵扣
-            $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
-            ->whereFindinSet('product_id', $orderinfo['store_id'])
-            ->field('*')
-            ->order('coupon_price', 'DESC')
-            ->select();
-            
-            if(count($couponList)>0){
-                $coupon = $couponList[0];
-                $coupon_amount = $coupon['coupon_price'];
+            if($pay_give>0){
+                $pay_flag=1;
             }
-           
+        }else if($useCoupon==1){//使用抵扣券
             if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
                 $couponMap = GoodsCouponUser::where('uid',$orderinfo['uid'])->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
                 $mcouponAmount = 0;
@@ -158,16 +169,33 @@ class StorePayOrder extends BaseModel
                 if(!$mcouponAmount>$coupon_amount){
                     $coupon_amount = $mcouponAmount;
                 }
-            }
-            if($pay_give==0){
                 $pay_amount = bcsub($total_amount,$coupon_amount,2);
+                if($coupon_amount>0){
+                    $pay_flag=3;
+                }
+            }
+          
+        }else if($usePayIntegral==1){//使用消费积分抵扣券
+            //计算商家消费积分支付金额
+            if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
+              $pay_points = $userInfo['pay_point'];
+              if($pay_points>$coupon_amount){
+                  $pay_point = $coupon_amount;
+              }else{
+                  $pay_point = $pay_points;
+              }
+              $pay_amount = bcsub($total_amount,$pay_point,2);
+            }
+            if($pay_point>0){
+                $pay_flag=2;
             }
         }
+        
         if($pay_amount==$total_amount){
-            $pay_point =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
+            $pay_pointer =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
             
         }
-        return self::where('id',$orderid)->update(['pay_amount'=>$pay_amount,'pay_give'=>$pay_give,'coupon_amount'=>$coupon_amount,'pay_pointer'=>$pay_point]);
+        return self::where('id',$orderid)->update(['pay_amount'=>$pay_amount,'pay_give'=>$pay_give,'coupon_amount'=>$coupon_amount,'pay_pointer'=>$pay_pointer,'pay_point'=>$pay_point,'pay_flag'=>$pay_flag]);
     }
     
     /*
@@ -252,19 +280,20 @@ class StorePayOrder extends BaseModel
         $sms_open = $feeRate['sms_open'];
         self::beginTrans();
         $res = true;
-        if($orderInfo['pay_give']>0){
+        $dikou=0;
+        if($orderInfo['pay_give']>0&&$orderInfo['pay_flag']==1){//购物积分抵扣
             $res = false !== User::bcDec($uid, 'give_point', $orderInfo['pay_give'], 'uid');
             if($res){
-                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, -$orderInfo['pay_give'], 0,0,0, '微信支付' . floatval($orderInfo['pay_amount']) . '元商家消费');
+                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, -$orderInfo['pay_give'], 0,0,0, '商家消费' . floatval($orderInfo['total_amount']) . '元抵扣');
             }
-        }else if($orderInfo['pay_pointer']>0){//判断是否有赠送积分
-            $res = false !== User::bcInc($uid, 'pay_point',$orderInfo['pay_pointer'], 'uid');
+            $dikou = $orderInfo['pay_give'];
+        }else if($orderInfo['pay_point']>0&&$orderInfo['pay_flag']==2){//消费积分抵扣
+            $res = false !== User::bcDec($uid, 'pay_point', $orderInfo['pay_point'], 'uid');
             if($res){
-                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0, $orderInfo['pay_pointer'],0,0, '商家消费赠送消费积分');
+                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0,-$orderInfo['pay_point'],0,0, '商家消费' . floatval($orderInfo['total_amount']) . '元抵扣');
             }
-        }
-        
-        if($orderInfo['coupon_amount']>0){//有使用抵扣券
+            $dikou = $orderInfo['pay_point'];
+        }else if($orderInfo['coupon_amount']>0&&$orderInfo['pay_flag']==3){//有使用抵扣券
             $coupon_price = $orderInfo['coupon_amount'];
             $couponList = GoodsCouponUser::getAllCouponList($uid,0);
             foreach ($couponList as $coupon){
@@ -300,8 +329,15 @@ class StorePayOrder extends BaseModel
                 if($coupon_price==0){
                     break;
                 }
-            }  
+            }
+            $dikou = $orderInfo['coupon_amount'];
+        }else if($orderInfo['pay_pointer']>0&&$orderInfo['pay_flag']==0){//判断是否有赠送积分
+            $res = false !== User::bcInc($uid, 'pay_point',$orderInfo['pay_pointer'], 'uid');
+            if($res){
+                $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0, $orderInfo['pay_pointer'],0,0, '商家消费赠送消费积分');
+            }
         }
+        
         //给商家结算货款
         $amount = $orderInfo['total_amount']*(100-$storeInfo['sett_rate'])/100;
         if($res){
@@ -329,9 +365,8 @@ class StorePayOrder extends BaseModel
             SystemStore::bcInc($orderInfo['store_id'], 'sales', 1, 'id');
         }
         
-        
         //用于分配整体利润
-        $runamount = ($orderInfo['total_amount'] - $amount - $orderInfo['pay_give'])*(100-$feeRate['plat_rate'])/100;
+        $runamount = ($orderInfo['total_amount'] - $amount - $dikou)*(100-$feeRate['plat_rate'])/100;
         $use_amount = 0;
         $fee=0;
         $repeat_point=0;
