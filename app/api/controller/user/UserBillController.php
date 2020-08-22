@@ -300,31 +300,31 @@ class UserBillController
                             array(
                                 'url' => $urlCode,     //二维码资源
                                 'stream' => 0,
-                                'left' => 114,
-                                'top' => 790,
+                                'left' => 130,
+                                'top' => 380,
                                 'right' => 0,
                                 'bottom' => 0,
-                                'width' => 120,
-                                'height' => 120,
+                                'width' => 350,
+                                'height' => 350,
                                 'opacity' => 100
                             )
                         ),
                         'text' => array(
                             array(
                                 'text' => $user['nickname'],
-                                'left' => 250,
+                                'left' => 130,
                                 'top' => 840,
                                 'fontPath' => $rootPath . 'public' . DS . $filelink['Bold'],     //字体文件
-                                'fontSize' => 16,             //字号
+                                'fontSize' => 26,             //字号
                                 'fontColor' => '40,40,40',       //字体颜色
                                 'angle' => 0,
                             ),
                             array(
                                 'text' => '邀请您加入' . sys_config('site_name'),
-                                'left' => 250,
+                                'left' => 130,
                                 'top' => 880,
                                 'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
-                                'fontSize' => 16,             //字号
+                                'fontSize' => 18,             //字号
                                 'fontColor' => '40,40,40',       //字体颜色
                                 'angle' => 0,
                             )

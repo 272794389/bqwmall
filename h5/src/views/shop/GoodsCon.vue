@@ -509,10 +509,10 @@ export default {
     showChang: function() {
       if (isWeixin()) {
         let config = {
-          latitude: parseFloat(this.storeItems.latitude),
-          longitude: parseFloat(this.storeItems.longitude),
-          name: this.storeItems.name,
-          address: this.storeItems.address + this.system_store.detailed_address
+          latitude: parseFloat(this.system_store.latitude),
+          longitude: parseFloat(this.system_store.longitude),
+          name: this.system_store.name,
+          address: this.system_store.address + this.system_store.detailed_address
         };
         wechatEvevt("openLocation", config)
           .then(res => {
