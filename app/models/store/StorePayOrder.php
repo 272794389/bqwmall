@@ -93,15 +93,15 @@ class StorePayOrder extends BaseModel
             $coupon_amount = $coupon['coupon_price'];
         }
         if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
-            $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+            $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
             $mcouponAmount = 0;
             if($couponMap){
                 $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
             }
-            if(!$mcouponAmount>$coupon_amount){
+            if($mcouponAmount<$coupon_amount){
                 $coupon_amount = $mcouponAmount;
             }
-            
+           
             //计算消费积分抵扣
             if($pay_points>0){
                 if($pay_points>$coupon_amount){
@@ -161,12 +161,12 @@ class StorePayOrder extends BaseModel
             }
         }else if($useCoupon==1){//使用抵扣券
             if($coupon_amount>0){//商家有抵扣活动，判断是否还有抵扣金额
-                $couponMap = GoodsCouponUser::where('uid',$orderinfo['uid'])->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+                $couponMap = GoodsCouponUser::where('uid',$orderinfo['uid'])->where('is_fail',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
                 $mcouponAmount = 0;
                 if($couponMap){
                     $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
                 }
-                if(!$mcouponAmount>$coupon_amount){
+                if($mcouponAmount<$coupon_amount){
                     $coupon_amount = $mcouponAmount;
                 }
                 $pay_amount = bcsub($total_amount,$coupon_amount,2);
