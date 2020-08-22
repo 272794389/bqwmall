@@ -396,9 +396,9 @@ class StoreProduct extends BaseModel
     public static function getHotProductLoading($field = '*', $page = 0, $limit = 0)
     {
         if (!$limit) return [];
-        $model = self::where('is_hot', 1)->where('is_del', 0)->where('mer_id', 0)
+        $model = self::where('sales','>', 0)->where('is_del', 0)->where('mer_id', 0)
             ->where('stock', '>', 0)->where('is_show', 1)->field($field)
-            ->order('sort DESC, id DESC');
+            ->order('sales DESC');
         if ($page) $model->page($page, $limit);
         $list = $model->select();
         if (is_object($list)) return $list->toArray();

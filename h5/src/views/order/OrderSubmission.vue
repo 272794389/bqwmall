@@ -42,21 +42,17 @@
         <div class="iconfont icon-jiantou"></div>
       </div>
       <div
-        class="address acea-row row-between-wrapper"
-        v-else
-        @click="showStoreList"
-      >
+        class="address acea-row row-between-wrapper" v-else>
         <div class="addressCon" v-if="storeItem">
           <div class="name">
-            {{ storeItem.name }}
-            <span class="phone" v-text="storeItem.phone"></span>
+            {{ system_store.name }}
+            <span class="phone" v-text="system_store.phone"></span>
           </div>
           <div
-            v-text="storeItem.address + ',' + storeItem.detailed_address"
-            v-if="storeItem.address && storeItem.detailed_address"
+            v-text="system_store.address + ',' + system_store.detailed_address"
+            v-if="system_store.address && system_store.detailed_address"
           ></div>
         </div>
-        <div class="iconfont icon-jiantou"></div>
       </div>
       <div class="line">
         <img src="@assets/images/line.jpg" />

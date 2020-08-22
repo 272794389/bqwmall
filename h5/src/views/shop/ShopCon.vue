@@ -36,49 +36,14 @@
      <div class="pay_btn" @click="goPay(storeInfo)">点击向商家付款</div>
      <div class="productList">
      <div v-if="goodList.length > 0">
-      <div class="title acea-row row-center-wrapper" style="line-height:0.8rem;">
+      <div class="title acea-row row-center-wrapper" style="line-height:0.8rem;line-height: 0.8rem;font-size: 0.4rem; font-weight: bold;justify-content: left;">
         <div class="titleTxt">商家为您推荐</div>
       </div>
-      <div class="list acea-row row-between-wrapper" ref="container" style="margin-top:0rem;">
-	      <div
-	        @click="goDetail(item)"
-	        v-for="(item, index) in goodList"
-	        :key="index"
-	        class="item"
-	        :class="Switch === true ? '' : 'on'"
-	        :title="item.store_name"
-	      >
-	        <div class="pictrue" :class="Switch === true ? '' : 'on'">
-	          <img :src="item.image" :class="Switch === true ? '' : 'on'" />
-	        </div>
-	        <div class="text" :class="Switch === true ? '' : 'on'">
-	          <div class="name pline1">{{ item.store_name }}</div>
-	          <div class="money font-color-red">
-	                                      ￥<span class="num">{{ item.price }}</span>
-	               <span class="shou">已售{{ item.sales }}{{ item.unit_name }}</span>
-	          </div>
-	          <div class="vip acea-row row-between-wrapper" :class="Switch === true ? '' : 'on'">
-	             <div v-if="item.belong_t == 0">
-		            <div class="vip" v-if="item.pay_paypoint > 0"  style="width:3.3rem;">
-		               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;" />{{ item.pay_paypoint || 0}}积分+￥{{ item.pay_amount || 0}}
-		            </div>
-		            <div class="vip" v-if="item.pay_repeatpoint > 0" style="width:3.3rem;">
-		               <img src="@assets/images/fu.png" class="image" style="width: 0.35rem;"/>{{ item.pay_repeatpoint || 0}}个重消积分+￥{{ item.pay_amount || 0}}
-		            </div>
-		            <div class="vip" v-if="item.pay_repeatpoint ==0&&item.pay_paypoint==0"  style="width:3.3rem;">
-		               <img src="@assets/images/fu.png" class="image" style="width:0.35rem;"/>￥{{ item.pay_amount || 0}}
-		            </div>
-		         </div>
-	             <div class="vip-money" v-else>
-	                 <img src="@assets/images/give.png" style="width: 0.35rem;"/>￥{{ item.pay_point }}消费积分
-	             </div>
-	          </div>
-	        </div>
-	      </div>
-	      </div>
+      
     </div>
   </div>
  </div>
+ 
  <div>
       <iframe
         v-if="locationShow && !isWeixin"
@@ -114,6 +79,30 @@
       </iframe>
     </div>
  </div>
+ <div class="list acea-row row-between-wrapper" ref="container" style="margin-top:0rem;">
+      
+         <div class="wrapper" v-if="goodList.length>0">
+		      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in goodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+	  </div>
 </template>
 <script>
 import {swiperSlide } from "vue-awesome-swiper";

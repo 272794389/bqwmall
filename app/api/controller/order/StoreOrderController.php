@@ -18,6 +18,7 @@ use app\models\store\{
     StoreOrderCartInfo,
     StoreOrderStatus,
     StorePink,
+    StoreProduct,
     StoreProductReply
 };
 use app\models\system\SystemStore;
@@ -73,6 +74,13 @@ class StoreOrderController
             $seckill_id = StoreCart::where('id', $cartId)->value('seckill_id');
             $combination_id = StoreCart::where('id', $cartId)->value('combination_id');
             $bargain_id = StoreCart::where('id', $cartId)->value('bargain_id');
+            $product_id = StoreCart::where('id', $cartId)->value('product_id');
+            $store_id = StoreProduct::where('id',$product_id)->value('store_id');
+            $data['system_store'] = ($res = SystemStore::getStoreDispose($store_id)) ? $res : [];//门店信息
+        }else{
+            $product_id = StoreCart::where('id', $cartIdA[0])->value('product_id');
+            $store_id = StoreProduct::where('id',$product_id)->value('store_id');
+            $data['system_store'] = ($res = SystemStore::getStoreDispose($store_id)) ? $res : [];//门店信息
         }
         $data['deduction'] = $seckill_id || $combination_id || $bargain_id;
         $data['usableCoupon'] = $usableCoupon;
@@ -103,7 +111,7 @@ class StoreOrderController
             $isHex =1;
         }
         $data['isHex'] = $isHex;
-        $data['system_store'] = ($res = SystemStore::getStoreDispose()) ? $res : [];//门店信息
+       
         return app('json')->successful($data);
     }
 
