@@ -380,7 +380,7 @@ export default {
 };
 </script>
 <style scoped>
-.product-bg{height:3.5rem;border-radius:0.1rem;}
+.product-bg{height:4.5rem;border-radius:0.1rem;}
 .store-name {
   color: #282828;
   font-size: 0.5rem;
@@ -395,8 +395,7 @@ export default {
 .pingfen_box{float:left;wdith:80%;margin-left:0.1rem;margin-top: 0.05rem;}
 .daohang{float:right;color:#666;width:7%;}
 .daohang img{width:0.5rem;}
-.location{float:left;width:90%;line-height: 0.6rem;}
-
+.location{float:left;width:90%;line-height: 0.6rem;white-space: nowrap;overflow: hidden;}
 .geoPage {
   position: fixed;
   width: 100%;
