@@ -239,9 +239,10 @@ export function wxShowLocation() {
   return new Promise((resolve, reject) => {
     let longitude = cookie.get(LONGITUDE); //经度
     let latitude = cookie.get(LATITUDE); //纬度
+    /*
     if (longitude && latitude) {
       return resolve({ longitude: longitude, latitude: latitude });
-    }
+    }*/
     wechatEvevt("getLocation", { type: "wgs84" })
       .then(res => {
         let latitude = res.latitude; // 纬度
