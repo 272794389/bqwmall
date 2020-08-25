@@ -429,9 +429,15 @@ class StoreProduct extends BaseModel
      */
     public static function lst($latitude, $longitude,$mapkay, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder)
     {
-        $crr = self::getCity($longitude, $latitude,$mapkay);
-        $city = $crr['result']['address_component']['city'];
-        $district = $crr['result']['address_component']['district'];
+        if($latitude){
+            $crr = self::getCity($longitude, $latitude,$mapkay);
+            $city = $crr['result']['address_component']['city'];
+            $district = $crr['result']['address_component']['district'];
+        }else{
+            $city='';
+            $district ='';
+        }
+      
         $baseOrder = '';
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC'; 
         
@@ -449,8 +455,10 @@ class StoreProduct extends BaseModel
     public static function getProductWhere($city,$district,$sId,$cid,$keyword,$model, $aler = '', $join = '')
     {
         $model = $model->where($aler.'is_del', 0)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
-        $model = $model->where($join . '.city', 'LIKE', "%$city%");
-        $model = $model->where($join . '.district', 'LIKE', "%$district%");
+        if($city){
+            $model = $model->where($join . '.city', 'LIKE', "%$city%");
+            $model = $model->where($join . '.district', 'LIKE', "%$district%");
+        }
         if ($cid) {
             $model->whereIn($aler.'id', function ($query) use ($cid) {
                 $query->name('store_product_cate')->where('cate_id', $cid)->field('product_id')->select();

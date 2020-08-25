@@ -202,15 +202,16 @@ class SystemStore extends BaseModel
             ->select()
             ->hidden(['is_show', 'is_del'])
             ->toArray();
-        if ($latitude && $longitude) {
+       
             foreach ($list as &$value) {
-                //计算距离
-                $value['distance'] = sqrt((pow((($latitude - $value['latitude']) * 111000), 2)) + (pow((($longitude - $value['longitude']) * 111000), 2)));
-                //转换单位
-                $value['range'] = bcdiv($value['distance'], 1000, 1);
+                if ($latitude && $longitude) {
+                    //计算距离
+                    $value['distance'] = sqrt((pow((($latitude - $value['latitude']) * 111000), 2)) + (pow((($longitude - $value['longitude']) * 111000), 2)));
+                    //转换单位
+                    $value['range'] = bcdiv($value['distance'], 1000, 1);
+                }
                 $value['cate_name'] = StoreCategory::where('id',$value['cat_id'])->value('cate_name'); 
             }
-        }
         return $list;
     }
     
