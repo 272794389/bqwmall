@@ -406,13 +406,14 @@ class StorePayOrder extends BaseModel
                             ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                         }
                         //给推荐人发送余额变动通知
-                        $fenamount = $uinfo['now_money']+$use_amount;
+                        $use_amount = bcadd($use_amount, 0, 2);
+                        $fenamount = bcadd($uinfo['now_money'], $use_amount, 2);
                         WechatTemplateService::sendTemplate(WechatUser::where('uid', $spread_uid)->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                             'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                             'keyword1' => '平台发放分销奖励',
-                            'keyword2' => +$use_amount,
+                            'keyword2' => '+'.$use_amount,
                             'keyword3' => $fenamount,
-                            'remark' => '感谢您的支持'
+                            'remark' => '佰仟万平台感谢您的支持'
                         ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                     }
                     
@@ -455,11 +456,12 @@ class StorePayOrder extends BaseModel
             }
             
             //给推荐人发送余额变动通知
-            $fenamount = $uinfo['now_money']+$use_amount;
+            $use_amount = bcadd($use_amount, 0, 2);
+            $fenamount = bcadd($uinfo['now_money'], $use_amount, 2);
             WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                 'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                 'keyword1' => '平台发放商家推荐奖励',
-                'keyword2' => +$use_amount,
+                'keyword2' => '+'.$use_amount,
                 'keyword3' => $fenamount,
                 'remark' => '感谢您的支持'
             ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -493,11 +495,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$districtAmount;
+                    $districtAmount = bcadd($districtAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $districtAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放代理商提成',
-                        'keyword2' => +$districtAmount,
+                        'keyword2' => '+'.$districtAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -523,11 +526,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$cityAmount;
+                    $cityAmount = bcadd($cityAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $cityAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放代理商提成',
-                        'keyword2' => +$cityAmount,
+                        'keyword2' => '+'.$cityAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -553,11 +557,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$agentAmount;
+                    $agentAmount = bcadd($agentAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $agentAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放代理商提成',
-                        'keyword2' => +$agentAmount,
+                        'keyword2' => '+'.$agentAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -591,11 +596,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$districtAmount;
+                    $districtAmount = bcadd($districtAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $districtAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放总监提成',
-                        'keyword2' => +$districtAmount,
+                        'keyword2' => '+'.$districtAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -621,11 +627,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$cityAmount;
+                    $cityAmount = bcadd($cityAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $cityAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放总监提成',
-                        'keyword2' => +$cityAmount,
+                        'keyword2' => '+'.$cityAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
@@ -651,11 +658,12 @@ class StorePayOrder extends BaseModel
                         ShortLetterRepositories::send(true, $uinfo['phone'], $data,$content);
                     }
                     //给推荐人发送余额变动通知
-                    $fenamount = $uinfo['now_money']+$agentAmount;
+                    $agentAmount = bcadd($agentAmount, 0, 2);
+                    $fenamount = bcadd($uinfo['now_money'], $agentAmount, 2);
                     WechatTemplateService::sendTemplate(WechatUser::where('uid', $uinfo['uid'])->value('openid'), WechatTemplateService::MONEYCHANGE_SUCCESS, [
                         'first' => '尊敬的客户您好，您在佰仟万平台的账户余额产生了变动',
                         'keyword1' => '平台发放总监提成',
-                        'keyword2' => +$agentAmount,
+                        'keyword2' => '+'.$agentAmount,
                         'keyword3' => $fenamount,
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
