@@ -10,7 +10,10 @@
         <div class="name">商家联系人</div>
         <input type="text" placeholder="商家联系人" v-model="store.link_name" required />
       </div>
-
+      <div class="item acea-row row-between-wrapper">
+        <div class="name">推荐人id</div>
+        <input type="text" placeholder="商家推荐人id" v-model="userInfo.spread_uid" required />
+      </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">商家联系电话</div>
         <input type="text" placeholder="请输入联系电话" v-model="store.link_phone" required />
@@ -204,7 +207,7 @@
 <script type="text/babel">
 import { CitySelect } from "vue-ydui/dist/lib.rem/cityselect";
 import District from "ydui-district/dist/jd_province_city_area_id";
-import { getAddress, postAddress } from "@api/user";
+import { getAddress, postAddress,getUser } from "@api/user";
 import {postStoreAdd, getStoreInfo} from "@api/merchant"
 import attrs, { required, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
@@ -233,10 +236,12 @@ export default {
       district: District,
       day_time_start:"00:00",
       day_time_end:"00:00",
-
+      userInfo: {},
       id: 0,
+      parent_id: 0,
       store: {
         is_default: 0 ,
+        is_show:1,
         image:'',
         license:'',
         idCardz:'',
@@ -258,16 +263,22 @@ export default {
     let id = this.$route.params.id;
     this.id = id;
     document.title = !id ? "新增门店" : "修改门店";
+    this.User();
     this.getUserAddress();
   },
   methods: {
+   User: function() {
+      let that = this;
+      getUser().then(res => {
+        that.userInfo = res.data;
+      });
+    },
     getUserAddress: function() {
       if (this.id==0) return false;
       let that = this;
       getStoreInfo({id:that.id}).then(res => {
         that.store = res.data;
-        that.model2 =
-          res.data.province + " " + res.data.city + " " + res.data.district;
+        that.model2 = res.data.province + " " + res.data.city + " " + res.data.district;
         that.address.province = res.data.province;
         that.address.city = res.data.city;
         that.address.district = res.data.district;
@@ -354,6 +365,7 @@ export default {
             day_time:this.day_time,
             mer_name:this.store.mer_name,
             link_name:this.store.link_name,
+            parent_id:this.store.parent_id,
             link_phone:this.store.link_phone,
           };
         postStoreAdd(data).then(function() {

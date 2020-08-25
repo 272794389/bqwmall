@@ -1,5 +1,9 @@
 <template>
   <div class="user">
+    <div class="followCode" v-if="followCode">
+      <div class="pictrue"><img :src="followUrl" /></div>
+      <div class="mask" @click="closeFollowCode"></div>
+    </div>
     <div class="header bg-color-red acea-row row-between-wrapper">
       <div class="picTxt acea-row row-between-wrapper">
         <div class="pictrue"><img :src="userInfo.avatar" /></div>
@@ -10,11 +14,11 @@
               <img :src="userInfo.vip_icon" />{{ userInfo.vip_name }}
             </div>
           </div>
-          <router-link :to="'/user/data'" class="id" v-if="userInfo.phone">
+          <router-link :to="'/user/data'" class="id">
             ID：{{ userInfo.uid || 0
             }}<span class="iconfont icon-bianji1"></span>
           </router-link>
-          <router-link :to="'/user/binding'" class="binding" v-else>
+          <router-link :to="'/user/binding'" class="binding" v-if="userInfo.phone==''">
             <span>绑定手机号</span>
           </router-link>
         </div>
@@ -141,8 +145,11 @@
       <div class="title">
 		 <router-link :to="'/user/user_coupon'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/coupon.png" /></div>
-		  <div class="title1-2">我的优惠券</div>
-		  <div class="title1-3">查看我的优惠券<span class="iconfont icon-jiantou"></span></div>
+		  <div class="title1-2">我的抵扣券</div>
+		  <div class="title1-3">
+		    <span style="color:#f00;" v-if="userInfo.coupon_price>0">金额：￥{{ userInfo.coupon_price }}</span>
+		    <span v-else>查看我的抵扣券</span>
+		    <span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
 	  <div class="title"  v-if="userInfo.is_check==1">
@@ -185,6 +192,7 @@
 <script>
 import { getUser, getMenuUser } from "@api/user";
 import { isWeixin } from "@utils";
+import { follow} from "@api/public";
 import SwitchWindow from "@components/SwitchWindow";
 import GeneralWindow from "@components/GeneralWindow";
 const NAME = "User";
@@ -198,6 +206,11 @@ export default {
   props: {},
   data: function() {
     return {
+      isWeixin: isWeixin(),
+      followUrl: "",
+      subscribe: false,
+      followHid: false,
+      followCode: false,
       userInfo: {},
       orderStatusNum: {},
       switchActive: false,
@@ -215,6 +228,7 @@ export default {
     }
   },
   mounted: function() {
+    this.getFollow();
     this.User();
     this.MenuUser();
     this.isWeixin = isWeixin();
@@ -223,11 +237,33 @@ export default {
     changeswitch: function(data) {
       this.switchActive = data;
     },
+    closeFollow() {
+      this.followHid = false;
+    },
+    followTap() {
+      this.followCode = true;
+      this.followHid = false;
+    },
+    closeFollowCode() {
+      this.followCode = false;
+      this.followHid = true;
+    },
+    getFollow() {
+      follow()
+        .then(res => {
+          this.followUrl = res.data.path;
+        })
+        .catch(() => {});
+    },
     User: function() {
       let that = this;
       getUser().then(res => {
         that.userInfo = res.data;
         that.orderStatusNum = res.data.orderStatusNum;
+        that.subscribe = res.data.subscribe;
+        if(!that.subscribe){
+          that.followCode = true;
+        }
       });
     },
     MenuUser: function() {
@@ -288,5 +324,21 @@ export default {
   font-size: 0.14rem;
   border: 1px solid #e8695e;
   color: #ffffff;
+}
+
+.followCode .pictrue {
+    width: 5rem;
+    height: 7.2rem;
+    border-radius: 12px;
+    left: 50%;
+    top: 50%;
+    margin-left: -2.5rem;
+    margin-top: -3.6rem;
+    position: fixed;
+    z-index: 100000;
+}
+.followCode .pictrue img {
+    width: 100%;
+    height: 100%;
 }
 </style>

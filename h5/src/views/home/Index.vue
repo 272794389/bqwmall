@@ -1,5 +1,6 @@
 <template>
   <div class="index" v-cloak style="background: #F5F5F5;">
+  <!--
     <div
       class="follow acea-row row-between-wrapper" v-if="followHid && isWeixin"
     >
@@ -13,6 +14,7 @@
       <div class="pictrue"><img :src="followUrl" /></div>
       <div class="mask" @click="closeFollowCode"></div>
     </div>
+    -->
     <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/search'" class="search acea-row row-middle">

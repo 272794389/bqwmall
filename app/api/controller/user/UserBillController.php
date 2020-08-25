@@ -9,6 +9,7 @@ use app\models\store\StoreOrder;
 use app\models\user\User;
 use app\models\user\UserBill;
 use app\models\user\UserExtract;
+use app\models\system\SystemStore;
 use app\Request;
 use crmeb\services\GroupDataService;
 use crmeb\services\SystemConfigService;
@@ -99,7 +100,7 @@ class UserBillController
             ['sort', ''],
         ], $request);
         $uid = $request->uid();
-        $data['list'] = User::getUserSpreadShop($uid, $spreadInfo['sort'], $spreadInfo['keyword'], $spreadInfo['page'], $spreadInfo['limit']);
+        $data['list'] = SystemStore::getShopSpreadCountList($uid, $spreadInfo['sort'], $spreadInfo['keyword'], $spreadInfo['page'], $spreadInfo['limit']);
         $data['total'] = User::getSpreadShopCount($uid);
         return app('json')->successful($data);
     }

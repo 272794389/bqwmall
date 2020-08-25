@@ -430,7 +430,7 @@ class User extends BaseModel
         if (!$uid) return false;
         $uidSubordinate = self::where('spread_uid', $uid)->column('uid');
         if (!count($uidSubordinate)) return 0;
-        return SystemStore::where('user_id', 'IN', implode(',', $uidSubordinate))->count();
+        return SystemStore::where('parent_id',$uid)->count();
     }
     
     

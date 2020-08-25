@@ -16,6 +16,7 @@ use app\models\store\StorePayOrder;
 use app\models\store\StoreProductRelation;
 use app\models\store\StoreSeckill;
 use app\models\store\StoreService;
+use app\models\user\WechatUser;
 use app\models\user\StorePayLog;
 use app\models\system\SystemStore;
 use app\models\user\User;
@@ -23,6 +24,8 @@ use app\models\user\UserAddress;
 use app\models\user\UserBill;
 use app\models\user\UserExtract;
 use app\models\user\UserNotice;
+use app\models\store\GoodsCouponUser;
+
 use crmeb\services\GroupDataService;
 use crmeb\services\UtilService;
 
@@ -192,7 +195,10 @@ class UserController
         } else if (!$user['phone']) {
             $user['switchUserInfo'][] = $request->user();
         }
-
+        $user['subscribe'] = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
+         
+        //统计我的抵扣券金额
+        $user['coupon_price']=GoodsCouponUser::where('uid',$request->uid())->where('is_fail',0)->value('sum(coupon_price-hamount)');
         return app('json')->successful($user);
     }
 

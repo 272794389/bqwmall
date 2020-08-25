@@ -258,6 +258,7 @@ class SystemStore extends BaseModel
      * @param int $limit
      * @return array
      */
+    /*
     public static function getShopSpreadCountList($uid, $orderBy = '', $keyword = '', $page = 0, $limit = 20)
     {
         $model = new self;
@@ -275,7 +276,28 @@ class SystemStore extends BaseModel
         $list = $model->select();
         if ($list) return $list->toArray();
         else return [];
+    }*/
+    
+    
+    public static function getShopSpreadCountList($uid, $orderBy = '', $keyword = '', $page = 0, $limit = 20)
+    {
+        $model = new self;
+        if ($orderBy === '') $orderBy = 'u.add_time desc';
+        $model = $model->alias(' u');
+        $sql = StorePayLog::where('o.order_id','>', 0)->where('o.huokuan', '>', 0)->where('o.belong_t', '<', 2)->group('o.uid')->field(['SUM(o.huokuan) as numberCount,count(1) as orderCount', 'o.uid','o.huokuan', 'o.order_id'])
+        ->alias('o')->fetchSql(true)->select();
+        $model = $model->join("(" . $sql . ") p", 'u.user_id = p.uid', 'LEFT');
+        $model = $model->where('u.parent_id',  $uid);
+        $model = $model->field("u.user_id,u.mer_name,u.image,from_unixtime(u.add_time,'%Y/%m/%d') as time,p.numberCount,p.orderCount");
+        if (strlen(trim($keyword))) $model = $model->where('u.mer_name', 'like', "%$keyword%");
+        $model = $model->group('u.user_id');
+        $model = $model->order($orderBy);
+        $model = $model->page($page, $limit);
+        $list = $model->select();
+        if ($list) return $list->toArray();
+        else return [];
     }
+    
     
     
     

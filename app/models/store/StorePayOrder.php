@@ -274,6 +274,7 @@ class StorePayOrder extends BaseModel
         //$storeInfo = SystemStore::getStoreDispose($orderInfo['store_id']);
         $storeInfo = SystemStore::where('id',$orderInfo['store_id'])->find();
         $userInfo = User::getUserInfo($uid);
+        $userInfo['add_time'] = User::where('uid',$uid)->value('add_time');
         //获取平台费率参数
         $feeRate = DataConfig::where('id', 1)->find();
         //短信发送开关
@@ -372,6 +373,7 @@ class StorePayOrder extends BaseModel
         $repeat_point=0;
         //计算3代推荐奖励
         $spread_uid = $userInfo['spread_uid'];
+        
         if($res&&$runamount>0&&$spread_uid>0){
             for ($i=0; $i < 3; $i++)
             {
@@ -413,29 +415,39 @@ class StorePayOrder extends BaseModel
                             'remark' => '感谢您的支持'
                         ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                     }
-                    $spread_uid = $uinfo['spread_uid'];
+                    
+                    //判断是否是商家直接推荐
+                    if($spread_uid==$storeInfo['user_id']&&$i==0){
+                       //判断商家推荐人与商家扫码人是否一致
+                       if($userInfo['add_time']>$storeInfo['add_time']){
+                           $spread_uid = $storeInfo['parent_id'];
+                       }else{
+                           $spread_uid = $uinfo['spread_uid'];
+                       }
+                    }else{
+                        $spread_uid = $uinfo['spread_uid'];
+                    }
                 }else{
                     break;
                 }
             }
         }
         //计算商家推荐人奖励
-        $uinfo = User::getUserInfo($storeInfo['user_id']);
-        if($uinfo['spread_uid']>0&&$feeRate['shop_rec']>0){
+        $uinfo = User::getUserInfo($storeInfo['parent_id']);
+        if($storeInfo['parent_id']>0&&$feeRate['shop_rec']>0){
             $use_amount = $runamount*$feeRate['shop_rec']/100;
             $fee = $use_amount*$feeRate['fee_rate']/100;
             $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
             $use_amount = $use_amount - $fee - $repeat_point;
             if($res){
-                $res = false !== User::bcInc($uinfo['spread_uid'], 'now_money', $use_amount, 'uid');
+                $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
             }
             if($res){
-                $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
+                $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
             }
             if($res&&$use_amount>0){
-                $res = StorePayLog::expend($uinfo['spread_uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
+                $res = StorePayLog::expend($uinfo['uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
-            $uinfo = User::getUserInfo($uinfo['spread_uid']);
             if($uinfo['phone']&&$sms_open>0){//推荐奖励
                 $data['code'] = '1';
                 $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";

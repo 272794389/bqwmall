@@ -27,6 +27,7 @@ class SystemStore extends AuthController
             ['page', 1],
             ['limit', 20],
             ['name', ''],
+            ['parent_id', ''],
             ['excel', 0],
             ['type', $this->request->param('type')]
         ]);
@@ -220,6 +221,7 @@ class SystemStore extends AuthController
             ['label', ''],
             ['name', ''],
             ['user_id', -1],
+            ['parent_id', -1],
             ['cat_id', 0],
             ['introduction', ''],
             ['image', ''],

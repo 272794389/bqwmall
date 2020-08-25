@@ -1193,21 +1193,20 @@ class StoreOrder extends BaseModel
                 }
             }
             //计算商家推荐人提成
-            $uinfo = User::where('uid',$storeInfo['user_id'])->find();
-            if($carinfo['profit']>0&&$uinfo['spread_uid']&&$feeRate['shop_rec']>0){
+            $uinfo = User::where('uid',$storeInfo['parent_id'])->find();
+            if($carinfo['profit']>0&&$storeInfo['parent_id']>0&&$feeRate['shop_rec']>0){
                 $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
                 $fee = $use_amount*$feeRate['fee_rate']/100;
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $use_amount = $use_amount - $fee - $repeat_point;
                 if($res){
-                    $res = false !== User::bcInc($uinfo['spread_uid'], 'now_money', $use_amount, 'uid');
+                    $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
                 }
                 if($res){
-                    $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
+                    $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
                 }
                 if($res&&$use_amount>0){
-                    $res = StorePayLog::expend($uinfo['spread_uid'], $id, 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
-                    $uinfo = User::getUserInfo($uinfo['spread_uid']);
+                    $res = StorePayLog::expend($uinfo['uid'], $id, 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";
@@ -1532,22 +1531,21 @@ class StoreOrder extends BaseModel
                     ], Url::buildUrl('/merchant/home')->suffix('')->domain(true)->build());
                 }
                 //计算商家推荐人提成
-                $uinfo = User::where('uid',$storeInfo['user_id'])->find();
-                if($carinfo['profit']>0&&$uinfo['spread_uid']&&$feeRate['shop_rec']>0){
+                $uinfo = User::where('uid',$storeInfo['parent_id'])->find();
+                if($carinfo['profit']>0&&$storeInfo['parent_id']>0&&$feeRate['shop_rec']>0){
                     $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
                     $fee = $use_amount*$feeRate['fee_rate']/100;
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $use_amount = $use_amount - $fee - $repeat_point;
                     if($res&&$use_amount){
-                        $res = false !== User::bcInc($uinfo['spread_uid'], 'now_money', $use_amount, 'uid');
+                        $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
                     }
                     if($res){
-                        $res = false !== User::bcInc($uinfo['spread_uid'], 'repeat_point', $repeat_point, 'uid');
+                        $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
                     }
                     if($res){
-                        $res = StorePayLog::expend($uinfo['spread_uid'], $rs['id'], 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
+                        $res = StorePayLog::expend($uinfo['uid'], $rs['id'], 1, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
                     }
-                    $uinfo = User::getUserInfo($uinfo['spread_uid']);
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的客户您好，您的账户收到一笔商家推荐奖励，奖励金额：".$use_amount."元！";
@@ -1776,6 +1774,7 @@ class StoreOrder extends BaseModel
         $repeat_point=0;
         //计算3代推荐奖励
         $userInfo = User::getUserInfo($order['uid']);
+        $userInfo['add_time'] = User::where('uid',$order['uid'])->value('add_time');
         $spread_uid = $userInfo['spread_uid'];
         if($res&&$runamount>0&&$spread_uid>0){
             for ($i=0; $i < 3; $i++)
@@ -1818,7 +1817,17 @@ class StoreOrder extends BaseModel
                             'remark' => '感谢您的支持'
                         ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                     }
-                    $spread_uid = $uinfo['spread_uid'];
+                   //判断是否是商家直接推荐
+                    if($spread_uid==$storeInfo['user_id']&&$i==0){
+                       //判断商家推荐人与商家扫码人是否一致
+                       if($userInfo['add_time']>$storeInfo['add_time']){
+                           $spread_uid = $storeInfo['parent_id'];
+                       }else{
+                           $spread_uid = $uinfo['spread_uid'];
+                       }
+                    }else{
+                        $spread_uid = $uinfo['spread_uid'];
+                    }
                 }else{
                     break;
                 }

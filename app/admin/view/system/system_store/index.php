@@ -31,6 +31,12 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">商家推荐人</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="parent_id" class="layui-input" placeholder="请输入推荐人id">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
                                 <div class="layui-input-inline">
                                     <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
                                         <i class="layui-icon layui-icon-search"></i>搜索</button>
@@ -73,7 +79,9 @@
                                                                             服务中心
                             {{# } }}
                     </script>
-                    
+                    <script type="text/html" id="link_name">
+                             {{d.link_name}}<br/> {{d.link_phone}}
+                    </script>
                     <script type="text/html" id="checkboxstatus">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
                                lay-text='通过|待审核' {{ d.status== 1 ? 'checked' : '' }}>
@@ -112,8 +120,8 @@
             {field: 'image', title: '商家图片', templet: '#headimgurl', width: '6%'},
             {field: 'license', title: '营业执照', templet: '#licenseurl',},
             {field: 'mer_name', title: '商家名称', width: '6%'},
-            {field: 'link_name', title: '商家联系人', width: '6%'},
-            {field: 'link_phone', title: '商家电话', width: '8%'},
+            {field: 'link_name', title: '商家联系人', templet: '#link_name', width: '8%'},
+            {field: 'parent_id', title: '商家推荐人', width: '6%'},
             {field: 'name', title: '门店名称', width: '8%'},
             {field: 'phone', title: '门店电话', width: '6%'},
             {field: 'address', title: '地址', templet: '#address',width: '12%'},

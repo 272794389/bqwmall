@@ -68,7 +68,7 @@ class StorePayLog extends BaseModel
         $data = [];
         foreach ($list as $item) {
             $value['time'] = $item['time'];
-            $value['list'] = self::where('id', 'in', $item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i") as add_time,mark,use_money')->order('add_time DESC')->select();
+            $value['list'] = self::where('id', 'in', $item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i") as add_time,mark,use_money,fee,repeat_point')->order('add_time DESC')->select();
             array_push($data, $value);
         }
         return $data;

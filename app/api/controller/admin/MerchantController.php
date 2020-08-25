@@ -285,7 +285,6 @@ class MerchantController
         $q = UtilService::getMore([
             ['id', ''],
         ], $request);
-
         $store = SystemStore::getStoreById($q['id']);
         return app('json')->successful($store->toArray());
     }
@@ -315,8 +314,8 @@ class MerchantController
             ['longitude', ''],
             ['day_time', ''],
             ['valid_time', ''],
-            ['is_show', 0],
-
+            ['is_show', 1],
+            ['parent_id', 0],
             ['mer_name', ''],
             ['link_name', ''],
             ['link_phone', 0],
@@ -340,6 +339,7 @@ class MerchantController
             'valid_time' => $q['valid_time'],
             'is_show' => $q['is_show'],
             'user_id' => $uid,
+            'parent_id' => $q['parent_id'],
             'add_time' => time(),
             'mer_name' => $q['mer_name'],
             'link_name' => $q['link_name'],

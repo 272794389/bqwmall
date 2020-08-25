@@ -85,6 +85,10 @@ class SystemStore extends BaseModel
         if (isset($where['name']) && $where['name'] != '') {
             $model = $model->where('id|name|introduction', 'like', '%' . $where['name'] . '%');
         }
+        if (isset($where['parent_id']) && $where['parent_id'] != '') {
+            $model = $model->where('parent_id',$where['parent_id']);
+        }
+        
         if (isset($where['type']) && $where['type'] != '' && ($data = self::setData($where['type']))) {
             $model = $model->where($data);
         }

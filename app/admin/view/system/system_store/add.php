@@ -45,6 +45,14 @@
                                 </Row>
                             </Form-Item>
                             <Form-Item>
+                                <Row>
+                                    <i-Col span="13">
+                                        <span>推荐人id：</span>
+                                        <i-Input placeholder="推荐人id" v-model="form.parent_id" style="width: 80%" type="text"></i-Input>
+                                    </i-Col>
+                                </Row>
+                            </Form-Item>
+                            <Form-Item>
                                 <span>所属分类：</span>
                                 <i-select style="width: 80%" v-model="form.cat_id">
                                     <i-option v-for="cat in catList" :value="cat.id" >{{cat.cate_name}}</i-option>
@@ -348,6 +356,7 @@
                     	label:storeData.label || '',
                         name:storeData.name || '',
                         user_id:storeData.user_id || '',
+                        parent_id:storeData.parent_id || '',
                         cat_id:storeData.cat_id || 0,
                         introduction:storeData.introduction || '',
                         phone:storeData.phone || '',

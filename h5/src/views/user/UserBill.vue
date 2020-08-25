@@ -18,7 +18,7 @@
           <div class="listn" v-for="(val, key) in item.list" :key="key">
             <div class="itemn acea-row row-between-wrapper">
               <div>
-                <div class="name line1">{{ val.mark }}</div>
+                <div class="name line1">{{ val.mark }}<span style="color:#f00;" v-if="val.use_money>0">(-{{ val.fee}}费用,+{{ val.repeat_point}}重消)</span></div>
                 <div>{{ val.add_time }}</div>
               </div>
               <div class="num" :class="val.use_money < 0 ? 'font-color-red' : ''">
