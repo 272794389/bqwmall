@@ -107,6 +107,13 @@
       </div>
     </div>
     <div class="myOrder1">
+     <div class="title" v-if="subscribe!=1">
+		 <div class="title1" @click="followTap">
+		  <div class="title1-1"><img src="@assets/images/focus.png" /></div>
+		  <div class="title1-2">关注我们</div>
+		  <div class="title1-3">关注接收余额通知<span class="iconfont icon-jiantou"></span></div>
+		 </div>
+	  </div>
       <div class="title">
 		 <router-link :to="'/user/user_finance'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/balance.png" /></div>
@@ -261,9 +268,6 @@ export default {
         that.userInfo = res.data;
         that.orderStatusNum = res.data.orderStatusNum;
         that.subscribe = res.data.subscribe;
-        if(!that.subscribe){
-          that.followCode = true;
-        }
       });
     },
     MenuUser: function() {

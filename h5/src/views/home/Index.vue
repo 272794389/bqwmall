@@ -420,6 +420,7 @@ export default {
   mounted: function() {
     this.getFollow();
     let that = this;
+    this.getWXLocation();
     window.addEventListener('scroll', this.handleScroll)
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
@@ -446,7 +447,6 @@ export default {
       if (res.data.site_name) document.title = res.data.site_name;
       that.setOpenShare();
       this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
-      this.getWXLocation();
     });
     this.getList();
     this.getNearGoodList();

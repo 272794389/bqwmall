@@ -178,15 +178,8 @@
       :evaluate="status.type || 0"
       :cartInfo="orderInfo.cartInfo || []"
     ></OrderGoods>
-    <div
-      class="goodCall"
-      @click="
-        $router.push({
-          path: '/customer/list?orderId=' + orderInfo.order_id
-        })
-      "
-    >
-      <span class="iconfont icon-kefu"></span><span>联系客服</span>
+    <div class="goodCall">
+      <span class="iconfont icon-kefu"></span><span><a href="tel:orderInfo.system_store.link_phone">联系客服</a></span>
     </div>
     <div class="wrapper">
       <div class="item acea-row row-between">

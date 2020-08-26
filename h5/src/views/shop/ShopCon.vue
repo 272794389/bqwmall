@@ -81,7 +81,7 @@
  </div>
  <div class="list acea-row row-between-wrapper" ref="container" style="margin-top:0rem;">
       
-         <div class="wrapper" v-if="goodList.length>0">
+         <div class="wrapper" v-if="goodList.length>0" style="width:100%;">
 		      <div class="productList" ref="container">
 		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
 				      <div @click="goDetail(item)" v-for="(item, index) in goodList" :key="index" class="item" :title="item.store_name">
