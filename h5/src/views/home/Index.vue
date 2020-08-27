@@ -430,9 +430,8 @@ export default {
       that.$set(that, "banner", res.data.banner);
       that.$set(that, "info", res.data.info);
       that.$set(that, "couponList", res.data.couponList);
-      alert("欢迎您");
       if (res.data.site_name) document.title = res.data.site_name;
-      that.setOpenShare();
+      alert("欢迎您使用佰仟万平台");
       this.getList();
     }).catch(err => {
                this.$dialog.error(err.msg);
