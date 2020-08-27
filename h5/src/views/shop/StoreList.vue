@@ -31,7 +31,7 @@
 		        <div class="text">
 		          <div class="pline2" style="margin-bottom:0.1rem;">{{ item.name }}</div>
 		          <!--<Reta :size="48" :score="4.5"></Reta>-->
-		          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style" v-if="item.belong_t==2">{{ item.range }}km</span></div>
+		          <div class="shoptip"><span class="cate_style">{{ item.cate_name }}</span><span  class="cate_style" v-if="item.range">{{ item.range }}km</span></div>
 		          
 		          <div class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业：{{ item.termDate }}&nbsp;{{ item.day_time }}</div>
 		          <div class="shoptip shopaddress addressUlr">{{item.detailed_address }}</div>
