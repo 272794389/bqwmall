@@ -443,8 +443,9 @@ export default {
       if (res.data.site_name) document.title = res.data.site_name;
       that.setOpenShare();
       this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
+      this.getList();
     });
-    this.getList();
+   
   },
   methods: {
     // 轮播图跳转
