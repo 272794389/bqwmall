@@ -432,15 +432,13 @@ export default {
       that.$set(that, "couponList", res.data.couponList);
       if (res.data.site_name) document.title = res.data.site_name;
       that.setOpenShare();
-      if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
-        alert("欢迎您");
-      }else{
-        alert("欢迎使用");
-      }
-      
+      this.getList();
     }).catch(err => {
-               this.$dialog.error(err.msg);
-           });
+       getNearStoreData().then(res => {
+        this.$set(this, "storeList", res.data.storeList);
+        this.$set(this, "nearGoodList", res.data.nearGoodList);
+       });
+    });
    
   },
   methods: {
