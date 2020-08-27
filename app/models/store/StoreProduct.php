@@ -423,6 +423,23 @@ class StoreProduct extends BaseModel
         return self::setLevelPrice($list, $uid);
     }
     
+    public static function getNetList($limit = 0,$uid = 0)
+    {
+        if (!$limit && !$bool) return [];
+        $model = self::where('is_del', 0)
+        ->where('stock', '>', 0)->where('is_show', 1)->where('belong_t',1)->field("id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point")
+        ->order('sort DESC');
+        if ($limit) $model->limit($limit);
+        $list = $model->select();
+        $list = count($list) ? $list->toArray() : [];
+        if (!empty($list)) {
+            foreach ($list as $k => $v) {
+                $list[$k]['activity'] = self::activity($v['id']);
+            }
+        }
+        return self::setLevelPrice($list, $uid);
+    }
+    
     /**
      * 同城商品列表
      * @return mixed

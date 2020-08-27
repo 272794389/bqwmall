@@ -9,6 +9,14 @@ export function getHomeData() {
 }
 
 /**
+ * 首页周边的店铺
+ * @returns {*}
+ */
+export function getNearStoreData() {
+  return request.get("getNearStoreData", {}, { login: false });
+}
+
+/**
  * 同城商品
  */
 export function goodListApi(data) {

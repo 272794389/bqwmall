@@ -295,7 +295,7 @@ import ShopGoodList from "@components/ShopGoodList";
 import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
 import Reta from "@components/Star";
-import { getHomeData, getShare, follow,goodListApi } from "@api/public";
+import { getHomeData, getShare, follow,goodListApi,getNearStoreData } from "@api/public";
 import cookie from "@utils/store/cookie";
 import { openShareAll, wxShowLocation } from "@libs/wechat";
 import { isWeixin, cdnZipImg } from "@utils/index";
@@ -422,19 +422,13 @@ export default {
     let that = this;
     this.getWXLocation();
     window.addEventListener('scroll', this.handleScroll);
-    this.getList();
-    this.getNearGoodList();
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
       cookie.set(MAPKEY, that.mapKey);
       that.logoUrl = res.data.logoUrl;
       that.newGoodsBananr = res.data.newGoodsBananr;
       that.$set(that, "banner", res.data.banner);
-      that.$set(that, "activity", res.data.activity);
-      that.$set(that, "article", res.data.article);
-     
       that.$set(that, "info", res.data.info);
-  
       that.$set(that, "couponList", res.data.couponList);
       if (that.isLogin) {
         that.subscribe = res.data.subscribe;
@@ -450,6 +444,7 @@ export default {
       that.setOpenShare();
       this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
     });
+    this.getList();
   },
   methods: {
     // 轮播图跳转
@@ -540,35 +535,29 @@ export default {
    
      // 获取门店列表数据
     getList: function() {
-      let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
-        page: 1,
-        limit: 10
-      };
-      storeListApi(data)
-        .then(res => {
-          this.storeList.push.apply(this.storeList, res.data.list);
-        })
-        .catch(err => {
-          this.$dialog.error(err.msg);
-        });
-    },
-     // 获周边的套餐列表
-    getNearGoodList: function() {
-      let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
-        page: 1,
-        limit: 10
-      };
-      goodListApi(data)
-        .then(res => {
-          this.nearGoodList.push.apply(this.nearGoodList, res.data.list);
-        })
-        .catch(err => {
-          this.$dialog.error(err.msg);
-        });
+       if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
+          getNearStoreData().then(res => {
+           this.$set(this, "storeList", res.data.storeList);
+           this.$set(this, "nearGoodList", res.data.nearGoodList);
+          });
+       }else{
+	      let data = {
+	        latitude: cookie.get(LATITUDE) || "", //纬度
+	        longitude: cookie.get(LONGITUDE) || "", //经度
+	        page: 1,
+	        limit: 10
+	      };
+	      storeListApi(data).then(res => {
+	          this.storeList.push.apply(this.storeList, res.data.list);
+	        }).catch(err => {
+	          this.$dialog.error(err.msg);
+	        });
+	       goodListApi(data).then(res => {
+              this.nearGoodList.push.apply(this.nearGoodList, res.data.list);
+           }) .catch(err => {
+               this.$dialog.error(err.msg);
+           });
+	  }
     },
     closeFollow() {
       this.followHid = false;

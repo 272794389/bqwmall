@@ -72,6 +72,14 @@ class PublicController
         $article = Article::getArticleNotice(1);
         return app('json')->successful(compact('banner', 'info', 'activity',  'logoUrl', 'couponList', 'site_name', 'subscribe', 'newGoodsBananr', 'tengxun_map_key','article'));
     }
+    
+    public function getNearStoreData(Request $request)
+    {
+        $storeList = SystemStore::netlst(1, 10,0,0,'','desc');
+        $nearGoodList = StoreProduct::getNetList(10,$request->uid());
+        return app('json')->successful(compact('storeList','nearGoodList'));
+    }
+    
 
     /**
      * 获取分享配置

@@ -199,6 +199,7 @@ Route::group(function () {
 Route::group(function () {
     //公共类
     Route::get('index', 'PublicController/index')->name('index');//首页
+    Route::get('getNearStoreData', 'PublicController/getNearStoreData')->name('getNearStoreData');//首页周边的店
     Route::get('search/keyword', 'PublicController/search')->name('searchKeyword');//热门搜索关键字获取
     //产品分类类
     Route::get('category', 'store.CategoryController/category')->name('category');
