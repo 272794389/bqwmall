@@ -444,7 +444,9 @@ export default {
       that.setOpenShare();
       this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
       this.getList();
-    });
+    }).catch(err => {
+               this.$dialog.error(err.msg);
+           });
    
   },
   methods: {
