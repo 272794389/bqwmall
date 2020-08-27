@@ -431,29 +431,7 @@ export default {
       that.$set(that, "info", res.data.info);
       that.$set(that, "couponList", res.data.couponList);
       if (res.data.site_name) document.title = res.data.site_name;
-      if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
-          getNearStoreData().then(res => {
-           this.$set(this, "storeList", res.data.storeList);
-           this.$set(this, "nearGoodList", res.data.nearGoodList);
-          });
-       }else{
-	      let data = {
-	        latitude: cookie.get(LATITUDE) || "", //纬度
-	        longitude: cookie.get(LONGITUDE) || "", //经度
-	        page: 1,
-	        limit: 10
-	      };
-	      storeListApi(data).then(res => {
-	          this.storeList.push.apply(this.storeList, res.data.list);
-	        }).catch(err => {
-	          this.$dialog.error(err.msg);
-	        });
-	       goodListApi(data).then(res => {
-              this.nearGoodList.push.apply(this.nearGoodList, res.data.list);
-           }) .catch(err => {
-               this.$dialog.error(err.msg);
-           });
-	  }
+      
     }).catch(err => {
                this.$dialog.error(err.msg);
            });
