@@ -535,6 +535,7 @@ export default {
    
      // 获取门店列表数据
     getList: function() {
+       alert(cookie.get(LATITUDE));
        if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
           getNearStoreData().then(res => {
            this.$set(this, "storeList", res.data.storeList);
