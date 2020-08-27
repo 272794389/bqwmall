@@ -400,7 +400,7 @@ export default {
     ximageuploaded(res) {
       if (res.status !== 200)
         return this.$dialog.error(res.msg || "上传图片失败");
-        this.store.xekeImg =res.data.url
+        this.store.xukeImg =res.data.url
     },
     ChangeIsShow: function() {
       this.store.is_show = !this.store.is_is_show;

@@ -138,7 +138,7 @@
 	          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
 	        </div>
 	        <div class="nav_box">
-	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">网店商品</span>
+	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">佰商荟萃</span>
 	          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
 	        </div>
        </div>
@@ -421,7 +421,9 @@ export default {
     this.getFollow();
     let that = this;
     this.getWXLocation();
-    window.addEventListener('scroll', this.handleScroll)
+    window.addEventListener('scroll', this.handleScroll);
+    this.getList();
+    this.getNearGoodList();
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
       cookie.set(MAPKEY, that.mapKey);
@@ -448,8 +450,6 @@ export default {
       that.setOpenShare();
       this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
     });
-    this.getList();
-    this.getNearGoodList();
   },
   methods: {
     // 轮播图跳转
