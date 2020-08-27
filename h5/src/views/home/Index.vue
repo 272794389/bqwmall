@@ -431,6 +431,12 @@ export default {
       that.$set(that, "info", res.data.info);
       that.$set(that, "couponList", res.data.couponList);
       if (res.data.site_name) document.title = res.data.site_name;
+      that.setOpenShare();
+      if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
+        alert("欢迎您");
+      }else{
+        alert("欢迎使用");
+      }
       
     }).catch(err => {
                this.$dialog.error(err.msg);
