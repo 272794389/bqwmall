@@ -430,19 +430,9 @@ export default {
       that.$set(that, "banner", res.data.banner);
       that.$set(that, "info", res.data.info);
       that.$set(that, "couponList", res.data.couponList);
-      if (that.isLogin) {
-        that.subscribe = res.data.subscribe;
-        if (!that.subscribe && that.followUrl) {
-          setTimeout(function() {
-            that.followHid = true;
-          }, 200);
-        }
-      } else {
-        that.followHid = false;
-      }
+      alert("欢迎您");
       if (res.data.site_name) document.title = res.data.site_name;
       that.setOpenShare();
-      this.showCoupon = !cookie.has(HAS_COUPON_WINDOW) && res.data.couponList.some(coupon => coupon.is_use);
       this.getList();
     }).catch(err => {
                this.$dialog.error(err.msg);
