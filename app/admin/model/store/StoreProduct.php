@@ -122,7 +122,6 @@ class StoreProduct extends BaseModel
             if (isset($where['hex_t']) && $where['hex_t'] != '') {
                 $model = $model->where('p.hex_t', $where['hex_t']);
             }
-            
           
             if (isset($where['belong_t']) && $where['belong_t'] != '') {
                 $model = $model->where('p.belong_t', $where['belong_t']);
