@@ -135,6 +135,16 @@ const router = new Router({
       component: () => import("@views/shop/news/NewsList.vue")
     },
     {
+	    path: "/pnews_list",
+	    name: "PNewsList",
+	    meta: {
+	      title: "文章列表",
+	      keepAlive: true,
+	      backgroundColor: "#fff"
+	    },
+	    component: () => import("@views/shop/news/PNewsList.vue")
+	  },
+    {
       path: "/evaluate_list/:id",
       name: "EvaluateList",
       meta: {

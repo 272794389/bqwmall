@@ -87,8 +87,7 @@ class Article extends BaseModel
     public static function cidByArticleList($cid, $page, $limit, $field = 'id,title,image_input,visit,add_time,synopsis,url')
     {
         $model = new self();
-//        if ($cid) $model->where("`cid` LIKE '$cid,%' OR `cid` LIKE '%,$cid,%' OR `cid` LIKE '%,$cid' OR `cid`=$cid ");
-        if ((int)$cid) $model = $model->where("CONCAT(',',cid,',')  LIKE '%,$cid,%'");
+        if((int)$cid) $model = $model->where('cid',$cid);
         $model = $model->field($field);
         $model = $model->where('status', 1);
         $model = $model->where('hide', 0);
