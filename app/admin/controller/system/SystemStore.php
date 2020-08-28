@@ -4,6 +4,8 @@ namespace app\admin\controller\system;
 
 use app\admin\controller\AuthController;
 use app\admin\model\system\SystemStore as SystemStoreModel;
+use app\admin\model\user\User;
+use app\admin\model\system\SystemAttachment;
 use app\admin\model\store\StoreCategory as StroreCateModel;
 use crmeb\services\{
     JsonService, UtilService, JsonService as Json, FormBuilder as Form
@@ -101,6 +103,37 @@ class SystemStore extends AuthController
         $this->assign(compact('ermaImg'));
         return $this->fetch();
     }
+    
+    //生成订单二维码
+    public function tui_qrcode($id){
+        $store_id = $id;
+        if(!$store_id) return $this->failed('数据不存在');
+        $storeInfo = SystemStoreModel::get($store_id);
+        
+        $user = User::where('uid',$storeInfo['user_id'])->find();
+        //公众号
+        $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_wap.jpg';
+        $imageInfo = SystemAttachment::getInfo($name, 'name');
+        //检测远程文件是否存在
+        if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
+            $imageInfo = null;
+            SystemAttachment::where(['name' => $name])->delete();
+        }
+        if (!$imageInfo) {
+            $siteUrl = sys_config('site_url');
+            $codeUrl = set_http_type($siteUrl . '?spread=' . $user['uid'], 1);//二维码链接
+            $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+            if (is_string($imageInfo)) return app('json')->fail('二维码生成失败', ['error' => $imageInfo]);
+            SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+            $urlCode = $imageInfo['dir'];
+        }
+        
+        $imageInfo = SystemAttachment::getInfo($name, 'name');
+        $ermaImg = $imageInfo['att_dir'];
+        $this->assign(compact('ermaImg'));
+        return $this->fetch();
+    }
+    
     
     
 

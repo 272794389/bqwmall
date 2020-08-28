@@ -6,7 +6,7 @@
         <div class="samebox""><span @click="set_where(0)">分类</span><span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span><span @click="set_where(2)" :class="condition==2 ? 'on' : ''">网店</span></div>
         <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
+          <input placeholder="搜索商家信息" v-model="where.keyword"  style="width: 3.48rem;"/>
         </div>
       </div>
     </form>

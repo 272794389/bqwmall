@@ -318,6 +318,7 @@
             {field: 'pay_point', title: '消费积分',width:'8%',sort:true,event:'pay_point',align:'center'},
             {field: 'repeat_point', title: '重消积分',width:'8%',sort:true,event:'repeat_point',align:'center'},
             {field: 'pay_count', title: '购买次数',align:'center',width:'6%'},
+            {field: 'scounts', title: '分享人数',align:'center',width:'6%'},
             {field: 'spread_uid_nickname', title: '推荐人',align:'center'},
             {field: 'data_time', title: '访问日期',align:'center',width:'12%',templet:'#data_time'},
             // {field: 'status', title: '状态',templet:"#checkboxstatus",width:'6%',align:'center'},

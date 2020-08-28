@@ -135,7 +135,7 @@
       <div class="info acea-row row-between-wrapper">
       <div class="pictrue"><img :src="system_store.image" /></div>
       <div class="text">
-      <div class="name line1">
+      <div class="name line1" @click="goDetail(system_store.id)">
       {{ system_store.name }}
       </div>
       <div class="address acea-row row-middle" @click="showChang">
@@ -932,6 +932,9 @@ export default {
           }
         });
       }
+    },
+    goDetail(store_id) {
+        this.$router.push({ path: "/sdetail/" + store_id });
     },
     //立即购买；
     tapBuy: function() {

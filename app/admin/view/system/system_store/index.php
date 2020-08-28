@@ -93,6 +93,9 @@
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='shop_qrcode'>
                                                                   下载收款码
                         </button>
+<button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='tui_qrcode'>
+                                                                  下载推广码
+                        </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='upload'>
                             上传轮播图
                         </button>
@@ -199,6 +202,8 @@
             case 'shop_qrcode':
             	$eb.createModalFrame('商家二维码',layList.U({a:'shop_qrcode',q:{id:data.id}}));
                 break;
+            case 'tui_qrcode':
+            	$eb.createModalFrame('商家推广码',layList.U({a:'tui_qrcode',q:{id:data.id}}));
                 break;
                 
         }

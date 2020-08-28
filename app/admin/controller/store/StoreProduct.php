@@ -81,6 +81,8 @@ class StoreProduct extends AuthController
             ['limit', 20],
             ['store_name', ''],
             ['cate_id', ''],
+            ['belong_t', ''],
+            ['hex_t', ''],
             ['excel', 0],
             ['order', ''],
             ['type', $this->request->param('type')]

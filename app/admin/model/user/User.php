@@ -159,6 +159,10 @@ class User extends BaseModel
                 } else {
                     $item['spread_uid_nickname'] = '无';
                 }
+                $item['scounts'] = self::getUserSpreadCount($item['uid']);
+                if($item['scounts']!=$item['spread_count']){
+                   self::where('uid',$item['uid'])->update(['spread_count' => $item['spread_counts']]);
+                }
                 if ($item['openid'] != '' && $item['routine_openid'] != '') {
                     $item['user_type'] = '通用';
                 } else if ($item['openid'] == '' && $item['routine_openid'] != '') {
@@ -182,6 +186,13 @@ class User extends BaseModel
             });//->toArray();
         $count = self::setWherePage(self::setWhere($where), $where, ['w.sex', 'w.province', 'w.city', 'u.status', 'u.is_promoter'], ['u.nickname', 'u.uid'])->alias('u')->join('WechatUser w', 'u.uid=w.uid')->count();
         return ['count' => $count, 'data' => $list];
+    }
+    
+    public static function getUserSpreadCount($uid = 0)
+    {
+        if (!$uid) return 0;
+        $counts = self::where('spread_uid', $uid)->count('uid');
+        return $counts ? $counts : 0;
     }
 
     /**

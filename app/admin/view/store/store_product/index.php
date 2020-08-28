@@ -38,6 +38,27 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">核销类型</label>
+                                <div class="layui-input-block">
+                                    <select name="hex_t">
+                                        <option value=" ">全部</option>
+                                        <option value="0">邮寄</option>
+                                        <option value="1">到店核销</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">商品类型</label>
+                                <div class="layui-input-block">
+                                    <select name="belong_t">
+                                        <option value="">全部</option>
+                                        <option value="0">商品中心</option>
+                                        <option value="1">网店商品</option>
+                                        <option value="2">本地特惠</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
                                 <label class="layui-form-label">商品名称</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="store_name" class="layui-input" placeholder="请输入商品名称,关键字,编号">
