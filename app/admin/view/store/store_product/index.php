@@ -41,7 +41,7 @@
                                 <label class="layui-form-label">核销类型</label>
                                 <div class="layui-input-block">
                                     <select name="hex_t">
-                                        <option value=" ">全部</option>
+                                        <option value="">全部</option>
                                         <option value="0">邮寄</option>
                                         <option value="1">到店核销</option>
                                     </select>
