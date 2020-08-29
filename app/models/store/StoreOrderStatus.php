@@ -30,6 +30,12 @@ class StoreOrderStatus extends BaseModel
         if($change_time == null) $change_time = time();
         return self::create(compact('oid','change_type','change_message','change_time'));
     }
+    
+    public static function hxstatus($oid,$uid,$change_type,$change_message,$change_time = null)
+    {
+        if($change_time == null) $change_time = time();
+        return self::create(compact('oid','uid','change_type','change_message','change_time'));
+    }
 
     public static function getTime($oid,$change_type)
     {

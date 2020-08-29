@@ -452,6 +452,12 @@ class StoreOrderController
         if (!$verify_code) return app('json')->fail('缺少核销码');
         $orderInfo = StoreOrder::where('verify_code', $verify_code)->where('paid', 1)->where('refund_status', 0)->find();
         if (!$orderInfo) return app('json')->fail('核销的订单不存在或未支付或已退款');
+        
+        $uid = $request->uid();
+        // 检测是否有权限核销
+        if (!StoreService::isCanCheck($orderInfo->store_id,$uid)){
+            return app('json')->fail('没有权限核销该订单');
+        }
         if ($orderInfo->status > 0) return app('json')->fail('订单已经核销');
         if ($orderInfo->combination_id && $orderInfo->pink_id) {
             $res = StorePink::where('id', $orderInfo->pink_id)->where('status', '<>', 2)->count();
@@ -463,17 +469,13 @@ class StoreOrderController
         }
         StoreOrder::beginTrans();
         try {
-            $uid = $request->uid();
-            if (SystemStoreStaff::verifyStatus($uid) && ($storeStaff = SystemStoreStaff::where('uid', $uid)->field(['store_id', 'id'])->find())) {
-                $orderInfo->store_id = $storeStaff['store_id'];
-                $orderInfo->clerk_id = $storeStaff['id'];
-            }
             $orderInfo->status = 2;
             if ($orderInfo->save()) {
                 OrderRepository::storeProductOrderTakeDeliveryAdmin($orderInfo);
-                StoreOrderStatus::status($orderInfo->id, 'take_delivery', '已核销');
+                StoreOrderStatus::hxstatus($orderInfo->id,$uid, 'take_delivery', '已核销');
                 event('ShortMssageSend', [$orderInfo['order_id'], 'Receiving']);
                 StoreOrder::commitTrans();
+                StoreOrder::sendMessage($uid,$orderInfo['order_id']);
                 return app('json')->success('核销成功');
             } else {
                 StoreOrder::rollbackTrans();

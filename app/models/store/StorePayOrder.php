@@ -282,6 +282,7 @@ class StorePayOrder extends BaseModel
         self::beginTrans();
         $res = true;
         $dikou=0;
+        $pay_pointer=0;
         if($orderInfo['pay_give']>0&&$orderInfo['pay_flag']==1){//购物积分抵扣
             $res = false !== User::bcDec($uid, 'give_point', $orderInfo['pay_give'], 'uid');
             if($res){
@@ -334,6 +335,7 @@ class StorePayOrder extends BaseModel
             $dikou = $orderInfo['coupon_amount'];
         }else if($orderInfo['pay_pointer']>0&&$orderInfo['pay_flag']==0){//判断是否有赠送积分
             $res = false !== User::bcInc($uid, 'pay_point',$orderInfo['pay_pointer'], 'uid');
+            $pay_pointer = $orderInfo['pay_pointer'];
             if($res){
                 $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0, $orderInfo['pay_pointer'],0,0, '商家消费赠送消费积分');
             }
@@ -677,6 +679,11 @@ class StorePayOrder extends BaseModel
             }
         }
         
+        $remark = '本次消费'.$orderInfo['total_amount'].'元,实际支付'.$orderInfo['pay_amount'].'元,';
+        if($pay_pointer>0){
+            $remark = $remark.'消费赠送'.$pay_pointer.'个消费积分,积分可抵'.$pay_pointer.'元现金使用,';
+        }
+        $remark = $remark.'感谢您的支持';
         //给客户发送消费通知
         WechatTemplateService::sendTemplate(WechatUser::where('uid', $orderInfo['uid'])->value('openid'), WechatTemplateService::PAYORDER_SUCCESS, [
             'first' => '尊敬的客户您好，您在佰仟万平台完成了一笔交易',
@@ -684,7 +691,7 @@ class StorePayOrder extends BaseModel
             'keyword2' => $orderInfo['order_id'],
             'keyword3' => date('Y-m-d H:i:s', time()),
             'keyword4' => $orderInfo['total_amount'],
-            'remark' => '本次消费总额'.$orderInfo['total_amount'].'元,实际支付'.$orderInfo['pay_amount'].'元，感谢您的支持'
+            'remark' => $remark
         ], Url::buildUrl('/user/payorder')->suffix('')->domain(true)->build());
         $res1 = self::where('order_id',$orderInfo['order_id'])->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);
         $res2 = $res1 && $res;

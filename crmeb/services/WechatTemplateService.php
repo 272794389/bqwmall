@@ -65,6 +65,12 @@ class WechatTemplateService implements ProviderInterface
     //余额变动提醒
     const MONEYCHANGE_SUCCESS = 'OPENTM406440024';
     
+    //客户核销成功提醒
+    const HEX_SUCCESS = 'OPENTM206215005';
+    
+    //店铺管理员核销成功提醒
+    const SHEX_SUCCESS = 'OPENTM407889520';
+    
     
     
     

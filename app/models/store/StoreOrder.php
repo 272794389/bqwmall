@@ -1870,6 +1870,11 @@ class StoreOrder extends BaseModel
             }
         }
         
+        $remark = '本次消费'.$order['total_price'].'元,实际支付'.$order['pay_price'].'元,';
+        if($order['pay_point']>0){
+            $remark = $remark.'消费赠送'.$order['pay_point'].'个消费积分,积分可抵'.$order['pay_point'].'元现金使用,';
+        }
+        $remark = $remark.'感谢您的支持';
        //给客户发送消费通知
         WechatTemplateService::sendTemplate(WechatUser::where('uid', $order['uid'])->value('openid'), WechatTemplateService::PAYORDER_SUCCESS, [
             'first' => '尊敬的客户您好，您在佰仟万平台完成了一笔交易',
@@ -1877,7 +1882,7 @@ class StoreOrder extends BaseModel
             'keyword2' => $order['order_id'],
             'keyword3' => date('Y-m-d H:i:s', time()),
             'keyword4' => $order['pay_price'],
-            'remark' => '订单总额'.$order['total_price'].'元,实际支付'.$order['pay_price'].'元，感谢您的支持'
+            'remark' => $remark
         ], Url::buildUrl('/order/list/1')->suffix('')->domain(true)->build());
         if (!$res) self::rollback();
         self::commit();
@@ -3328,6 +3333,37 @@ class StoreOrder extends BaseModel
         return $model;
 
     }
+    
+    //测试微信模板
+    public static function sendmessage($uid,$order_id){
+        $order = self::where('order_id', $order_id)->find();
+        $storeInfo = SystemStore::where('id',$order['store_id'])->find();
+        //给客户发送订单核销提醒  商品名称、数量
+        $list = DB::name('store_order')->alias('o')->where('o.order_id',$order['order_id'])->join('store_order_cart_info p','o.id=p.oid')->join('store_product q','p.product_id=q.id')->field('q.store_name')->select()->toArray();
+        if($list){
+            foreach ($list as &$item) {
+                //给客户发送支付成功提醒
+                WechatTemplateService::sendTemplate(WechatUser::where('uid', $order['uid'])->value('openid'), WechatTemplateService::HEX_SUCCESS, [
+                    'first' => '尊敬的客户您好，您有一笔订单已经到店核销',
+                    'keyword1' => $item['store_name'],
+                    'keyword2' => $order['total_num']."份",
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'remark' => '点击查看订单详情'
+                ], Url::buildUrl('/order/detail/'.$order['order_id'])->suffix('')->domain(true)->build());
+                //给商家发送支付成功提醒
+                WechatTemplateService::sendTemplate(WechatUser::where('uid', $uid)->value('openid'), WechatTemplateService::SHEX_SUCCESS, [
+                    'first' => '尊敬的商户您好，您刚完成一笔订单核销',
+                    'keyword1' => $order['verify_code'],
+                    'keyword2' => $item['store_name'],
+                    'keyword3' => date('Y-m-d H:i:s', time()),
+                    'keyword4' => $storeInfo['name'],
+                    'remark' => '点击查看订单详情'
+                ], Url::buildUrl('/order/detail/'.$order['order_id'])->suffix('')->domain(true)->build());
+            } 
+        }
+    }
+    
+    
 
     public static function getOrderProductReplyList($where)
     {
