@@ -58,7 +58,7 @@ class StorePayOrder extends BaseModel
      * @param int $paid
      * @return UserRecharge|bool|\think\Model
      */
-    public static function addOrder($uid,$store_id,$total_amount)
+    public static function addOrder($uid,$store_id,$total_amount,$check_id)
     {
         $order_id = self::getNewOrderId($uid);
         if(!$order_id) return self::setErrorInfo('订单生成失败！');
@@ -115,7 +115,7 @@ class StorePayOrder extends BaseModel
         if($pay_amount==$total_amount){
             $pay_pointer =  round( $storeInfo['pay_rate']*$pay_amount/100,2);
         }
-        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','coupon_amount','pay_give','pay_point','add_time','pay_pointer'));
+        return self::create(compact('order_id','uid','store_id','total_amount','pay_amount','coupon_amount','pay_give','pay_point','add_time','pay_pointer','check_id'));
     }
     
     //计算积分抵扣或抵扣券抵扣的金额
@@ -693,6 +693,21 @@ class StorePayOrder extends BaseModel
             'keyword4' => $orderInfo['total_amount'],
             'remark' => $remark
         ], Url::buildUrl('/user/payorder')->suffix('')->domain(true)->build());
+        
+        //给核销员发送通知
+        if($orderInfo['check_id']>0){
+            WechatTemplateService::sendTemplate(WechatUser::where('uid', $orderInfo['check_id'])->value('openid'), WechatTemplateService::PAYORDER_SUCCESS, [
+                'first' => '尊敬的管理员您好，您在佰仟万平台完成了一笔交易',
+                'keyword1' => '客户到店扫码消费',
+                'keyword2' => $orderInfo['order_id'],
+                'keyword3' => date('Y-m-d H:i:s', time()),
+                'keyword4' => $orderInfo['total_amount'],
+                'remark' => '感谢您的支持'
+            ], Url::buildUrl('/customer/myorder/'.$orderInfo['check_id'])->suffix('')->domain(true)->build());
+            
+        }
+        
+        
         $res1 = self::where('order_id',$orderInfo['order_id'])->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);
         $res2 = $res1 && $res;
         self::checkTrans($res2);

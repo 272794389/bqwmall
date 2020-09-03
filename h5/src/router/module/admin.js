@@ -10,6 +10,16 @@ export default [
     component: () => import("@views/orderAdmin/OrderIndex.vue")
   },
   {
+    path: "/customer/myorder/:check_id",
+    name: "AdminMyOrder",
+    meta: {
+      title: "业务员订单统计",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/orderAdmin/AdminMyOrder.vue")
+  },
+  {
     path: "/customer/orders/:types?",
     name: "AdminOrderList",
     meta: {

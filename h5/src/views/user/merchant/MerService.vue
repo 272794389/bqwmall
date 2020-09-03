@@ -8,11 +8,13 @@
             <img src="@assets/images/line.jpg" />
         </div>
         <div class="item" v-for="(item, index) in addressList" :key="index">
-            <div class="address">
+            <div class="address" @click="goDetail(item.uid)">
                 <div class="consignee">
                     客服昵称：{{ item.nickname
                     }}<span class="phone">真实姓名：{{ item.real_name }}</span>
+                    <span class="iconfont icon-jiantou" style="float:right;"></span>
                 </div>
+                
             </div>
             <div class="operation acea-row row-between-wrapper">
                 <div class="select-btn">
@@ -47,14 +49,14 @@
         <Loading :loaded="loadend" :loading="loading"></Loading>
         <div class="noCommodity" v-if="addressList.length < 1 && page > 1">
             <div class="noPictrue">
-                    <span>没有任何客服</span>
+                    <span>没有任何管理员</span>
             </div>
         </div>
         <div style="height:1.2rem;"></div>
         <div class="footer acea-row row-between-wrapper">
 
             <div class="addressBnt on bg-color-red"  @click="addService">
-                <span class="iconfont icon-tianjiadizhi"></span>添加客服
+                <span class="iconfont icon-tianjiadizhi"></span>添加管理员
             </div>
 
         </div>
@@ -120,7 +122,11 @@
 
                     that.loadend = res.data.length < that.limit; //判断所有数据是否加载完成；
                     that.page = that.page + 1;
-                });
+                }).catch(err => {
+                  that.loading = false;
+                  that.loadend = true;
+                  this.$dialog.error(err.msg);
+               });
             },
             /**
              * 编辑地址
@@ -166,7 +172,11 @@
                     that.$set(that, "addressList", that.addressList);
                 });
             },
-
+           goDetail(uid) {
+		         this.$router.push({
+		             path:"/customer/myorder/" +uid
+		        });
+		    },
             /**
              * 新增地址
              */

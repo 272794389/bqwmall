@@ -382,9 +382,10 @@ class PublicController
     }
     
     public function shoppay(Request $request){
-        list($amount, $store_id) = UtilService::postMore([
+        list($amount, $store_id,$check_id) = UtilService::postMore([
             ['amount', 0],
-            ['store_id', 0]
+            ['store_id', 0],
+            ['check_id', 0]
         ], $request, true);
         $uid = $request->uid();
         if ($amount<0.1)
@@ -394,7 +395,7 @@ class PublicController
         if(!$uid){
             return app('json')->fail('请先登录');
         }
-        $order = StorePayOrder::addOrder($uid,$store_id,$amount);//创建消费订单
+        $order = StorePayOrder::addOrder($uid,$store_id,$amount,$check_id);//创建消费订单
         if ($order)
             return app('json')->success('操作成功', ['order_id' => $order['id']]);
         else

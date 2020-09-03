@@ -4,11 +4,14 @@ namespace app\admin\controller\wechat;
 
 use app\admin\controller\AuthController;
 use app\admin\model\system\SystemAttachment;
+use app\admin\model\system\SystemStore as StoreModel;
+
 use crmeb\services\{
     CacheService,
     FormBuilder as Form,
     UtilService as Util,
-    JsonService as Json
+    JsonService as Json,
+    UtilService
 };
 use think\facade\Route as Url;
 use app\admin\model\wechat\{
@@ -29,7 +32,8 @@ class StoreService extends AuthController
      */
     public function index()
     {
-        $this->assign(ServiceModel::getList(0));
+        $store_list = StoreModel::dropList();
+        $this->assign('store_list', $store_list);
         return $this->fetch();
     }
 
@@ -60,6 +64,20 @@ class StoreService extends AuthController
         $this->assign(['title' => '添加客服', 'save' => Url::buildUrl('save')]);
         return $this->fetch();
     }
+    
+    
+    public function list()
+    {
+        $where = UtilService::getMore([
+            ['page', 1],
+            ['limit', 20],
+            ['name', ''],
+            ['store_id', '']
+        ]);
+        return Json::successlayui(ServiceModel::lst($where));
+    }
+    
+    
 
     /**
      * 保存新建的资源
@@ -135,6 +153,43 @@ class StoreService extends AuthController
         else
             return Json::successful('删除成功!');
     }
+    
+    
+     public function store_qrcode($id){
+         $service = ServiceModel::get($id);
+         $erma_url='';
+         if ($service){
+             $erma_url = $service['erma_url'];
+         }
+         
+         $store = StoreModel::get($service['store_id']);
+         
+         $ermaImg = $erma_url;
+         if(!$ermaImg){
+             //$siteUrl = sysConfig('site_url');
+             $siteUrl = "https://www.dshqfsc.com";
+             $codeUrl = UtilService::setHttpType($siteUrl, 1)."/shoppay/".$service['store_id']."?spread=".$store['user_id']."&checkId=".$service['uid'];//二维码链接
+             $name = date("Y-m-d")."-order-sale-".time().".jpg";
+             $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+             if(!$imageInfo) return app('json')->fail('二维码生成失败');
+             if (!$imageInfo) return app('json')->fail('二维码生成失败');
+             $data =[];
+             //计算二维码图片地址
+             $arr = array();
+             $arr = explode("//",$siteUrl);
+             $farr = explode(".",$arr[1]);
+             $ermaImg = 'img';
+             if($farr[0]!='www'){
+                 $ermaImg = $farr[0]."-".$ermaImg;
+             }
+             // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
+             $data['erma_url']="http://oss.dshqfsc.com/".$name;
+             $ermaImg = $data['erma_url'];
+             ServiceModel::edit($data,$id); 
+         }
+         $this->assign(compact('ermaImg'));
+         return $this->fetch();
+     }
 
     /**
      * 显示资源列表

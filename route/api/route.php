@@ -33,8 +33,17 @@ Route::any('routine/notify', 'wechat.AuthController/notify');//小程序支付�
 
 //管理员订单操作类
 Route::group(function () {
+    
+    
+    Route::get('admin/order/mystaticstics/:check_id', 'admin.StoreOrderController/mystaticstics')->name('mystaticstics');
+    
     Route::get('admin/order/statistics', 'admin.StoreOrderController/statistics')->name('adminOrderStatistics');//订单数据统计
     Route::get('admin/order/data', 'admin.StoreOrderController/data')->name('adminOrderData');//订单每月统计数据
+    Route::get('admin/order/mydata', 'admin.StoreOrderController/mydata')->name('adminMyOrderData');//订单每月统计数据
+    Route::get('admin/order/mypaydata', 'admin.StoreOrderController/mypaydata')->name('adminMyPayOrderData');//订单每月统计数据
+    
+    
+    
     Route::get('admin/order/list', 'admin.StoreOrderController/lst')->name('adminOrderList');//订单列表
     Route::get('admin/order/detail/:orderId', 'admin.StoreOrderController/detail')->name('adminOrderDetail');//订单详情
     Route::get('admin/order/delivery/gain/:orderId', 'admin.StoreOrderController/delivery_gain')->name('adminOrderDeliveryGain');//订单发货获取订单信息

@@ -19,9 +19,11 @@ export default {
   components: {},
   props: {},
   data: function() {
+  const { checkId=0 } = this.$route.query;
     return {
       amount: 0, //消费金额
       id: 0,
+      checkId:0,
       isWeixin: false,
       storeInfo: {}
     };
@@ -31,12 +33,17 @@ export default {
     $route(n) {
       if (n.name === NAME) {
         this.id = n.params.id;
+        alert(this.id);
+        const { checkId=0 } = this.$route.query;
+        this.checkId = checkId;
         if (n.name === NAME) this.User();
       }
     }
   },
   mounted: function() {
    this.id = this.$route.params.id;
+   const { checkId=0 } = this.$route.query;
+   this.checkId = checkId;
    this.getStoreInfo();
    this.User();
    this.isWeixin = isWeixin();
@@ -62,7 +69,7 @@ export default {
     async confirm() {
       let that = this;
       const { amount } = that;
-      shopPay({amount: this.amount,store_id: this.id })
+      shopPay({amount: this.amount,store_id: this.id,check_id: this.checkId })
         .then(res => {
           if (res.data !== undefined&&res.data.order_id>0) {
             this.$router.push({ path: "/shopset/" + res.data.order_id });

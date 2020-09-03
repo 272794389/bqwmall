@@ -179,7 +179,7 @@
 		 <router-link :to="'/merchant/home'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/shop.png" /></div>
 		  <div class="title1-2">我是商家</div>
-		  <div class="title1-3"><span v-if="userInfo.store_name!=''">管理我的店铺</span><span v-else>我要入驻</span><span class="iconfont icon-jiantou"></span></div>
+		  <div class="title1-3"><span v-if="userInfo.is_store==1">管理我的店铺</span><span v-else>我要入驻</span><span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
 	  <div class="title">
@@ -287,7 +287,7 @@ export default {
         }
       }
       if (url === "/customer/index" && !this.userInfo.adminid) {
-        return this.$dialog.toast({ mes: "您还不是客服！！" });
+        return this.$dialog.toast({ mes: "您还不是管理员！！" });
       }
       this.$router.push({ path: this.MyMenus[index].wap_url });
     },

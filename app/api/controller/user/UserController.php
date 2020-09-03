@@ -137,8 +137,16 @@ class UserController
         $storeInfo = SystemStore::where('user_id',$user['uid'])->find();
         if($storeInfo){//存在商户信息
             $user['store_name'] = $storeInfo['mer_name'];
+            $user['is_store']=1;
         }else{
             $user['store_name'] = '';
+            $user['is_store']=0;
+        }
+        if($user['is_store']==0){
+            $cservice = StoreService::where('uid',$user['uid'])->find();
+            if($cservice){
+                $user['is_store']=1;
+            }
         }
         
         //判断是否有核销权限

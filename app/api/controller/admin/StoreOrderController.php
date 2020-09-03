@@ -39,6 +39,31 @@ class StoreOrderController
         $data = array_merge($dataCount, $dataPrice);
         return app('json')->successful($data);
     }
+    
+    
+    
+    public function mystaticstics(Request $request,$check_id)
+    {
+        $uid = $request->uid();
+        if (!StoreService::orderServiceStatus($uid))
+            return app('json')->fail('权限不足');
+        
+        $cservice = StoreService::where('uid',$check_id)->find();
+        if($uid!=$check_id){
+            $service = StoreService::where('uid',$uid)->find();
+            if($service['is_admin']!=1){
+                return app('json')->fail('权限不足');
+            }
+            if($service['store_id']!=$cservice['store_id']){
+                return app('json')->fail('权限不足');
+            }
+        }
+        $dataPrice = StoreOrder::getMyOrderTimeData($check_id,$cservice['store_id']);
+        $dataPrice['real_name'] = $cservice['real_name'];
+        
+        $data = array_merge($dataPrice);
+        return app('json')->successful($data);
+    }
 
     /**
      * 订单每月统计数据
@@ -61,6 +86,74 @@ class StoreOrderController
         if ($data) return app('json')->successful($data->toArray());
         return app('json')->successful([]);
     }
+    
+
+    /**
+     * 订单每月统计数据
+     * @param Request $request
+     * @return mixed
+     */
+    public function mydata(Request $request)
+    {
+        list($page, $limit, $start, $stop,$check_id) = UtilService::getMore([
+            ['page', 1],
+            ['limit',30],
+            ['start', ''],
+            ['stop', ''],
+            ['check_id', '']
+        ], $request, true);
+        $uid = $request->uid();
+        if (!StoreService::orderServiceStatus($uid))
+            return app('json')->fail('权限不足');
+        
+        $cservice = StoreService::where('uid',$check_id)->find();
+        if($uid!=$check_id){
+            $service = StoreService::where('uid',$uid)->find();
+            if($service['is_admin']!=1){
+                return app('json')->fail('权限不足');
+            }
+            if($service['store_id']!=$cservice['store_id']){
+                return app('json')->fail('权限不足');
+            }
+        }
+        if (!$limit) return app('json')->successful([]);
+        $data = StoreOrder::getMyOrderDataPriceCount($uid,$page, $limit, $start, $stop,$check_id,$cservice['store_id']);
+        if ($data) return app('json')->successful($data->toArray());
+        return app('json')->successful([]);
+    }
+    
+    /**
+     * 订单每月统计数据
+     * @param Request $request
+     * @return mixed
+     */
+    public function mypaydata(Request $request)
+    {
+        list($page, $limit, $check_id) = UtilService::getMore([
+            ['page', 1],
+            ['limit',30],
+            ['check_id', '']
+        ], $request, true);
+        $uid = $request->uid();
+        if (!StoreService::orderServiceStatus($uid))
+            return app('json')->fail('权限不足');
+    
+            $cservice = StoreService::where('uid',$check_id)->find();
+            if($uid!=$check_id){
+                $service = StoreService::where('uid',$uid)->find();
+                if($service['is_admin']!=1){
+                    return app('json')->fail('权限不足');
+                }
+                if($service['store_id']!=$cservice['store_id']){
+                    return app('json')->fail('权限不足');
+                }
+            }
+            if (!$limit) return app('json')->successful([]);
+            $data = StoreOrder::getMyPayOrderDataPriceCount($uid,$page, $limit,$check_id,$cservice['store_id']);
+            if ($data) return app('json')->successful($data->toArray());
+            return app('json')->successful([]);
+    }
+    
 
     /**
      * 订单列表

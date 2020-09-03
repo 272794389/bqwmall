@@ -37,6 +37,32 @@ class StoreService extends BaseModel
             $item['wx_name'] = WechatUser::where(['uid' => $item['uid']])->value('nickname');
         });
     }
+    
+    
+    /**
+     * 获取门店列表
+     * @param $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function lst($where)
+    {
+        $model = self::page((int)$where['page'], (int)$where['limit']);
+        if (isset($where['store_id']) && $where['store_id'] != '') {
+            $model = $model->where('store_id', $where['store_id']);
+        }
+        //        if (isset($where['type']) && $where['type'] != '' && ($data = self::setData($where['type']))) {
+        //            $model = $model->where($data);
+        //        }
+        $model = $model->alias('a')
+        ->join('system_store s', 'a.store_id = s.id')
+        ->field('a.id,a.uid,a.nickname,a.avatar,a.real_name,a.status,a.add_time,s.name,a.is_admin,a.is_check,a.store_id');
+        $data = $model->select();
+        $count = $data->count();
+        return compact('count', 'data');
+    }
 
     /**
      * 获取聊天记录用户

@@ -1,6 +1,6 @@
 module.exports = {
   // 请求域名 格式： https://您的域名
-  HTTP_REQUEST_URL:'',
+  HTTP_REQUEST_URL:'https://www.dshqfsc.com',
   // Socket链接 暂不做配置
   WSS_SERVER_URL:'',
 

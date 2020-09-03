@@ -11,17 +11,14 @@
 
 
     <div class="list acea-row row-between-wrapper" v-if="status==2">
-      <router-link
-        class="item acea-row row-center-wrapper row-column"
-        :to="{ path: '/merchant/service/' + mer.id }"
-      >
+      <router-link class="item acea-row row-center-wrapper row-column" :to="{ path: '/merchant/service/' + mer.id }" v-if="service.is_admin==1">
         <span class="iconfont icon-paihang1"></span>
         <div>客服管理</div>
       </router-link>
 
       <router-link
         class="item acea-row row-center-wrapper row-column"
-        :to="'/merchant/plist'"
+        :to="'/merchant/plist'"  v-if="service.is_admin==1"
       >
         <span class="iconfont icon-paihang"></span>
         <div>商品管理</div>
@@ -29,7 +26,7 @@
   
       <router-link
         class="item acea-row row-center-wrapper row-column"
-        :to="'/customer/index'"
+        :to="'/customer/index'"  v-if="service.is_admin==1"
       >
         <span class="iconfont icon-dingdan"></span>
         <div>订单管理</div>
@@ -41,15 +38,13 @@
         <span class="iconfont icon-erweima"></span>
         <div>收款码</div>
       </router-link>
-     <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"
-        :to="'/merchant/product'"
+        :to="'/customer/myorder/'+ service.uid" v-if="service.uid>0"
       >
-        <span class="iconfont icon-paihang1"></span>
-        <div>提现管理</div>
+        <span class="iconfont icon-xiaolian"></span>
+        <div>我的业绩</div>
       </router-link>
-      -->
     </div>
   </div>
 </template>
@@ -63,7 +58,8 @@ export default {
   data: function() {
     return {
       status:0,
-      mer: {}
+      mer: {},
+      service:{}
     };
   },
   watch: {
@@ -79,6 +75,7 @@ export default {
       const {data} = await getMerHome();
       this.$data.status = data.status;
       this.$data.mer = data.mer;
+      this.$data.service = data.service;
     },
     toApply: function() {
       this.$router.push({path: "/merchant/storeAdd/0"});

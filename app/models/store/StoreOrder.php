@@ -2570,6 +2570,40 @@ class StoreOrder extends BaseModel
         $data['monthCount'] = self::where('is_del', 0)->where('pay_time', '>=', $now_month) ->where('store_id','in', $merList)->where('paid', 1)->where('refund_status', 0)->count();
         return $data;
     }
+    
+    
+    /**
+     * 获取 今日 昨日 本月 订单金额
+     * @return mixed
+     */
+    public static function getMyOrderTimeData($uid,$store_id)
+    {
+        $to_day = strtotime(date('Y-m-d'));//今日
+        $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
+        $now_month = strtotime(date('Y-m'));//本月
+        //今日成交额
+        $data['todayPrice'] = number_format(self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '>=', $to_day)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->value('sum(total_price)'), 2) ?? 0;
+        //今日订单数
+        $data['todayCount'] = self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '>=', $to_day)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->count();
+        //昨日成交额
+        $data['proPrice'] = number_format(self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '<', $to_day)->where('a.pay_time', '>=', $pre_day)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->value('sum(total_price)'), 2) ?? 0;
+        //昨日订单数
+        $data['proCount'] = self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '<', $to_day)->where('a.pay_time', '>=', $pre_day)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->count();
+        //本月成交额
+        $data['monthPrice'] = number_format(self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '>=', $now_month)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->value('sum(total_price)'), 2) ?? 0;
+        //本月订单数
+        $data['monthCount'] = self::alias('a')->join('store_order_status s', 'a.id = s.oid')->where('a.pay_time', '>=', $now_month)->where('a.paid', 1)->where('a.store_id', $store_id)->where('a.refund_status', 0)->where('s.uid', $uid)->count();
+       
+        $data['todayPrice'] += number_format(StorePayOrder::where('check_id',$uid)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('store_id', $store_id)->value('sum(total_amount)'), 2) ?? 0;
+        $data['todayCount'] += StorePayOrder::where('check_id',$uid)->where('pay_time', '>=', $to_day)->where('paid', 1)->where('store_id', $store_id)->count();
+        $data['proPrice'] += number_format(StorePayOrder::where('check_id',$uid)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('store_id', $store_id)->value('sum(total_amount)'), 2) ?? 0;
+        $data['proCount'] += StorePayOrder::where('check_id',$uid)->where('pay_time', '<', $to_day)->where('pay_time', '>=', $pre_day)->where('paid', 1)->where('store_id', $store_id)->count();
+        $data['monthPrice'] += number_format(StorePayOrder::where('check_id',$uid)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('store_id', $store_id)->value('sum(total_amount)'), 2) ?? 0;
+        $data['monthCount'] += StorePayOrder::where('check_id',$uid)->where('pay_time', '>=', $now_month)->where('paid', 1)->where('store_id', $store_id)->count();
+        return $data;
+    }
+    
+    
 
     /**
      * 获取某个用户的订单统计数据
@@ -2862,6 +2896,39 @@ class StoreOrder extends BaseModel
         $model = $model->where('paid', 1);
         $model = $model->where('store_id', "in",$merList );
         $model = $model->where('refund_status', 0);
+        $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
+        $model = $model->order('pay_time DESC');
+        if ($page) $model = $model->page($page, $limit);
+        return $model->select();
+    }
+    
+    /**
+     * 订单每月统计数据
+     * @param $page
+     * @param $limit
+     * @return array
+     */
+    public static function getMyOrderDataPriceCount($uid,$page, $limit, $start, $stop,$check_id,$store_id)
+    {
+        if (!$limit) return [];
+        $model = self::alias('a')->join('store_order_status b', 'a.id = b.oid')->where('b.uid',$check_id);
+        if ($start != '' && $stop != '') $model = $model->where('pay_time', '>', $start)->where('pay_time', '<=', $stop);
+        $model = $model->field('sum(pay_price) as price,count(id) as count,FROM_UNIXTIME(pay_time, \'%m-%d\') as time');
+        $model = $model->where('is_del', 0);
+        $model = $model->where('paid', 1);
+        $model = $model->where('store_id', $store_id);
+        $model = $model->where('refund_status', 0);
+        $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
+        $model = $model->order('pay_time DESC');
+        if ($page) $model = $model->page($page, $limit);
+        return $model->select();
+    }
+    
+    public static function getMyPayOrderDataPriceCount($uid,$page, $limit,$check_id,$store_id)
+    {
+        if (!$limit) return [];
+        $model = StorePayOrder::where('check_id',$check_id)->where('store_id',$store_id)->where('paid',1);
+        $model = $model->field('sum(total_amount) as price,count(id) as count,FROM_UNIXTIME(pay_time, \'%m-%d\') as time');
         $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
         $model = $model->order('pay_time DESC');
         if ($page) $model = $model->page($page, $limit);

@@ -6,12 +6,33 @@ import request from "@utils/request";
 export function getStatisticsInfo() {
   return request.get("/admin/order/statistics", {}, { login: true });
 }
+
+/*
+ * 业务员订单统计
+ * */
+export function getMyOrderStatistics(id) {
+  return request.get("/admin/order/mystaticstics/" + id, {}, { login: false });
+}
+
 /**
  * 订单月统计
  */
 export function getStatisticsMonth(where) {
   return request.get("/admin/order/data", where, { login: true });
 }
+
+/**
+ * 订单月统计
+ */
+export function getMyStatisticsMonth(where) {
+  return request.get("/admin/order/mydata", where, { login: true });
+}
+
+export function getMyPayStatisticsMonth(where) {
+	  return request.get("/admin/order/mypaydata", where, { login: true });
+	}
+
+
 /**
  * 订单月统计
  */

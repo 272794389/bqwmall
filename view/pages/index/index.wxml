@@ -18,112 +18,74 @@
             </block>
         </swiper>
     </view>
-    <view class='nav acea-row' wx:if="{{menus.length}}">
-      <block wx:for="{{menus}}" wx:key='index'>
-        <navigator class='item' wx:if="{{item.show == '1'}}" url='{{item.url}}'  open-type='switchTab' hover-class='none'>
-          <view class='pictrue'><image src='{{item.pic}}'></image></view>
-          <view>{{item.name}}</view>
-        </navigator>
-        <navigator class='item' wx:else url='{{item.url}}' hover-class='none'>
-          <view class='pictrue'><image src='{{item.pic}}'></image></view>
-          <view>{{item.name}}</view>
-        </navigator>
-      </block> 
-    </view>
-    <view class='news acea-row row-between-wrapper' wx:if="{{itemNew.length}}">
-       <view class='pictrue'><image src='/images/news.png'></image></view>
-       <view class='swiperTxt'>
-            <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="2500" duration="{{duration}}" vertical="true" circular="true">
-                <block wx:for="{{itemNew}}" wx:key='index'>
-                    <swiper-item catchtouchmove='catchTouchMove'>
-                        <navigator wx:if="{{item.show == '1'}}" url='{{item.url}}'  open-type='switchTab' class='acea-row row-between-wrapper' hover-class='none'>
-                            <view class='text acea-row row-between-wrapper'>
-                                <view class='label border2' wx:if="{{item.id%2 == 0}}">最新</view>
-                                <view class='newsTitle line1'>{{item.info}}</view>
-                            </view>
-                            <view class='iconfont icon-xiangyou'></view>
-                        </navigator>
-                        <navigator wx:else open-type='navigate' url='{{item.url}}'  class='acea-row row-between-wrapper' hover-class='none'>
-                            <view class='text acea-row row-between-wrapper'>
-                                <view class='label border2' wx:if="{{item.id%2 == 0}}">最新</view>
-                                <view class='newsTitle line1'>{{item.info}}</view>
-                            </view>
-                            <view class='iconfont icon-xiangyou'></view>
-                        </navigator>
-                    </swiper-item>
-                  </block>
-              </swiper> 
-       </view>
-    </view>
-    <view class='specialArea acea-row row-between-wrapper' wx:if="{{activityList.length}}">
-      <block wx:for="{{activityList}}" wx:key='index'>
-       <navigator class='assemble' url='{{item.link}}' wx:if="{{index < 1}}">
-          <image src='{{item.pic}}'></image>
-          <view class='text'>
-             <view class='name'>{{item.title}}</view>
-             <view class='infor'>{{item.info}}</view>
-          </view>
-       </navigator>
-      </block> 
-       <view class='list acea-row row-column-between'>
-          <block wx:for="{{activityList}}" wx:key='index'>
-            <navigator class='item' url='{{item.link}}' wx:if="{{index > 0}}">
-              <image src='{{item.pic}}'></image>
-              <view class='text'>
-                  <view class='name'>{{item.title}}</view>
-                  <view class='infor'>{{item.info}}</view>
-              </view>
-            </navigator>
-          </block>  
-       </view>
-    </view>
-    <view class="liveBroadcast" wx:if='{{liveList.length || liveInfo.roomid}}'>
-        <view class="title">热门直播</view>
-        <!-- end:结束；time：直播时间 -->
-        <navigator wx:if='{{liveInfo.roomid}}' hover-class="none" url="plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id={{liveInfo.roomid}}" class="broadcast time">
-           <view class="pictrue">
-              <image src="{{liveInfo.cover_img}}"></image>
-              <view class="label" wx:if='{{liveInfo.live_status == 101}}'><text class="iconfont icon-zhibo"></text>直播中</view>
-              <view class="label" wx:if='{{liveInfo.live_status == 103}}'><text class="iconfont icon-zhibojieshux"></text>已结束</view>
-              <view class="label" wx:if='{{liveInfo.live_status == 102}}'><text class="iconfont icon-shijian"></text>直播时间 {{liveInfo._start_time}}</view>
-           </view>
-           <view class="text line1">{{liveInfo.name}}</view>
-        </navigator>
-        <view class="list" wx:if="{{liveList.length}}">
-           <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
-              <navigator hover-class="none" wx:for='{{liveList}}' wx:key='index' url="plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id={{item.roomid}}" class="item">
-                  <view class="pictrue">
-                    <image src="{{item.cover_img}}"></image>
-                    <view class="label" wx:if='{{item.live_status == 101}}'><text class="iconfont icon-zhibo"></text>直播中</view>
-              <view class="label" wx:if='{{item.live_status == 103}}'><text class="iconfont icon-zhibojieshux"></text>已结束</view>
-              <view class="label" wx:if='{{item.live_status == 102}}'><text class="iconfont icon-shijian"></text>直播时间 {{item._start_time}}</view>
+    <view class='nav acea-row'>
+        <swiper indicator-dots="true" style="width:100%;height:370rpx;"
+                   circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="#999" indicator-active-color="#FFBA00">
+            <swiper-item wx:if="{{fastList.length}}">
+              <block wx:for="{{fastList}}" wx:key="index">
+               <navigator url=''>
+                  <view class='item' data-index='{{index}}'>
+                     <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                     <view>{{item.cate_name}}</view>
                   </view>
-                  <view class="text line1">{{item.name}}</view>
                 </navigator>
-            </scroll-view>
-        </view>
+              </block> 
+            </swiper-item>
+            <swiper-item wx:if="{{sfastList.length}}">
+              <block wx:for="{{sfastList}}" wx:key="index">
+                <view class='item' data-index='{{index}}'>
+                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                  <view>{{item.cate_name}}</view>
+                </view>
+              </block> 
+            </swiper-item>
+            <swiper-item wx:if="{{tfastList.length}}">
+              <block wx:for="{{tfastList}}" wx:key="index">
+                <view class='item' data-index='{{index}}'>
+                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                  <view>{{item.cate_name}}</view>
+                </view>
+              </block> 
+            </swiper-item>
+            <swiper-item wx:if="{{ffastList.length}}">
+              <block wx:for="{{ffastList}}" wx:key="index">
+                <view class='item' data-index='{{index}}'>
+                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                  <view>{{item.cate_name}}</view>
+                </view>
+              </block> 
+            </swiper-item>
+        </swiper>
     </view>
-    <view class='wrapper' wx:if="{{fastList.length}}">
-       <view class='title acea-row row-between-wrapper'>
-          <view class='text'>
-             <view class='name line1'>快速选择</view>
-             <view class='line1'>{{fastInfo}}</view>
+   <view class="wrapper jinpbox" wx:if="{{hostList.length}}">
+     <view class="title acea-row row-between-wrapper">
+        <view class="text">
+          <view class="jname line1">
+               <text> 精品</text><image src='http://oss.dshqfsc.com/c4d8e202008061642339596.png'></image>
+               <navigator class='more' url='/pages/first-new-product/index?type=1'>更多<text class='iconfont icon-jiantou'></text></navigator>
           </view>
-          <navigator class='more' url='/pages/goods_cate/goods_cate' open-type='switchTab'>更多<text class='iconfont icon-jiantou'></text></navigator>
-       </view>
-       <view class='scroll-product'>
-          <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
-              <block wx:for="{{fastList}}" wx:key='index'>
-                 <navigator hover-class="none" class='item' url='/pages/goods_list/goods_list?sid={{item.id}}&title={{item.cate_name}}'>
-                    <view class='img-box'>
-                      <image src='{{item.pic}}'></image>
-                    </view>
-                    <view class='pro-info line1'>{{item.cate_name}}</view>
+        </view>
+      </view>
+      <view class="newProducts">
+           <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
+              <block wx:for="{{hostList}}" wx:key='index'>
+                 <navigator hover-class="none" class='item' url='/pages/goods_details/index?id={{item.id}}'>
+                    <view class="img-box">
+                        <image src="{{item.image}}" ></image>
+                        <view class="pictrue_log_medium pictrue_log_class">精品</view>
+                     </view>
+                    
                   </navigator>
               </block>  
            </scroll-view>
         </view>
-    </view>
+   </view>
+     <view id="searchBar" class="specialArea acea-row row-between-wrapper">
+        
+        
+        
+        </view>
+
      <view class='wrapper' wx:if="{{bastList.length}}">
        <view class='title acea-row row-between-wrapper'>
           <view class='text'>
