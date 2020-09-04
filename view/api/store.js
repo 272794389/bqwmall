@@ -132,5 +132,21 @@ export function getSearchKeyword(){
  * @returns {*}
  */
 export function storeListApi(data) {
-  return request.get("store_list", data);
+  return request.get("store_list", data,{ noAuth : true});
+}
+
+/**
+ * 本地优惠套餐
+ * @returns {*}
+ */
+export function goodListApi(data) {
+  return request.get("tgoods_list", data,{ noAuth : true});
+}
+
+/**
+ * 获取网店列表
+ * 
+ */
+export function getNearStoreData(data) {
+  return request.get("getNearStoreData",data,{ noAuth : true});
 }

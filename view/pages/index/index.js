@@ -2,6 +2,7 @@ const app = getApp();
 
 import { getIndexData, getCoupons, getTemlIds, getLiveList} from '../../api/api.js';
 import { CACHE_SUBSCRIBE_MESSAGE } from '../../config.js';
+import { storeListApi,goodListApi,getNearStoreData } from '../../api/store.js';
 import Util from '../../utils/util.js';
 import wxh from '../../utils/wxh.js';
 Page({
@@ -21,6 +22,9 @@ Page({
     sfastList: [],
     tfastList: [],
     ffastList: [],
+    netGoodList:[],
+    nearGoodList:[],
+    storeList:[],
     firstInfo: '',
     firstList: [],
     salesInfo: '',
@@ -44,6 +48,8 @@ Page({
     selfLatitude: '',
     liveList: [],
     liveInfo:{},
+    condition:3,
+    searchBarFixed:0,
   },
   closeTip:function(){
     wx.setStorageSync('msg_key',true);
@@ -55,7 +61,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    wxh.selfLocation(1);
+    this.selfLocation();
     this.setData({
       navH: app.globalData.navHeight
     });
@@ -76,25 +82,80 @@ Page({
 
     })
   },
+
+/**
+  * 获取本地特惠套餐及周边的店
+  * 
+  */
+ selfLocation: function () {
+  const that = this;
+  wxh.selfLocation().then(res=>{
+    let data={
+      latitude: res.latitude || '', //纬度
+      longitude: res.longitude || '', //经度
+      page: 1,
+      limit: 10
+    }
+    storeListApi(data).then(res => {
+      let list = res.data.list || [];
+      this.data.storeList = app.SplitArray(list, this.data.storeList);
+      this.setData({
+        storeList: this.data.storeList
+      });
+    }).catch(err => {
+      wx.showToast({
+        title: '网络连接失败，请检查网络！',
+        icon: 'none',
+        duration: 2000//持续的时间
+      })
+    })
+    goodListApi(data).then(res => {
+      let list = res.data.list || [];
+      this.data.nearGoodList = app.SplitArray(list, this.data.nearGoodList);
+      this.setData({
+        nearGoodList: this.data.nearGoodList
+      });
+    }).catch(err => {
+      wx.showToast({
+        title: '网络连接失败，请检查网络0！',
+        icon: 'none',
+        duration: 2000//持续的时间
+      })
+    })
+  }).catch(()=>{
+    let data={
+      page: 1,
+      limit: 10
+    }
+    getNearStoreData(data).then(res => {
+       let list = res.data.storeList || [];
+       let list1 = res.data.nearGoodList || [];
+       this.data.nearGoodList = app.SplitArray(list1, this.data.nearGoodList);
+       this.data.storeList = app.SplitArray(list, this.data.storeList);
+       this.setData({
+        nearGoodList: this.data.nearGoodList,
+        storeList: this.data.storeList
+      });
+    })
+  });
+},
+
+
+  tap: function (e){
+    var index = e.currentTarget.dataset.id;
+    console.log(index)
+    this.setData({
+      condition: index
+    });
+    console.log(this.data.condition)
+  },
   /**
    * 商品详情跳转
    */
    goDetail: function (e) {
      console.log(e)
      let item = e.currentTarget.dataset.items
-    if (item.activity && item.activity.type === "1") {
-      wx.navigateTo({
-        url: `/pages/activity/goods_seckill_details/index?id=' ${item.activity.id} + '&time=' + ${item.activity.time} + '&status=1'`
-      });
-    } else if (item.activity && item.activity.type === "2") {
-      wx.navigateTo({ url:  `/pages/activity/goods_bargain_details/index?id=${item.activity.id}`});
-    } else if (item.activity && item.activity.type === "3") {
-      wx.navigateTo({
-        url: `/pages/activity/goods_combination_details/index?id=${item.id}`
-      });
-    } else {
-      wx.navigateTo({ url: "/detail/" + item.id });
-    }
+     wx.navigateTo({ url: "/pages/goods_details/index?id=" + item.id });
   },
   getTemlIds(){
     let messageTmplIds = wx.getStorageSync(CACHE_SUBSCRIBE_MESSAGE);
@@ -146,6 +207,7 @@ Page({
         sfastList: res.data.info.sfastList,
         tfastList: res.data.info.tfastList,
         ffastList: res.data.info.ffastList,
+        netGoodList: res.data.info.netGoodList,
         hostList:res.data.info.hostList,
         firstInfo: res.data.info.firstInfo,
         firstList: res.data.info.firstList,
@@ -196,6 +258,14 @@ Page({
 
   },
 
+  onPageScroll: function (t) {
+    var a = this;
+     console.log(t.scrollTop)
+    
+      a.setData({
+        searchBarFixed:t.scrollTop
+        })
+  },
   /**
    * 用户点击右上角分享
    */

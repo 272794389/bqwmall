@@ -65,111 +65,140 @@
                <navigator class='more' url='/pages/first-new-product/index?type=1'>更多<text class='iconfont icon-jiantou'></text></navigator>
           </view>
         </view>
-      </view>
-      <view class="newProducts">
+     </view>
+     <view class="newProducts">
            <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
               <block wx:for="{{hostList}}" wx:key='index'>
                  <navigator hover-class="none" class='item' url='/pages/goods_details/index?id={{item.id}}'>
-                    <view class="img-box">
+                     <view class="img-box">
                         <image src="{{item.image}}" ></image>
                         <view class="pictrue_log_medium pictrue_log_class">精品</view>
                      </view>
-                    
+                    <view class="money font-color-red" style="margin-top:10rpx;">￥{{ item.price }}</view>
+                    <view class="money" style="text-decoration: line-through;color:#999;">￥{{ item.ot_price }}</view>
                   </navigator>
               </block>  
            </scroll-view>
         </view>
    </view>
-     <view id="searchBar" class="specialArea acea-row row-between-wrapper">
-        
-        
-        
-        </view>
-
-     <view class='wrapper' wx:if="{{bastList.length}}">
-       <view class='title acea-row row-between-wrapper'>
-          <view class='text'>
-             <view class='name line1'>精品推荐</view>
-             <view class='line1'>{{bastInfo}}</view>
-          </view>
-          <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=1'>更多<text class='iconfont icon-jiantou'></text></navigator>
+   <view class="specialArea acea-row row-between-wrapper">
+       <view   class="{{searchBarFixed >560 ? 'isFixed' :''}}" style="top:{{navH}}rpx">
+            <view class="nav_box">
+	          <view  class=" {{condition == 3 ? 'nav_title_font' : 'nav_title'}}" data-id="3"  bindtap="tap">本地特惠</view>
+	          <view class="nav_desc {{condition == 3 ? 'nav_on' : ''}}">吃喝玩乐</view>
+	        </view>
+	        <view class="nav_box">
+	          <view class="{{condition == 2 ? 'nav_title_font' : 'nav_title'}}'" data-id="2"  bindtap="tap">周边的店</view>
+	          <view class="nav_desc {{condition == 2 ? 'nav_on' : ''}}" >商家直达</view>
+	        </view>
+	        <view class="nav_box">
+	          <view class="{{condition == 1 ? 'nav_title_font' : 'nav_title'}}'" data-id="1" bindtap="tap">商品中心</view>
+	          <view class="nav_desc {{condition == 1 ? 'nav_on' : ''}}">积分兑换</view>
+	        </view>
+	        <view class="nav_box">
+	          <view class="{{condition == 4 ? 'nav_title_font' : 'nav_title'}}" data-id="4" bindtap="tap">佰商荟萃</view>
+	          <view class="nav_desc {{condition == 4 ? 'nav_on' : ''}}">精挑细选</view>
+	        </view>
        </view>
-       <view class='boutique'>
-            <swiper  autoplay="true"  indicator-dots="true"
-                 circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="rgba(252,65,65,0.3)" indicator-active-color="#fc4141">
-                <block wx:for="{{bastBanner}}" wx:key='index'>
-                  <swiper-item>
-                <navigator url='{{item.link}}' style='width:100%;height:100%;' hover-class='none'>
-                    <image src="{{item.img}}" class="slide-image" data-idx='{{index}}'/>
-                    </navigator>
-                  </swiper-item>
-                </block>
-            </swiper>
-       </view>
-       <goodList bastList="{{bastList}}"></goodList>
-    </view>
-    <view class='hotList' wx:if="{{likeInfo.length}}">
-       <view class='hot-bg'>
-          <view class='title acea-row row-between-wrapper'>
-            <view class='text line1'><text class='label'>热门榜单</text>根据销量、搜索、好评等综合得出</view>
-            <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=2'>更多<text class="iconfont icon-jiantou"></text></navigator>
-          </view>
-       </view>
-       <view class='list acea-row row-middle'>
-          <block wx:for="{{likeInfo}}" wx:key='index'>
-            <navigator class='item' url='/pages/goods_details/index?id={{item.id}}'>
-              <view class='pictrue'>
+   </view>
+   <!--网店商品-->
+   <view wx:if="{{condition==4}}">
+    <view class='recommend' wx:if="{{netGoodList.length}}">
+      <view class='recommendList acea-row row-between-wrapper'>
+          <view class='item' wx:for="{{netGoodList}}" wx:key='index'  bindtap="goDetail" data-items='{{item}}'>
+            <view class='pictrue'>
                 <image src='{{item.image}}'></image>
-                <image wx:if="{{index == 0}}" src='/images/one.png' class='numPic'></image>
-                <image wx:elif="{{index == 1}}" src='/images/two.png' class='numPic'></image>
-                <image wx:elif="{{index == 2}}" src='/images/three.png' class='numPic'></image>
-              </view>
-              <view class='name line1'>{{item.store_name}}</view>
-              <view class='money font-color'>￥<text class='num'>{{item.price}}</text></view>
-            </navigator>
-          </block>  
-       </view>
-    </view>
-    <view class='adver' wx:if="{{newGoodsBananr}}">
-      <block>
-        <image src='{{newGoodsBananr}}'></image>
-      </block>  
-    </view>
-     <view class='wrapper' wx:if="{{firstList.length}}">
-       <view class='title acea-row row-between-wrapper'>
-          <view class='text'>
-             <view class='name line1'>首发新品<text class='new font-color'>NEW~</text></view>
-             <view class='line1'>{{firstInfo}}</view>
+            </view>
+            <view class='name pline2'>{{item.store_name}}</view>
+            <view class='money font-color'>￥<text class='num'>{{item.price}}</text><text class="shou" style="text-decoration:line-through;">原价{{ item.ot_price }}</text></view>
+            <view class="money">
+                          <text class="activity" style="color: #e93323;" wx:if="{{item.give_rate>0}}">可用购物积分抵扣{{ item.give_rate }}元</text>
+                          <text class="shou" style="margin-left:0rpx;" wx:else>已售{{ item.sales }}{{ item.unit_name }}</text>
+            </view>
           </view>
-          <navigator class='more' hover-class="none" url='/pages/first-new-product/index?type=3'>更多<text class='iconfont icon-jiantou'></text></navigator>
-       </view>
-       <view class='newProducts'>
-          <scroll-view class="scroll-view_x" scroll-x style="width:auto;overflow:hidden;">
-              <block wx:for="{{firstList}}" wx:key='index'>
-                 <view class='item'>
-                    <view class='img-box' bindtap="goDetail" data-items='{{item}}'>
-                      <image src='{{item.image}}'></image>
-                      <text class="pictrue_log_medium pictrue_log_class" wx:if="{{item.activity && item.activity.type ==='1'}}">秒杀</text>
-                      <text class="pictrue_log_medium pictrue_log_class" wx:if="{{item.activity && item.activity.type === '2'}}">砍价</text>
-                      <text class="pictrue_log_medium pictrue_log_class" wx:if="{{item.activity && item.activity.type === '3'}}">拼团</text>
-                    </view>
-                    <view class='pro-info line1'>{{item.store_name}}</view>
-                    <view class='money font-color'>￥{{item.price}}</view>
-                 </view>
-              </block>  
-           </scroll-view>
-        </view>
+      </view>
+      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多精挑细选商品  ></navigator>
     </view>
-    <view class='wrapper' wx:if="{{benefit.length}}">
-       <view class='title acea-row row-between-wrapper'>
-          <view class='text'>
-             <view class='name line1'>促销单品</view>
-             <view class='line1'>{{salesInfo}}</view>
+    <view class='noCommodity' wx:else>
+        <view class='pictrue'><image src='/images/noShopper.png'></image></view>
+    </view>
+  </view>
+  <!--本地特惠-->
+  <view wx:if="{{condition==3}}">
+    <view class='recommend' wx:if="{{nearGoodList.length}}">
+      <view class='recommendList acea-row row-between-wrapper'>
+          <view class='item' wx:for="{{nearGoodList}}" wx:key='index'  bindtap="goDetail" data-items='{{item}}'>
+            <view class='pictrue'>
+                <image src='{{item.image}}'></image>
+            </view>
+            <view class='name pline2'>{{item.store_name}}</view>
+            <view class='money font-color'>￥<text class='num'>{{item.price}}</text><text class="shou" style="text-decoration:line-through;">原价{{ item.ot_price }}</text></view>
+            <view class="money">
+                          <text class="activity" style="color: #e93323;" wx:if="{{item.give_rate>0}}">可用购物积分抵扣{{ item.give_rate }}元</text>
+                          <text class="shou" style="margin-left:0rpx;" wx:else>已售{{ item.sales }}{{ item.unit_name }}</text>
+            </view>
           </view>
-          <navigator class='more' hover-class="none" url='/pages/promotional-items/index'>更多<text class='iconfont icon-jiantou'></text></navigator>
-       </view>
-       <promotionGood benefit="{{benefit}}"></promotionGood>
+      </view>
+      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多精挑细选商品  ></navigator>
     </view>
+    <view class='noCommodity' wx:else>
+        <view class='pictrue'><image src='/images/noShopper.png'></image></view>
+    </view>
+  </view>
+  <!--商品中心-->
+  <view wx:if="{{condition==1}}">
+    <view class='recommend' wx:if="{{bastList.length}}">
+      <view class='recommendList acea-row row-between-wrapper'>
+          <view class='item' wx:for="{{bastList}}" wx:key='index'  bindtap="goDetail" data-items='{{item}}'>
+            <view class='pictrue'>
+                <image src='{{item.image}}'></image>
+            </view>
+            <view class='name pline2'>{{item.store_name}}</view>
+            <view class='money font-color'>￥<text class='num'>{{item.price}}</text><text class="shou" style="text-decoration:line-through;">原价{{ item.ot_price }}</text></view>
+            <view class="money">
+                          <text class="activity" style="color: #e93323;" wx:if="{{item.pay_paypoint>0}}">可用消费积分抵扣{{ item.pay_paypoint }}元</text>
+                          <text class="shou" style="margin-left:0rpx;" wx:else>已售{{ item.sales }}{{ item.unit_name }}</text>
+            </view>
+          </view>
+      </view>
+      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多积分兑换商品  ></navigator>
+    </view>
+    <view class='noCommodity' wx:else>
+        <view class='pictrue'><image src='/images/noShopper.png'></image></view>
+    </view>
+  </view>
+  <!--周边的店-->
+  <view wx:if="{{condition==2}}">
+    <view class="wrapper" wx:if="{{storeList.length}}">
+	      <view class="goodList">
+			    <view class="item acea-row row-between-wrapper shangjia" bindtap="goShop" wx:for="{{storeList}}" wx:key='index' data-items='{{item}}'>
+			      <view class="pictrue" >
+			         <image src='{{item.image}}' class="image"></image>
+			      </view>
+			      <view class="shop_box">
+			        <view class="text">
+			          <text class="pline3" style="margin-bottom:10rpx;">{{ item.name }}</text>
+			         
+			          <view class="shoptip"><text class="cate_style">{{ item.cate_name }}</text><text  class="cate_style" wx:if="{{item.range>0}}">{{ item.range }}km</text></view>
+			          <text class="shoptip shopaddress ktime" style="margin-bottom:0.1rem;">营业：{{ item.termDate }}  {{ item.day_time }}</text>
+			          <text class="shoptip shopaddress addressUlr">{{item.detailed_address }}</text>
+			        </view>
+			      </view>
+			    </view>
+		 </view>
+     <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多周边优惠商家  ></navigator>
+	 </view>
+   <view class='noCommodity' wx:else>
+        <view class='pictrue'><image src='/images/noShopper.png'></image></view>
+    </view>
+
+  </view>
+
+
+   
+  
+   
+
 </view>
-<coupon-window window='{{window}}' couponList="{{couponList}}" bind:onColse="onColse"></coupon-window>
+
 <home></home>

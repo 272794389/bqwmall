@@ -171,6 +171,7 @@ class SystemStore extends BaseModel
         $model = $model->where('is_del', 0);
         $model = $model->where('is_show',1);
         $model = $model->where('status', 1);
+        $model = $model->where('belong_t', 2);
         if($cid>0){
             $model = $model->where('cat_id',$cid);
         }
@@ -181,7 +182,11 @@ class SystemStore extends BaseModel
         }
         if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
         $baseOrder = '';
-        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+        if ($salesOrder) {
+            $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+        }else{
+            $baseOrder = $salesOrder == 'id DESC';
+        }
        
         if ($latitude && $longitude) {
             if($condition==1){//默认50km
