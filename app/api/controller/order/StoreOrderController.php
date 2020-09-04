@@ -129,7 +129,7 @@ class StoreOrderController
     {
 
 //        $priceGroup = StoreOrder::getOrderPriceGroup($cartInfo);
-        if (!$key) return app('json')->fail('参数错误!');
+        if (!$key) return app('json')->fail('参数错误o!');
         $uid = $request->uid();
         if (StoreOrder::be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
