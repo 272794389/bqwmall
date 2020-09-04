@@ -52,7 +52,8 @@ Page({
     contacts:'',
     contactsTel:'',
     mydata: {},
-    storeList: []
+    storeList: [],
+    isHex:0
   },
   /**
    * 授权回调事件
@@ -136,14 +137,13 @@ Page({
   },
   addressType:function(e){
     let index = e.currentTarget.dataset.index;
-    this.computedPrice();
-    if (this.data.storeList.length>0){
-      this.setData({ shippingType: parseInt(index) });
-    }else{
-      if(index==1){
+    if (index && !this.data.system_store.id)
         return app.Tips({ title: '暂无门店信息，你无法选择到店自提' });
-      }
-    }
+      if (this.data.isHex == 1 && index!=1)
+        return app.Tips({ title: '该商品只能到店自提！' });
+        this.setData({
+          shippingType:index
+         })
   },
   bindPickerChange: function (e) {
     let value = e.detail.value;
@@ -249,8 +249,14 @@ Page({
         seckillId: parseInt(res.data.seckill_id),
         usableCoupon: res.data.usableCoupon,
         // system_store: res.data.system_store,
-        store_self_mention: res.data.store_self_mention
+        store_self_mention: res.data.store_self_mention,
+        isHex: res.data.isHex,
       });
+      if (that.data.isHex == 1){
+        that.setData({
+          shippingType:1
+        });
+      }
       that.data.cartArr[1].title = '可用余额:' + res.data.userInfo.now_money;
       if (res.data.offline_pay_status == 2)  that.data.cartArr.pop();
       that.setData({ cartArr: that.data.cartArr, ChangePrice: that.data.totalPrice });

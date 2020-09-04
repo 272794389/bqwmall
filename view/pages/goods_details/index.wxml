@@ -16,7 +16,7 @@
  <scroll-view scroll-into-view='{{toView}}' scroll-y='true' scroll-with-animation="true" style='height:{{scrollY>200?(height+2*navH+20):(height+navH)}}rpx;' bindscroll="scroll">
      <view id="past0">
   <productConSwiper imgUrls="{{storeInfo.slider_image}}" videoline="{{storeInfo.video_link}}"></productConSwiper>
-  <view class='wrapper'>
+  <view class='wrapper' style="padding-bottom:30rpx;">
     <view class='share acea-row row-between row-bottom'>
       <view class='money font-color'>
         ￥
@@ -27,6 +27,27 @@
       <view class='iconfont icon-fenxiang' bindtap='listenerActionSheet'></view>
     </view>
     <view class='introduce'>{{storeInfo.store_name}}</view>
+    
+   <view class='label acea-row row-between-wrapper' wx:if="{{storeInfo.belong_t == 0}}">
+         <view class="vip-money" wx:if="{{storeInfo.pay_paypoint>0}}">
+                      支付{{ storeInfo.pay_paypoint || 0}}个消费积分+￥{{ storeInfo.pay_amount || 0}}元现金
+         </view>
+         <view class="vip-money" wx:if="{{storeInfo.pay_repeatpoint>0}}">
+                      支付{{ storeInfo.pay_repeatpoint || 0}}个重消积分+￥{{ storeInfo.pay_amount || 0}}元现金
+         </view>
+         <view class="vip-money" wx:if="{{storeInfo.give_point>0}}">
+                       支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.give_point }}购物积分
+         </view>
+   </view>
+   <view class='label acea-row row-between-wrapper' wx:if="{{storeInfo.belong_t == 1||storeInfo.belong_t == 2}}">
+         <view class="vip-money" wx:if="{{storeInfo.pay_point>0}}">
+                      支付￥{{ storeInfo.price }}元现金，送{{ storeInfo.pay_point }}个消费积分
+         </view>
+         <view class="vip-money" wx:if="{{storeInfo.give_rate>0}}">
+                      支付￥{{ storeInfo.pay_amount }}元现金+{{ storeInfo.give_rate }}购物积分
+         </view>
+   </view>
+
     <view class='label acea-row row-between-wrapper'>
       <view>原价:￥{{storeInfo.ot_price}}</view>
       <view>库存:{{storeInfo.stock}}{{storeInfo.unit_name}}</view>
@@ -38,6 +59,7 @@
         <view class='activity'>赠送 {{storeInfo.give_integral}} 积分</view>
       </view>
     </view>
+    <!--
     <view class='coupon acea-row row-between-wrapper' bindtap='coupon' style="{{ storeInfo.give_integral > 0 ? 'margin-top:0;':''}}">
       <view class='hide line1 acea-row'>
         优惠券：
@@ -45,6 +67,7 @@
       </view>
       <view class='iconfont icon-jiantou'></view>
     </view>
+    -->
     <view class="coupon acea-row row-between-wrapper"  wx:if="{{activity.length}}">
         <view class="line1 acea-row">
           <text decode="{{true}}" space="{{true}}">活&nbsp;&nbsp;&nbsp;动：</text>
@@ -71,32 +94,31 @@
     </view>
     <view class='iconfont icon-jiantou'></view>
   </view>
-  <!-- <view class="store-info" wx:if='{{systemStore.id && storeSelfMention}}'>
-    <view class="acea-row row-between-wrapper store-box" bindtap="showStoreList">
+  <view class="store-info" wx:if='{{systemStore.id}}'>
+    <view class="acea-row row-between-wrapper store-box">
       <view class="title">门店信息</view>
       <view class='iconfont icon-jiantou'></view>
     </view> 
-    <view class="info acea-row row-between-wrapper" wx:if="{{storeList.length!==0}}">
+    <view class="info acea-row row-between-wrapper">
       <view class="picTxt">
         <view class="pictrue">
-          <image src="{{storeItems.image}}" lazy-load="true"></image>
+          <image src="{{systemStore.image}}" lazy-load="true"></image>
         </view>
         <view class="text">
           <view class="name line1">
-            {{storeItems.name}}
+            {{systemStore.name}}
           </view>
           <view class="address acea-row row-middle" bindtap="showMaoLocation">
-            <text class="addressTxt line1">{{storeItems.address}}{{", "+storeItems.detailed_address}}</text>
+            <text class="addressTxt line1">{{systemStore._detailed_address}}</text>
             <text class="iconfont icon-youjian"></text>
           </view>
         </view>
       </view>
       <view class="addressBox">
         <view class="iconfont icon-dadianhua01 font-color phone" bindtap="makePhone"></view>
-        <view class="addressTxt line1 corlor-red" wx:if="{{storeItems.range}}" bindtap="showMaoLocation">距离{{storeItems.range}}千米</view>
       </view>
     </view>
-  </view> -->
+  </view>
   </view>
   <view class='userEvaluation' id="past1">
     <view class='title acea-row row-between-wrapper'>
@@ -160,11 +182,12 @@
       <view>购物车</view>
     </navigator>
     <view class='bnt acea-row'>
-      <form bindsubmit="joinCart">
+      <form bindsubmit="joinCart" wx:if="{{storeInfo.hex_t<1}}">
         <button class='joinCart bnts' formType="submit">加入购物车</button>
       </form>
       <form bindsubmit="goBuy" wx:if="{{productSelect.stock>0}}">
-        <button class='buy bnts' formType="submit">立即购买</button>
+        <button class='buy bnts' formType="submit" wx:if="{{storeInfo.hex_t<1}}">立即购买</button>
+        <button class='buy bnts' formType="submit" style="width: 444rpx;border-radius: 50rpx;" wx:else>立即购买</button>
       </form>
       <form wx:else>
         <button class='buy bnts bg-color-hui'>已售罄</button>

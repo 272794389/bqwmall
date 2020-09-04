@@ -120,9 +120,10 @@ export default {
       getAddress(that.id).then(res => {
         that.userAddress = res.data;
         that.model2 =
-          res.data.province + " " + res.data.city + " " + res.data.district;
+        res.data.province + " " + res.data.city + " " + res.data.district;
         that.address.province = res.data.province;
         that.address.city = res.data.city;
+        that.address.district = res.data.district;
         that.address.city_id = res.data.city_id;
       });
     },
