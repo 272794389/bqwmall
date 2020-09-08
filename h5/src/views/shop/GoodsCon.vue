@@ -938,8 +938,30 @@ export default {
     },
     //立即购买；
     tapBuy: function() {
-      //  1=直接购买
-      this.goCat(1);
+      if(this.storeInfo.hex_t>0){
+       //  1=直接购买
+       this.$dialog.confirm({
+              mes: "该商品需到店核销使用，不提供配送服务！",
+              opts: [
+                {
+                  txt: "确认购买",
+                  color: false,
+                  callback: () => {
+                    this.goCat(1);
+                  }
+                },
+                {
+                  txt: "取消",
+                  color: false,
+                  callback: () => {
+                   
+                  }
+                }
+              ]
+            });
+      }else{
+         this.goCat(1);
+      }
     },
     listenerActionSheet: function() {
       if (isWeixin() === true) {

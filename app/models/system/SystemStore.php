@@ -224,7 +224,7 @@ class SystemStore extends BaseModel
      * 网店列表
      * @return mixed
      */
-    public static function netlst($page, $limit,$sid,$cid,$keyword,$salesOrder)
+    public static function netlst($page, $limit,$sid,$cid,$keyword,$salesOrder,$city,$district)
     {
         $model = new self();
         $model = $model->where('is_del', 0);
@@ -241,8 +241,11 @@ class SystemStore extends BaseModel
         if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
         $baseOrder = '';
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+        
+        if (!empty($city)) $model->where('city', 'LIKE', htmlspecialchars("%$city%"));
+        if (!empty($district)) $model->where('district', 'LIKE', htmlspecialchars("%$district%"));
          
-        $model = $model->where('belong_t',1);
+       // $model = $model->where('belong_t',1);
         
         $list = $model->page((int)$page, (int)$limit)
         ->select()

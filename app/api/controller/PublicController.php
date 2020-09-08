@@ -270,7 +270,7 @@ class PublicController
      */
     public function store_list(Request $request)
     {
-        list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition) = UtilService::getMore([
+        list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition,$city,$district) = UtilService::getMore([
             ['latitude', ''],
             ['longitude', ''],
             ['page', 1],
@@ -279,14 +279,16 @@ class PublicController
             ['cid', 0],
             ['keyword', ''],
             ['salesOrder', ''],
-            ['condition', 1]
+            ['condition', 1],
+            ['city', ''],
+            ['district', '']
         ], $request, true);
         if($condition==1){//同城
           $list = SystemStore::lst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
           if (!$list) $list = [];
           $data['list'] = $list;
         }else{//查询网店
-            $list = SystemStore::netlst($page, $limit,$sid,$cid,$keyword,$salesOrder);
+            $list = SystemStore::netlst($page, $limit,$sid,$cid,$keyword,$salesOrder,$city,$district);
             if (!$list) $list = [];
             $data['list'] = $list;
         }

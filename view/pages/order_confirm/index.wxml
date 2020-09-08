@@ -19,14 +19,13 @@
       </view>
       <view class='iconfont icon-jiantou'></view>
     </view>
-    <view class='address acea-row row-between-wrapper' wx:else bindtap="showStoreList">
-      <view class='addressCon' wx:if="{{storeList.length!==0}}">
+    <view class='address acea-row row-between-wrapper' wx:else>
+      <view class='addressCon'>
         <view class='name'>{{system_store.name}}
             <text class='phone'>{{system_store.phone}}</text>
         </view>
         <view> {{system_store.address}}{{", " + system_store.detailed_address}}</view>
       </view>
-      <view class='iconfont icon-jiantou'></view>
     </view>
     <view class='line'>
       <image src='/images/line.jpg'></image>
@@ -34,27 +33,42 @@
   </view>
   <orderGoods cartInfo="{{cartInfo}}"></orderGoods>
   <view class='wrapper'>
+  <!--
     <view class='item acea-row row-between-wrapper' bindtap='coupon' wx:if="{{!pinkId && !BargainId && !combinationId && !seckillId}}">
       <view>优惠券</view>
       <view class='discount'>{{couponTitle}}
         <text class='iconfont icon-jiantou'></text>
       </view>
     </view>
-    <view class='item acea-row row-between-wrapper' wx:if="{{!pinkId && !BargainId && !combinationId && !seckillId}}">
+    -->
+    <view class='item acea-row row-between-wrapper'>
       <view>积分抵扣</view>
       <view class='discount acea-row row-middle'>
-        <view> {{useIntegral ? "剩余积分":"当前积分"}}
-          <text class='num font-color'>{{integral || 0}}</text>
+        <view> 当前可抵扣
+          <text class='num font-color'>￥{{ orderPrice.total_price-orderPrice.pay_price-orderPrice.coupon_price || 0}}</text>
         </view>
         <checkbox-group bindchange="ChangeIntegral">
           <checkbox checked='{{useIntegral ? true : false}}' />
         </checkbox-group>
       </view>
     </view>
+     <view class='item acea-row row-between-wrapper'>
+      <view>抵扣券抵扣</view>
+      <view class='discount acea-row row-middle'>
+        <view> 当前可抵扣
+          <text class='num font-color'>￥{{ orderPrice.coupon_price || 0}}</text>
+        </view>
+        <checkbox-group bindchange="ChangeCoupon">
+          <checkbox checked='{{useCoupon ? true : false}}' />
+        </checkbox-group>
+      </view>
+    </view>
+    <!--
     <view class='item acea-row row-between-wrapper' wx:if="{{priceGroup.vipPrice > 0 && userInfo.vip && !pinkId && !BargainId && !combinationId && !seckillId}}">
       <view>会员优惠</view>
       <view class='discount'>-￥{{priceGroup.vipPrice}}</view>
     </view>
+    -->
     <view class='item acea-row row-between-wrapper' wx:if='{{shippingType==0}}'>
       <view>快递费用</view>
       <view class='discount' wx:if='{{priceGroup.storePostage > 0}}'>￥{{priceGroup.storePostage}}</view>
@@ -98,25 +112,45 @@
   <view class='moneyList'>
     <view class='item acea-row row-between-wrapper'>
       <view>商品总价：</view>
-      <view class='money'>￥{{priceGroup.totalPrice}}</view>
+      <view class='money'>￥{{orderPrice.total_price}}</view>
     </view>
-    <view class='item acea-row row-between-wrapper' wx:if="{{coupon_price > 0}}">
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.give_rate != undefined &&orderPrice.give_rate>0}}">
+      <view>购物积分抵扣：</view>
+      <view class='money'>-￥{{orderPrice.give_rate}}</view>
+    </view>
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.pay_paypoint != undefined &&orderPrice.pay_paypoint>0}}">
+      <view>消费积分抵扣：</view>
+      <view class='money'>-￥{{orderPrice.pay_paypoint}}</view>
+    </view>
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.pay_repeatpoint != undefined &&orderPrice.pay_repeatpoint>0}}">
+      <view>重消积分抵扣：</view>
+      <view class='money'>-￥{{orderPrice.pay_repeatpoint}}</view>
+    </view>
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.give_point != undefined &&orderPrice.give_point>0}}">
+      <view>赠送购物积分：</view>
+      <view class='money'>+￥{{orderPrice.give_point}}</view>
+    </view>
+     <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.pay_point != undefined &&orderPrice.pay_point>0}}">
+      <view>赠送消费积分：</view>
+      <view class='money'>+￥{{orderPrice.pay_point}}</view>
+    </view>
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.coupon_price > 0}}">
       <view>优惠券抵扣：</view>
-      <view class='money'>-￥{{coupon_price}}</view>
+      <view class='money'>-￥{{orderPrice.coupon_price}}</view>
     </view>
-    <view class='item acea-row row-between-wrapper' wx:if="{{integral_price > 0}}">
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.deduction_price > 0}}">
       <view>积分抵扣：</view>
-      <view class='money'>-￥{{integral_price}}</view>
+      <view class='money'>-￥{{orderPrice.deduction_price}}</view>
     </view>
-    <view class='item acea-row row-between-wrapper' wx:if="{{priceGroup.storePostage > 0}}">
+    <view class='item acea-row row-between-wrapper' wx:if="{{orderPrice.pay_postage > 0}}">
       <view>运费：</view>
-      <view class='money'>+￥{{priceGroup.storePostage}}</view>
+      <view class='money'>+￥{{orderPrice.pay_postage}}</view>
     </view>
   </view>
   <view style='height:120rpx;'></view>
   <view class='footer acea-row row-between-wrapper'>
     <view>合计:
-      <text class='font-color'>￥{{totalPrice || 0}}</text>
+      <text class='font-color'>￥{{orderPrice.pay_price || 0}}</text>
     </view>
     <view class='settlement' style='z-index:100' bindtap="SubOrder">立即结算</view>
   </view>

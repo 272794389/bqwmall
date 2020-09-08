@@ -39,6 +39,7 @@ Page({
     couponTitle:'请选择',//优惠券
     coupon_price:0,//优惠券抵扣金额
     useIntegral:false,//是否使用积分
+    useCoupon:false,//是否使用抵扣券
     integral_price:0,//积分抵扣金额
     ChangePrice:0,//使用积分抵扣变动后的金额
     formIds:[],//收集formid
@@ -52,6 +53,7 @@ Page({
     contacts:'',
     contactsTel:'',
     mydata: {},
+    orderPrice: {},
     storeList: [],
     isHex:0
   },
@@ -79,9 +81,6 @@ Page({
     let currPage = pages[pages.length - 1]; //当前页面
     if (currPage.data.storeItem){
       let json = currPage.data.storeItem;
-      this.setData({
-        system_store: json,
-      });
     }
   },
   /**
@@ -98,10 +97,7 @@ Page({
     }
     storeListApi(data).then(res => {
       let list = res.data.list || [];
-      this.setData({
-        storeList: list,
-        system_store: list[0],
-      });
+      
     }).catch(err => {
 
     })
@@ -116,19 +112,25 @@ Page({
   },
   computedPrice:function(){
     let shippingType = this.data.shippingType;
-    postOrderComputed(this.data.orderKey,{
-      addressId: this.data.addressId,
+    var data={};
+    data={
+       addressId: this.data.addressId,
       useIntegral: this.data.useIntegral ? 1 : 0,
+      useCoupon: this.data.useCoupon ? 1 : 0,
       couponId: this.data.couponId,
       shipping_type: parseInt(shippingType) + 1,
-      payType: this.data.payType
-    }).then(res=>{
+      payType: this.data.payType,
+      cartIds: this.data.cartId,
+    };
+    postOrderComputed(this.data.orderKey,data).then(res=>{
       let result = res.data.result;
       if (result){
         this.setData({ 
           totalPrice: result.pay_price, 
+          orderPrice: result,
           integral_price: result.deduction_price, 
           coupon_price: result.coupon_price, 
+          orderKey: result.key,
           integral: this.data.useIntegral ? result.SurplusIntegral : this.data.userInfo.integral ,
           'priceGroup.storePostage': shippingType == 1 ? 0 : result.pay_postage,
         });
@@ -205,6 +207,13 @@ Page({
     this.computedPrice();
   },
   /**
+   * 使用抵扣券抵扣
+  */
+ ChangeCoupon:function(){
+  this.setData({useCoupon:!this.data.useCoupon});
+  this.computedPrice();
+},
+  /**
    * 选择地址后改变事件
    * @param object e
   */
@@ -244,11 +253,12 @@ Page({
         integralRatio: res.data.integralRatio,
         offlinePostage: res.data.offlinePostage,
         orderKey: res.data.orderKey,
+        addressInfo: res.data.addressInfo,
         priceGroup: res.data.priceGroup,
         totalPrice: app.help().Add(parseFloat(res.data.priceGroup.totalPrice), parseFloat(res.data.priceGroup.storePostage)),
         seckillId: parseInt(res.data.seckill_id),
         usableCoupon: res.data.usableCoupon,
-        // system_store: res.data.system_store,
+         system_store: res.data.system_store,
         store_self_mention: res.data.store_self_mention,
         isHex: res.data.isHex,
       });
@@ -257,6 +267,7 @@ Page({
           shippingType:1
         });
       }
+      that.computedPrice();
       that.data.cartArr[1].title = '可用余额:' + res.data.userInfo.now_money;
       if (res.data.offline_pay_status == 2)  that.data.cartArr.pop();
       that.setData({ cartArr: that.data.cartArr, ChangePrice: that.data.totalPrice });
@@ -376,6 +387,7 @@ Page({
       couponId: that.data.couponId,
       payType: that.data.payType,
       useIntegral: that.data.useIntegral,
+      useCoupon: that.data.useCoupon,
       bargainId: that.data.BargainId,
       combinationId: that.data.combinationId,
       pinkId: that.data.pinkId,

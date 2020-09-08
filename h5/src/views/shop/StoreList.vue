@@ -3,14 +3,31 @@
     <div class="storeBox productList" ref="container" style="margin-top:2.6rem;">
      <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(0)">分类</span><span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span><span @click="set_where(2)" :class="condition==2 ? 'on' : ''">网店</span></div>
-        <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
+        <div class="samebox""><span @click="set_where(0)">分类</span>
+           <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
+           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="max-width:1.7rem;width: auto;overflow: hidden;">{{model2}}</span>
+           <CitySelect
+              ref="cityselect"
+              v-model="show2"
+              :callback="result2"
+              :items="district"
+              :ready="ready"
+              provance=""
+              city=""
+              area=""
+            ></CitySelect>
+        </div>
+        <div class="input acea-row row-between-wrapper"  style="width: 3.3rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商家信息" v-model="where.keyword"  style="width: 3.48rem;"/>
+          <input placeholder="搜索商家信息" v-model="where.keyword"  style="width: 2.0rem;"/>
         </div>
       </div>
     </form>
     <div class="aside">
+      
+     <div class="item acea-row row-center-wrapper" @click="asideTap(0)" :class="0 === navActive ? 'on' : ''">
+        <span>全部</span>
+      </div>
       <div
         class="item acea-row row-center-wrapper"
         :class="item.id === navActive ? 'on' : ''"
@@ -90,10 +107,18 @@
       </iframe>
     </div>
   </div>
+   <!--页面返回不刷新-->
+	<keep-alive>
+	  <router-view v-if="$route.meta.keepAlive"></router-view>
+	</keep-alive>
+	<router-view v-if="!$route.meta.keepAlive"></router-view>
 </template>
 
 <script>
 import Loading from "@components/Loading";
+import { CitySelect } from "vue-ydui/dist/lib.rem/cityselect";
+import { getCity } from "@api/public";
+import { getAddress, postAddress } from "@api/user";
 import { storeListApi,getDetailCategory } from "@api/store";
 import { isWeixin } from "@utils/index";
 import Reta from "@components/Star";
@@ -103,9 +128,12 @@ import cookie from "@utils/store/cookie";
 const LONGITUDE = "user_longitude";
 const LATITUDE = "user_latitude";
 const MAPKEY = "mapKey";
+
+
 export default {
   name: "storeList",
-  components: { Loading ,Reta},
+  meta: { keepAlive: true},
+  components: { Loading ,Reta,CitySelect},
   computed: mapGetters(["goName"]),
   data() {
    const { s = "", sid = 0,cid=0, title = "" } = this.$route.query;
@@ -116,10 +144,16 @@ export default {
         latitude:"",
         longitude:"",
         keyword: s,
+        city: "",
+        district: "",
         sid: sid, //一级分类id
         cid: cid, //二级分类id
         salesOrder: ""
       },
+      show2: false,
+      district: [],
+      ready: false,
+      address: {},
       title: title && cid ? title : "",
       loaded: false,
       stock: 0,
@@ -131,7 +165,8 @@ export default {
       system_store: {},
       mapKey: cookie.get(MAPKEY),
       locationShow: false,
-      condition: 1
+      condition: 1,
+      model2: "全国",
     };
   },
   watch: {
@@ -161,12 +196,28 @@ export default {
 		       this.getList();
 	      }
      } 
-    
+    this.getCityList();
     this.$scroll(this.$refs.container, () => {
       !this.loading && this.getList();
     });
   },
   methods: {
+   result2(ret) {
+      this.model2 = ret.itemName3;
+      this.where.city = ret.itemName2;
+      this.where.district = ret.itemName3;
+      this.$set(this, "storeList", []);
+      this.where.page = 1;
+      this.loaded = false;
+      this.getList();
+    },
+   getCityList: function() {
+      let that = this;
+      getCity().then(res => {
+        that.district = res.data;
+        that.ready = true;
+      });
+    },
     selfLocation() {
       if (isWeixin()) {
         wxShowLocation()
@@ -305,6 +356,7 @@ export default {
           break;
         case 2:
           that.condition = 2;
+          that.show2=true;
           break;
       }
       that.$set(that, "storeList", []);
@@ -331,7 +383,7 @@ export default {
 </script>
 
 <style scoped>
-.samebox{width: 2.8rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox{width: 3.8rem;height: 0.6rem;line-height: 0.6rem;}
 .samebox span{float: left; width: 0.7rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
