@@ -242,9 +242,10 @@ class SystemStore extends BaseModel
         $baseOrder = '';
         if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
         
-        if (!empty($city)) $model->where('city', 'LIKE', htmlspecialchars("%$city%"));
-        if (!empty($district)) $model->where('district', 'LIKE', htmlspecialchars("%$district%"));
-         
+        if($city!='全部省份'){
+            if (!empty($city)) $model->where('city', 'LIKE', htmlspecialchars("%$city%"));
+            if (!empty($district)) $model->where('district', 'LIKE', htmlspecialchars("%$district%"));
+        }
        // $model = $model->where('belong_t',1);
         
         $list = $model->page((int)$page, (int)$limit)

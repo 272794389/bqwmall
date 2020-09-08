@@ -5,7 +5,7 @@
       <div class="search bg-color-red acea-row row-between-wrapper">
         <div class="samebox""><span @click="set_where(0)">分类</span>
            <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
-           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="max-width:1.7rem;width: auto;overflow: hidden;">{{model2}}</span>
+           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="max-width:1.7rem;width: auto;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
            <CitySelect
               ref="cityselect"
               v-model="show2"
@@ -107,11 +107,6 @@
       </iframe>
     </div>
   </div>
-   <!--页面返回不刷新-->
-	<keep-alive>
-	  <router-view v-if="$route.meta.keepAlive"></router-view>
-	</keep-alive>
-	<router-view v-if="!$route.meta.keepAlive"></router-view>
 </template>
 
 <script>
@@ -132,7 +127,6 @@ const MAPKEY = "mapKey";
 
 export default {
   name: "storeList",
-  meta: { keepAlive: true},
   components: { Loading ,Reta,CitySelect},
   computed: mapGetters(["goName"]),
   data() {
