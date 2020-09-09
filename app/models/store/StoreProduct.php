@@ -298,6 +298,68 @@ class StoreProduct extends BaseModel
             return self::setLevelPrice($list, $uid);
     }
     
+    public static function getNetGoodsProductList($data, $uid)
+    {
+        $sId = $data['sid'];
+        $cId = $data['cid'];
+        $keyword = $data['keyword'];
+        $priceOrder = $data['priceOrder'];
+        $salesOrder = $data['salesOrder'];
+        $news = $data['news'];
+        $belong_t = $data['belong_t'];
+        $condition=$data['condition'];
+        $page = $data['page'];
+        $limit = $data['limit'];
+        $type = $data['type']; // 某些模板需要购物车数量 1 = 需要查询，0 = 不需要
+        $model = self::validWhere();
+    
+        if ($cId) {
+            $model->whereIn('id', function ($query) use ($cId) {
+                $query->name('store_product_cate')->where('cate_id', $cId)->field('product_id')->select();
+            });
+        } elseif ($sId) {
+            $model->whereIn('id', function ($query) use ($sId) {
+                $query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+                    $q->name('store_category')->where('pid', $sId)->field('id')->select();
+                })->field('product_id')->select();
+            });
+        }
+        if (!empty($keyword)) $model->where('keyword|store_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        if ($news != 0) $model->where('is_new', 1);
+        $model->where('belong_t','<', 2);
+        /*
+         if($condition==1){//周边
+         $model->where('belong_t', 2);
+         }else if($condition==2){//消费积分兑换
+         $model->where('pay_paypoint', '>',0);
+         }else if($condition==3){//重消积分兑换
+         $model->where('pay_repeatpoint', '>',0);
+         }else if($condition==4){//网店商品
+         $model->where('belong_t', 2);
+         }*/
+        $baseOrder = '';
+        if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+        //        if($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//真实销量
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';//虚拟销量
+        if ($baseOrder) $baseOrder .= ', ';
+        $model->order($baseOrder . 'sort DESC, add_time DESC');
+        $list = $model->page((int)$page, (int)$limit)->field('id,store_name,cate_id,image,IFNULL(sales,0) + IFNULL(ficti,0) as sales,ot_price,price,stock,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point,belong_t,coupon_price,unit_name')->select()->each(function ($item) use ($uid, $type) {
+            if ($type) {
+                $item['is_att'] = StoreProductAttrValueModel::where('product_id', $item['id'])->count() ? true : false;
+                if ($uid) $item['cart_num'] = StoreCart::where('is_pay', 0)->where('is_del', 0)->where('is_new', 0)->where('type', 'product')->where('product_id', $item['id'])->where('uid', $uid)->value('cart_num');
+                else $item['cart_num'] = 0;
+                if (is_null($item['cart_num'])) $item['cart_num'] = 0;
+            }
+        });
+            $list = count($list) ? $list->toArray() : [];
+            if (!empty($list)) {
+                foreach ($list as $k => $v) {
+                    $list[$k]['activity'] = self::activity($v['id']);
+                }
+            }
+            return self::setLevelPrice($list, $uid);
+    }
+    
 
     /*
      * 分类搜索
@@ -469,6 +531,30 @@ class StoreProduct extends BaseModel
         return $list;
     }
     
+    /**
+     * 按地区筛选商品列表
+     * @return mixed
+     */
+    public static function getNearList($city, $district,$mapkay, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder)
+    {
+        if($city=='全部省份'){
+            $city='';
+            $district ='';
+        }
+        $baseOrder = '';
+        if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+    
+        if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+    
+        $baseOrder = 'sort desc,id desc';
+        $model = self::getProductWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
+        ->order($baseOrder);
+         
+        if ($limit) $model->page($page, $limit);
+        $list = $model->select();
+        return $list;
+    }
+    
     public static function getProductWhere($city,$district,$sId,$cid,$keyword,$model, $aler = '', $join = '')
     {
         $model = $model->where($aler.'is_del', 0)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
@@ -490,6 +576,14 @@ class StoreProduct extends BaseModel
         if (!empty($keyword)) $model->where($aler.'store_name', 'LIKE', htmlspecialchars("%$keyword%"));
         return $model;
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     //根据经纬度查询所在城市

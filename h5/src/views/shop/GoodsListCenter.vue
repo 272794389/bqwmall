@@ -2,10 +2,10 @@
   <div class="productList" ref="container">
     <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span><span @click="set_where(2)" :class="condition==2 ? 'on' : ''">网购</span></div>
-        <div class="input acea-row row-between-wrapper" style="width: 4.4rem;">
+        <div class="samebox""><span @click="set_where(0)">分类</span><span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span><span @click="set_where(2)" :class="condition==2 ? 'on' : ''">网购</span></div>
+        <div class="input acea-row row-between-wrapper" style="width: 3.4rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword" style="width: 3.48rem;"/>
+          <input placeholder="搜索商品信息" v-model="where.keyword" style="width: 2.48rem;"/>
         </div>
         <div
           class="iconfont"
@@ -281,7 +281,8 @@ export default {
       let that = this;
       switch (index) {
         case 0:
-          return that.$router.push({ path: "/gcategory" });
+          return that.$router.push({ path: "/category" });
+          break;
         case 1:
           if (that.price === 0) that.price = 1;
           else if (that.price === 1) that.price = 2;
@@ -349,7 +350,7 @@ export default {
 };
 </script>
 <style scoped>
-.samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox{width: 3rem;height: 0.6rem;line-height: 0.6rem;}
 .samebox span{float: left; width: 0.8rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
