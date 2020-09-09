@@ -552,6 +552,7 @@ class StoreProduct extends BaseModel
          
         if ($limit) $model->page($page, $limit);
         $list = $model->select();
+        $list = count($list) ? $list->toArray() : [];
         return $list;
     }
     

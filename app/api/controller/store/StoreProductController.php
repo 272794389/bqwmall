@@ -56,9 +56,9 @@ class StoreProductController
             $data['list'] = $list;
             $data['tengxun_map_key'] = sys_config('tengxun_map_key');
             return app('json')->successful($data);
-        }else if($data['condition']==2){//全国筛选地区
+        }else if($data['condition']==2){//网购
             return app('json')->successful(StoreProduct::getNetGoodsProductList($data,$request->uid()));
-        }else{//网购
+        }else{//全国筛选地区
             return app('json')->successful(StoreProduct::getNearList($data['city'],$data['district'],sys_config('tengxun_map_key'),$data['page'], $data['limit'],$data['sid'],$data['cid'],$data['keyword'],$data['salesOrder'],$data['priceOrder']));
         }
        

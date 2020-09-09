@@ -3,7 +3,8 @@
     <div class="storeBox productList" ref="container" style="margin-top:2.6rem;">
      <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(0)">分类</span>
+        <div class="samebox"">
+           <span @click="set_where(0)">分类</span>
            <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
            <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="max-width:1.7rem;width: auto;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
            <CitySelect
@@ -25,7 +26,7 @@
     </form>
     <div class="aside">
       
-     <div class="item acea-row row-center-wrapper" @click="asideTap(0)" :class="0 === navActive ? 'on' : ''">
+      <div class="item acea-row row-center-wrapper" @click="asideTap(0)" :class="0 === navActive ? 'on' : ''">
         <span>全部</span>
       </div>
       <div

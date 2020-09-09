@@ -2,19 +2,31 @@
   <div class="productList" ref="container">
     <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(0)" class="on">选择分类</span></div>
-        <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
-          <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
+        <div class="samebox"">
+           <span @click="set_where(0)">分类</span>
+           <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
+           <span @click="set_where(2)" :class="condition==3 ? 'on' : ''" style="width:" style="width: 1.0rem;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
+           <CitySelect
+              ref="cityselect"
+              v-model="show2"
+              :callback="result2"
+              :items="district"
+              :ready="ready"
+              provance=""
+              city=""
+              area=""
+            ></CitySelect>
         </div>
-        <div
-          class="iconfont"
-          :class="Switch === true ? 'icon-pailie' : 'icon-tupianpailie'"
-          @click="switchTap"
-        ></div>
+        <div class="input acea-row row-between-wrapper"  style="width: 3.5rem;">
+          <span class="iconfont icon-sousuo"></span>
+          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 2rem;"/>
+        </div>
       </div>
     </form>
     <div class="aside">
+      <div class="item acea-row row-center-wrapper" @click="asideTap(0)" :class="0 === navActive ? 'on' : ''">
+        <span>全部</span>
+      </div>
       <div
         class="item acea-row row-center-wrapper"
         :class="item.id === navActive ? 'on' : ''"
@@ -25,6 +37,7 @@
         <span>{{ item.cate_name }}</span>
       </div>
     </div>
+   
     <div
       class="list acea-row row-between-wrapper"
       :class="Switch === true ? '' : 'on'"
@@ -103,13 +116,14 @@
   </div>
 </template>
 <script>
+import { CitySelect } from "vue-ydui/dist/lib.rem/cityselect";
+import { getCity } from "@api/public";
 import Recommend from "@components/Recommend";
 import { isWeixin } from "@utils/index";
 import { wechatEvevt, wxShowLocation } from "@libs/wechat";
 import debounce from "lodash.debounce";
 import Loading from "@components/Loading";
-import {goodListApi } from "@api/public";
-import {getDetailCategory } from "@api/store";
+import { getProducts,getDetailCategory } from "@api/store";
 import cookie from "@utils/store/cookie";
 const LONGITUDE = "user_longitude";
 const LATITUDE = "user_latitude";
@@ -118,7 +132,7 @@ export default {
   name: "GoodsListTong",
   components: {
     Recommend,
-    Loading
+    Loading,CitySelect
   },
   props: {},
   data: function() {
@@ -134,6 +148,8 @@ export default {
         belong_t:2,
         latitude:"",
         longitude:"",
+        city: "",
+        district: "",
         limit: 8,
         keyword: s,
         sid: sid, //一级分类id
@@ -142,6 +158,9 @@ export default {
         priceOrder: "",
         salesOrder: ""
       },
+      show2: false,
+      district: [],
+      ready: false,
       title: title && cid ? title : "",
       loadTitle: "",
       loading: false,
@@ -150,7 +169,8 @@ export default {
       price: 0,
       stock: 0,
       nows: false,
-      condition: 0
+      condition: 1,
+      model2: "全国"
     };
   },
   watch: {
@@ -186,11 +206,29 @@ export default {
     } else {
       this.selfLocation();
     }
+    this.getCityList();
     this.$scroll(this.$refs.container, () => {
       !this.loading && this.get_product_list();
     });
   },
   methods: {
+   result2(ret) {
+      this.model2 = ret.itemName3;
+      this.where.city = ret.itemName2;
+      this.where.district = ret.itemName3;
+      this.$set(this, "productList", []);
+      this.where.page = 1;
+      this.loaded = false;
+      this.loadend = false;
+      this.get_product_list();
+    },
+   getCityList: function() {
+      let that = this;
+      getCity().then(res => {
+        that.district = res.data;
+        that.ready = true;
+      });
+    },
     selfLocation() {
       if (isWeixin()) {
         wxShowLocation()
@@ -289,10 +327,15 @@ export default {
       that.loading = true;
       this.setWhere();
       let q = that.where;
-      goodListApi(q).then(res => {
+      getProducts(q).then(res => {
         that.loading = false;
-        that.productList.push.apply(that.productList, res.data.list);
-        that.loadend = res.data.list.length < that.where.limit; //判断所有数据是否加载完成；
+        if(that.condition==1){
+           that.productList.push.apply(that.productList, res.data.list);
+           that.loadend = res.data.list.length < that.where.limit; //判断所有数据是否加载完成；
+        }else{
+           that.productList.push.apply(that.productList, res.data); 
+           that.loadend = res.data.length < that.where.limit; //判断所有数据是否加载完成；
+        }
         that.where.page = that.where.page + 1;
       });
     }, 300),
@@ -310,16 +353,11 @@ export default {
         case 0:
           return that.$router.push({ path: "/tcategory" });
         case 1:
-          if (that.price === 0) that.price = 1;
-          else if (that.price === 1) that.price = 2;
-          else if (that.price === 2) that.price = 0;
-          that.stock = 0;
+          that.condition = 1;
           break;
-        case 2:
-          if (that.stock === 0) that.stock = 1;
-          else if (that.stock === 1) that.stock = 2;
-          else if (that.stock === 2) that.stock = 0;
-          that.price = 0;
+       case 2:
+          that.condition = 3;
+          that.show2=true;
           break;
         case 3:
           that.nows = !that.nows;
@@ -375,8 +413,8 @@ export default {
 };
 </script>
 <style scoped>
-samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
-.samebox span{float: left; width: 1.6rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
+.samebox{width: 3.0rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox span{float: left; width: 0.7rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
   border-top: 3px solid #f5f5f5;
