@@ -439,12 +439,6 @@ export default {
         this.$set(this, "nearGoodList", res.data.nearGoodList);
        });
     });
-    if(this.nearGoodList.length==0){
-       getNearStoreData().then(res => {
-        this.$set(this, "storeList", res.data.storeList);
-        this.$set(this, "nearGoodList", res.data.nearGoodList);
-       });
-    }
   },
   methods: {
     // 轮播图跳转
