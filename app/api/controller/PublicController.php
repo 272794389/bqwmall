@@ -75,7 +75,7 @@ class PublicController
     
     public function getNearStoreData(Request $request)
     {
-        $storeList = SystemStore::netlst(1, 10,0,0,'','desc');
+        $storeList = SystemStore::netlst(1, 10,0,0,'','desc','','');
         $nearGoodList = StoreProduct::getNetList(10,$request->uid());
         return app('json')->successful(compact('storeList','nearGoodList'));
     }

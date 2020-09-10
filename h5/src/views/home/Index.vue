@@ -535,11 +535,6 @@ export default {
    
      // 获取门店列表数据
     getList: function() {
-        getNearStoreData().then(res => {
-           this.$set(this, "storeList", res.data.storeList);
-           this.$set(this, "nearGoodList", res.data.nearGoodList);
-          });
-    /*
        if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
           getNearStoreData().then(res => {
            this.$set(this, "storeList", res.data.storeList);
@@ -563,7 +558,6 @@ export default {
                this.$dialog.error(err.msg);
            });
 	  }
-	  */
     },
     closeFollow() {
       this.followHid = false;
