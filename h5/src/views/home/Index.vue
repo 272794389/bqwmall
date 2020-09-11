@@ -267,7 +267,7 @@
       @checked="couponClose"
       @close="couponClose"
     ></Coupon-window>
-    <div style="height:1.2rem;"></div>
+    <div style="height:1.2rem;height: 1.2rem;text-align: center;margin-top: 0.2rem;color: #999;font-size:0.2rem;">黔ICP备17003404号-1</div>
     <div>
       <iframe
         v-if="mapKey && !isWeixin"
