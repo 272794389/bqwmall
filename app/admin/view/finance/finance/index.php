@@ -84,6 +84,14 @@
                                                                   系统升级
                         {{# } }}
                     </script>
+                    <script type="text/html" id="mer_name">
+                       {{#  if(d.huokuan >0){ }}
+                            {{d.mer_name}}
+                       {{# }else{ }}
+                                                                 --
+                        {{# } }}
+                    </script>
+                    
                 </div>
             </div>
         </div>
@@ -98,6 +106,7 @@
         return [
             {field: 'uid', title: '会员ID', sort: true,event:'uid',align:"center",width:"5%"},
             {field: 'nickname', title: '昵称|电话号码' ,align:"center",width:"10%"},
+            {field: 'mer_name', title: '商家名称' ,align:"center",templet:'#mer_name',width:"10%"},
             {field: 'belong_t', title: '记录类型',sort:true,templet:'#belong_t',align:"center"},
             {field: 'use_money', title: '余额',align:"center"},
             {field: 'huokuan', title: '货款',align:"center"},

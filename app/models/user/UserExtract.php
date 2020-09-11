@@ -11,6 +11,9 @@ use crmeb\basic\BaseModel;
 use crmeb\services\workerman\ChannelService;
 use crmeb\traits\ModelTrait;
 use think\facade\Db;
+use crmeb\services\ WechatTemplateService;
+use app\models\user\WechatUser;
+use think\facade\Route as Url;
 
 
 /**
@@ -119,7 +122,20 @@ class UserExtract extends BaseModel
                 try{
                     ChannelService::instance()->send('WITHDRAW', ['id'=>$res1->id]);
                 }catch (\Exception $e){}
-                event('AdminNewPush');
+                //event('AdminNewPush');
+                WechatTemplateService::sendTemplate(WechatUser::where('uid', $userInfo['uid'])->value('openid'), WechatTemplateService::CASH_SUCCESS, [
+                    'first' => '尊敬的客户您好，您的提现申请已提交成功',
+                    'keyword1' => 'bqw'.time(),
+                    'keyword2' => $data['money'],
+                    'keyword3' => date("Y-m-d H:i",time()),
+                    'remark' => '提现金额会在24小时内到账（节假日顺延），请知晓并耐心等待！'
+                ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
+                WechatTemplateService::sendTemplate(WechatUser::where('uid', 42533)->value('openid'), WechatTemplateService::CASHAUDIT_SUCCESS, [
+                    'first' => '管理员您好，用户发起提现请求',
+                    'keyword1' => $userInfo['nickname'],
+                    'keyword2' => $data['money'],
+                    'remark' => '请及时审核确认'
+                ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 //发送模板消息
                 return true;
             }else return self::setErrorInfo('提现失败!');
@@ -195,7 +211,20 @@ class UserExtract extends BaseModel
                     try{
                         ChannelService::instance()->send('WITHDRAW', ['id'=>$res1->id]);
                     }catch (\Exception $e){}
-                    event('AdminNewPush');
+                    //event('AdminNewPush');
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', $userInfo['uid'])->value('openid'), WechatTemplateService::CASH_SUCCESS, [
+                        'first' => '尊敬的客户您好，您的提现申请已提交成功',
+                        'keyword1' => 'bqw'.time(),
+                        'keyword2' => $data['money'],
+                        'keyword3' => date("Y-m-d H:i",time()),
+                        'remark' => '提现金额会在24小时内到账（节假日顺延），请知晓并耐心等待！'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
+                    WechatTemplateService::sendTemplate(WechatUser::where('uid', 42533)->value('openid'), WechatTemplateService::CASHAUDIT_SUCCESS, [
+                        'first' => '管理员您好，用户发起提现请求',
+                        'keyword1' => $userInfo['nickname'],
+                        'keyword2' => $data['money'],
+                        'remark' => '请及时审核确认'
+                    ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                     //发送模板消息
                     return true;
                 }else return self::setErrorInfo('提现失败!');

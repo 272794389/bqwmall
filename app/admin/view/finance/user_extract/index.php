@@ -79,7 +79,6 @@
                             </div>
                         </div>
                     </div>
-                     -->
                     <div class="col-sm-3 ui-sortable">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
@@ -91,6 +90,7 @@
                             </div>
                         </div>
                     </div>
+                     -->
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped  table-bordered">

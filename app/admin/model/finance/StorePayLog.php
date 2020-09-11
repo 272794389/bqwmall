@@ -81,6 +81,7 @@ class StorePayLog extends BaseModel
         }
         $model = self::getModelTime($time, self::alias('A')
             ->join('user B', 'B.uid=A.uid')
+            ->join('system_store C','C.user_id=A.uid')
             ->order('A.add_time desc'), 'A.add_time');
         if (trim($where['belong_t']) != '') {//记录类型
             $model = $model->where('A.belong_t', $where['belong_t']);
@@ -101,7 +102,7 @@ class StorePayLog extends BaseModel
         if ($where['nickname'] != '') {
             $model = $model->where('B.nickname|B.uid|B.phone', 'like', "%$where[nickname]%");
         }
-        return $model->field(['A.*', 'FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time', 'B.uid', 'B.nickname','B.phone']);
+        return $model->field(['A.*', 'FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time', 'B.uid', 'B.nickname','B.phone','C.mer_name']);
     }
 
     
