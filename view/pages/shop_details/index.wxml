@@ -1,0 +1,63 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='product-con storeBox'>
+    <view id="past0">
+      <view class="store-name">{{ storeInfo.name }}</view>
+      <view style="width: 100%;line-height: 80rpx;color: #282828;">
+                    {{storeInfo.cate_name}}  |  {{ storeInfo.sales }}人消费过 </view>
+      <storeConSwiper imgUrls="{{storeInfo.slider_image}}"></storeConSwiper>
+      <view class="storeBox-box" style="background: #fff;">
+        <view class="pingfen" wx:if="{{couponList.length > 0}}">
+          <block   wx:for="{{couponList}}" wx:key='index'>
+              <view class="activity">满{{item.use_min_price}}元抵{{item.coupon_price}}元</view>
+          </block>
+          <view class="iconfont icon-jiantou" bindtap="moreCoupon" data-items='{{item}}' style="float:right;"></view>
+        </view>
+        <view class="pingfen service" wx:if="{{labelList.length > 0}}">
+          <block wx:for="{{labelList}}" wx:key='index'>
+            <view class="service_label">{{ item }}</view>
+           </block>
+        </view>
+        <view class="pingfent ktime" style="height:70rpx;">
+           营业时间  {{ storeInfo.termDate}}  {{ storeInfo.day_time}}
+           <view class="store-phone" bindtap="makePhone"><view class="iconfont icon-dadianhua01" style="color:#666;"></view ></view>
+        </view>
+        <view class="pingfent addressUlr" style="height:80rpx;line-height: 60rpx;"> 
+           <view class="location">{{ storeInfo.detailed_address }}</view> 
+           <view  class="daohang" bindtap="showMaoLocation">
+              <view class="iconfont icon-jiantou"></view>
+           </view>
+         </view>
+         
+         <navigator class='keepBnt bg-color' url='/pages/shoppay/index?id={{storeInfo.id}}'>点击向商家付款</navigator>
+      </view>
+      <view wx:if="{{goodList.length > 0}}" style="width: 100%;float: left;">
+            <view class="title acea-row row-center-wrapper" style="line-height:80rpx;line-height: 80rpx;font-size: 40rpx; font-weight: bold;justify-content: left;">
+              <view class="titleTxt">商家为您推荐</view>
+            </view>
+      </view>
+    </view>
+</view>
+<view class='wrapper' style="padding-bottom:30rpx;float: left;margin-top: 20rpx;">
+        <view class='recommend' wx:if="{{goodList.length}}">
+          <view class='recommendList acea-row row-between-wrapper'>
+              <view class='item' wx:for="{{goodList}}" wx:key='index'  bindtap="goDetail" data-items='{{item}}'>
+                <view class='pictrue'>
+                    <image src='{{item.image}}'></image>
+                </view>
+                <view class='name pline2'>{{item.store_name}}</view>
+                <view class='money font-color'>￥<text class='num'>{{item.price}}</text><text class="shou" style="text-decoration:line-through;">原价{{ item.ot_price }}</text></view>
+                <view class="money">
+                              <text class="activityg" style="color: #e93323;font-size:20rpx;" wx:if="{{item.give_rate>0}}">可用购物积分抵扣{{ item.give_rate }}元</text>
+                              <text class="activityg" style="color: #e93323;font-size:20rpx;" wx:elif="{{item.pay_paypoint>0}}">可用消费积分抵扣{{ item.pay_paypoint }}元</text>
+                              <text class="activityg" style="color: #e93323;font-size:20rpx;" wx:elif="{{item.pay_repeatpoint>0}}">可用重消积分抵扣{{ item.pay_repeatpoint }}元</text>
+                              <text class="shou" style="margin-left:0rpx;" wx:else>已售{{ item.sales }}{{ item.unit_name }}</text>
+                </view>
+              </view>
+          </view>
+        </view>
+      </view>
+<!-- 组件 -->
+<authorize bind:onLoadFun="onLoadFun" isAuto="{{isAuto}}" iShidden="{{iShidden}}"></authorize>
+<!-- html转wxml -->
+<import src="/wxParse/wxParse.wxml" />
+<home></home>

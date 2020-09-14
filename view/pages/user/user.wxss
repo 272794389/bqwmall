@@ -10,7 +10,6 @@
 .user .header .picTxt .text .id{color:rgba(255,255,255,0.6);font-size:26rpx;margin-top:15rpx;}
 .user .header .picTxt .text .id .iconfont{font-size:30rpx;margin-left:12rpx;}
 .user .header .icon-shezhi{font-size:36rpx;color:#fff;margin-top:-52rpx;}
-.user .wrapper{padding:0 20rpx;}
 .user .wrapper .nav{background-color:#fff;border-radius:6rpx;height:140rpx;}
 .user .wrapper .nav .item{flex:1;text-align:center;font-size:26rpx;color:#aaa;}
 .user .wrapper .nav .item~.item{border-left:1px solid #eee;}
@@ -38,3 +37,18 @@
 .switchWindow .switchBnt.cancelBnt{background-color:#fff;color:#999;background-image:none;margin-top:10rpx;}
 .order-status-num {min-width:14rpx;background-color: #fff;color: #ee5a52;border-radius: 15px;position: absolute;right: -14rpx;top: -15rpx;font-size: 23rpx;padding: 0 8rpx; border: 1px solid #ee5a52;}
 .user .binding{padding: 2rpx 18rpx; background-color: #ca1f10; border-radius: 50px;font-size: 22rpx;border: 1px solid #e8695e;color: #ffffff;}
+
+.myOrder1{margin-top:15rpx;background:#fff;float: left;width: 100%;}
+.myOrder1{margin-top:15rpx;background:#fff;float: left;width: 100%;}
+.myOrder1 .title{width:98%;height: 80rpx;border-bottom: 1rpx solid #e5e5e5;padding-top: 8rpx;margin:auto;}
+.myOrder1 .title1{width:96%;margin:2%;display:block;float:left;font-size:26rpx;}
+.myOrder1 .title1-1{width:8%;float:left;}
+.myOrder1 .title1-1 image{width:35rpx;height:35rpx;}
+.myOrder1 .title1-2{width:42%;float:left;color:#333;}
+.myOrder1 .title1-3{width:50%;float:left;color:#999;text-align: right;}
+.myOrder1 .title1 .title1-3 .iconfont{font-size:25rpx;margin-left:7rpx;float: right; margin-top: 8rpx;}
+.foot{background-color: #F8F8F8;text-align: center; width: 100%;overflow: hidden;padding-bottom: 30rpx;padding-top: 30rpx;}
+.foot .foot1{width: 75%; margin: 0 auto;background: none;}
+.foot .foot1 .foot2{border-right: 1rpx solid #dcdcdc;font-size: 25rpx; padding-left: 20rpx; padding-right:20rpx;}
+.foot .foot1 .foot2:last-child{border-right: 0 none;}
+.foot .foot3{text-align: center;line-height:50rpx;color: #a2a2a2;font-size: 20rpx;padding-top: 10rpx;}

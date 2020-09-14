@@ -188,7 +188,7 @@ class UserBillController
                 $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
                 $imageInfo = SystemAttachment::getInfo($name, 'name');
                 //检测远程文件是否存在
-                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && UtilService::CurlFileExist($imageInfo['att_dir']) === false) {
+                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
                     $imageInfo = null;
                     SystemAttachment::where(['name' => $name])->delete();
                 }

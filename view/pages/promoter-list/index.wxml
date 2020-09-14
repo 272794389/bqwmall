@@ -19,13 +19,13 @@
     </view>
     <view class='list'>
         <view class="sortNav acea-row row-middle">
-            <view class="sortItem" data-sort="childCount ASC" bindtap='setSort' wx:if="{{sort == 'childCount DESC'}}">团队排序
+            <view class="sortItem" data-sort="childCount ASC" bindtap='setSort' wx:if="{{sort == 'childCount DESC'}}">市场排序
               <image src='/images/sort1.png'></image>
             </view>
-            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'childCount ASC'}}">团队排序
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'childCount ASC'}}">市场排序
               <image src='/images/sort3.png'></image>
             </view>
-            <view class="sortItem" data-sort="childCount DESC" bindtap='setSort' wx:else>团队排序
+            <view class="sortItem" data-sort="childCount DESC" bindtap='setSort' wx:else>市场排序
               <image src='/images/sort2.png'></image>
             </view>
             <view class="sortItem" data-sort="numberCount ASC" bindtap='setSort' wx:if="{{sort == 'numberCount DESC'}}">金额排序

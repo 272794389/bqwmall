@@ -15,17 +15,23 @@ Page({
       'color':true,
       'class':'0'
     },
+    /*
     navList: [
       { 'name': '银行卡', 'icon':'icon-yinhangqia'},
       { 'name': '微信', 'icon': 'icon-weixin2' },
       { 'name': '支付宝', 'icon': 'icon-icon34' }
       ],
+    */
+   navList: [
+     { 'name': '银行卡', 'icon':'icon-yinhangqia'}
+    ],
     currentTab: 0,
     index: 0,
     array: [],//提现银行
     minPrice:0.00,//最低提现金额
     userInfo:[],
-    isClone:false
+    isClone:false,
+    withdraw_fee:0
   },
   onLoadFun:function(){
     this.getUserInfo();
@@ -42,7 +48,7 @@ Page({
     extractBank().then(res=>{
       var array = res.data.extractBank;
       array.unshift("请选择银行");
-      that.setData({ array: array, minPrice: res.data.minPrice });
+      that.setData({ array: array, minPrice: res.data.minPrice,withdraw_fee:res.data.withdraw_fee });
     });
   },
   /**
@@ -63,11 +69,11 @@ Page({
   subCash: function (e) {
     let that = this, value = e.detail.value;
     if (that.data.currentTab == 0){//银行卡
+      if (value.bank_address.length == 0) return app.Tips({title:'请填写开户行支行'});
       if (value.name.length == 0) return app.Tips({title:'请填写持卡人姓名'});
       if (value.cardnum.length == 0) return app.Tips({title:'请填写卡号'});
-      if (that.data.index == 0) return app.Tips({title:"请选择银行"});
+     // if (that.data.index == 0) return app.Tips({title:"请选择银行"});
       value.extract_type = 'bank';
-      value.bankname = that.data.array[that.data.index];
     } else if (that.data.currentTab == 1) {//微信
       value.extract_type = 'weixin';
       if (value.name.length == 0) return app.Tips({ title: '请填写微信号' });
@@ -81,7 +87,7 @@ Page({
     if (value.money < that.data.minPrice) return app.Tips({title:'提现金额不能低于' + that.data.minPrice});
     extractCash(value).then(res=>{
       that.getUserInfo();
-      return app.Tips({ title: res.msg, icon: 'success' });
+      return app.Tips({ title: res.msg, icon: 'success' }, {tab:5,url:'/pages/user_spread_money/index?type=1'});
     }).catch(err=>{
       return app.Tips({ title: err });
     });

@@ -1,0 +1,20 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='product-con storeBox'>
+    <view id="past0">
+      <view class="store-name">{{ storeInfo.name }}</view>
+      <view style="width: 100%;line-height: 80rpx;color: #282828;">
+                    {{storeInfo.cate_name}}  |  {{ storeInfo.sales }}人消费过 </view>
+      <view class="storeBox-box" style="background: #fff;">
+        <view class="pingfen" wx:if="{{couponList.length > 0}}">
+          <block   wx:for="{{couponList}}" wx:key='index'>
+              <view class="activity">满{{item.use_min_price}}元抵{{item.coupon_price}}元</view>
+          </block>
+        </view>
+      </view>
+    </view>
+</view>
+<!-- 组件 -->
+<authorize bind:onLoadFun="onLoadFun" isAuto="{{isAuto}}" iShidden="{{iShidden}}"></authorize>
+<!-- html转wxml -->
+<import src="/wxParse/wxParse.wxml" />
+<home></home>

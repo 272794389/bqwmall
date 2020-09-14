@@ -1,0 +1,43 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='my-account'>
+   <view class='wrapper'>
+      <view class='header'>
+         <view class='headerCon'>
+              <view class='account acea-row row-top row-between'>
+                  <view class='assets'>
+                    <view wx:if="{{type==1}}">购物积分余额</view>
+                    <view wx:elif="{{type==2}}">消费积分余额</view>
+                    <view wx:elif="{{type==3}}">重消积分余额</view>
+                    <view class='money'>{{ now_money }}</view>
+                  </view>
+              </view>
+              <view class='cumulative acea-row row-top'>
+                <view class='item' wx:if="{{recharge_switch}}">
+                    <view>累计收入(元)</view>
+                    <view class='money'>{{ in_amount }}</view>
+                </view>
+                <view class='item'>
+                    <view>累计支出(元)</view>
+                    <view class='money'>{{ out_amount }}</view>
+                </view>
+              </view>
+         </view>
+      </view>
+      <view class='nav acea-row row-middle'>
+         <navigator class='item' hover-class='none' url='/pages/user_paypoint_list/index?type=0&recodeType={{type}}'>
+            <view class='pictrue'><image src='/images/record1.png'></image></view>
+            <view>全部记录</view>
+         </navigator>
+         <navigator class='item' hover-class='none' url='/pages/user_paypoint_list/index?type=2&recodeType={{type}}'>
+            <view class='pictrue'><image src='/images/record3.png'></image></view>
+            <view>收入记录</view>
+         </navigator>
+         <navigator class='item' hover-class='none' url='/pages/user_paypoint_list/index?type=1&recodeType={{type}}'>
+            <view class='pictrue'><image src='/images/record2.png'></image></view>
+            <view>支出记录</view>
+         </navigator>
+      </view>
+   </view>
+   <recommend host_product="{{host_product}}"></recommend>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>

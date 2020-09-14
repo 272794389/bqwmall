@@ -2,7 +2,7 @@
 
 import { getProductHot } from '../../api/store.js';
 import { openRechargeSubscribe } from '../../utils/SubscribeMessage.js';
-import { getUserInfo, userActivity } from '../../api/user.js';
+import { getUserInfo, getBalance } from '../../api/user.js';
 
 const app=getApp();
 
@@ -18,6 +18,9 @@ Page({
       'title': '我的账户',
       'color': false,
     },
+    now_money: 0,
+    orderStatusSum: 0,
+    recharge: 0,
     userInfo:{},
     host_product:[],
     isClose:false,
@@ -30,7 +33,7 @@ Page({
   onLoadFun:function(){
     this.getUserInfo();
     this.get_host_product();
-    this.get_activity();
+    this.getBalance();
   },
   /**
    * 生命周期函数--监听页面加载
@@ -53,6 +56,21 @@ Page({
       wx.hideLoading();
     });
   },
+
+  
+   /**
+   * 获取余额详情
+  */
+ getBalance:function(){
+  let that = this;
+  getBalance().then(res=>{
+    that.setData({ 
+      now_money: res.data.now_money, 
+      orderStatusSum: res.data.orderStatusSum, 
+      recharge: res.data.recharge
+    });
+  });
+},
 
   /**
    * 获取用户详情

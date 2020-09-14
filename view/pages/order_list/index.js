@@ -112,7 +112,13 @@ Page({
   */
   goPay:function(e){
     let order_id = e.currentTarget.dataset.order_id, pay_price = e.currentTarget.dataset.pay_price;
-    this.setData({ pay_close: true, pay_order_id: order_id, totalPrice: pay_price});
+    openOrderSubscribe().then(()=>{
+      wx.hideLoading();
+      wx.navigateTo({ url: '/pages/order_details/index?order_id=' + order_id })
+    }).catch(()=>{
+      wx.hideLoading();
+    })
+    //this.setData({ pay_close: true, pay_order_id: order_id, totalPrice: pay_price});
   },
   /**
    * 支付成功回调

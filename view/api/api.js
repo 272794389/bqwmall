@@ -55,6 +55,15 @@ export function getUserCoupons(types){
 }
 
 /**
+ * 我的优惠券
+ * @param int types 0全部 
+*/
+export function getCouponsList(types){
+  return request.get('coupons/list/'+types)
+}
+
+
+/**
  * 文章分类列表
  * 
 */

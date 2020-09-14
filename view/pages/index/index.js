@@ -140,20 +140,20 @@ Page({
   });
 },
 
-
+goShop: function (e) {
+  let item = e.currentTarget.dataset.items;
+  wx.navigateTo({ url: `/pages/shop_details/index?id=${item.id}` });
+ },
   tap: function (e){
     var index = e.currentTarget.dataset.id;
-    console.log(index)
     this.setData({
       condition: index
     });
-    console.log(this.data.condition)
   },
   /**
    * 商品详情跳转
    */
    goDetail: function (e) {
-     console.log(e)
      let item = e.currentTarget.dataset.items
      wx.navigateTo({ url: "/pages/goods_details/index?id=" + item.id });
   },
@@ -260,8 +260,6 @@ Page({
 
   onPageScroll: function (t) {
     var a = this;
-     console.log(t.scrollTop)
-    
       a.setData({
         searchBarFixed:t.scrollTop
         })

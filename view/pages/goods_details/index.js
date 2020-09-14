@@ -636,10 +636,25 @@ Page({
    * 立即购买
   */
   goBuy: function (e) {
-    if (app.globalData.isLog === false)
+    var that=this;
+    if (app.globalData.isLog === false){
       this.setData({ isAuto: true, iShidden: false });
-    else
-      this.goCat(true);
+    } else if(that.data.storeInfo.hex_t<1){
+      that.goCat(true);
+    }else{
+        wx.showModal({
+        title: '提示',
+        content: '该商品需到店核销使用，不提供配送服务，确认下单？',
+        success: function (sm) {
+          if (sm.confirm) {
+            that.goCat(true);
+            } else if (sm.cancel) {
+             // console.log('用户点击取消')
+            }
+          }
+        })
+      
+    }
   },
   /**
    * 分享打开和关闭

@@ -76,7 +76,7 @@ class UserRecharge extends BaseModel
      */
     public static function jsPay($orderInfo)
     {
-        return MiniProgramService::jsPay(WechatUser::uidToOpenid($orderInfo['uid']), $orderInfo['order_id'], $orderInfo['price'], 'user_recharge', '用户充值');
+        return MiniProgramService::jsPay(WechatUser::uidToOpenid($orderInfo['uid'], 'openid'), $orderInfo['order_id'], $orderInfo['price'], 'user_recharge', '用户充值');
     }
 
     /**

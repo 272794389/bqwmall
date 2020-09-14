@@ -26,7 +26,7 @@
            </div>
         </div>
         
-        <div class="pingfent ktime" style="height:0.7rem;">
+        <div class="pingfent ktime" style="line-height: 40rpx;">
            营业时间&nbsp;&nbsp;{{ storeInfo.termDate}}&nbsp;&nbsp;{{ storeInfo.day_time}}
            <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#666;"></span ></a>
         </div>

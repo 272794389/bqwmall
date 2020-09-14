@@ -1,5 +1,5 @@
 // pages/bill-details/index.js
-import { getCommissionInfo } from '../../api/user.js';
+import { getPayLog } from '../../api/user.js';
 const app=getApp();
 Page({
 
@@ -49,7 +49,7 @@ Page({
       page: that.data.page,
       limit: that.data.limit
       }
-    getCommissionInfo(data, that.data.type).then(function(res){
+      getPayLog(data, that.data.type).then(function(res){
       var list=res.data,loadend=list.length < that.data.limit;
       that.data.userBillList = app.SplitArray(list,that.data.userBillList);
       that.setData({

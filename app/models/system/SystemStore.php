@@ -300,7 +300,7 @@ class SystemStore extends BaseModel
         $model = $model->where('u.parent_id',  $uid);
         $model = $model->field("u.user_id,u.mer_name,u.image,from_unixtime(u.add_time,'%Y/%m/%d') as time,p.numberCount,p.orderCount");
         if (strlen(trim($keyword))) $model = $model->where('u.mer_name', 'like', "%$keyword%");
-        $model = $model->group('u.user_id');
+        $model = $model->group('u.id');
         $model = $model->order($orderBy);
         $model = $model->page($page, $limit);
         $list = $model->select();

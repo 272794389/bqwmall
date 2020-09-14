@@ -1,4 +1,5 @@
-import { getProductslist, getProductHot } from '../../api/store.js';
+import { getProductslist,getGoodsProducts, getProductHot,getDetailCategory } from '../../api/store.js';
+import { getCity } from '../../api/api.js';
 
 
 const app = getApp();
@@ -12,18 +13,21 @@ Page({
     parameter: {
       'navbar': '1',
       'return': '1',
-      'title': '商品列表',
+      'title': '商品中心列表',
       'color': true,
       'class': '0'
     },
     navH: "",
     is_switch:true,
+    category: [],
+    navActive: 0,
     where: {
       sid: 0,
       keyword: '',
       priceOrder: '',
       salesOrder: '',
       news: 0,
+      belong_t:0,
       page: 1,
       limit: 10,
       cid: 0,
@@ -34,7 +38,8 @@ Page({
     loadend:false,
     loading:false,
     loadTitle:'加载更多',
-    userInfo:{}
+    userInfo:{},
+    condition: 1
   },
   onLoadFun: function (e) {
     this.setData({
@@ -47,13 +52,29 @@ Page({
   onLoad: function (options) {
     this.setData({ 
       ['where.sid']: options.sid || 0, 
+      ['where.cid']: options.cid || 0,
+      navActive:options.cid || 0,
       title: options.title || '', 
       ['where.keyword']: options.searchValue || '', 
       navH: app.globalData.navHeight
     });
+    this.loadCategoryData();
     this.get_product_list();
     this.get_host_product();
   },
+
+  asideTap:function(e) {
+    let did = e.currentTarget.dataset.id;
+    this.setData({ navActive: did, stock: 0 });
+    if(this.data.where.sid>0){
+      this.setData({ loadend: false, ['where.page']: 1, ['where.cid']: did,navActive: did });
+    }else{
+      this.setData({ loadend: false, ['where.page']: 1, ['where.sid']: did,navActive: did,category:[] });
+      this.loadCategoryData();
+    }
+    this.get_product_list(true);
+  },
+
    /**
    * 商品详情跳转
    */
@@ -79,6 +100,9 @@ Page({
        is_switch: !this.data.is_switch
      })
   },
+  goStyle:function(){
+    wx.switchTab({ url: "/pages/goods_cate/goods_cate" });
+ },
   searchSubmit: function (e) {
     var that = this;
     this.setData({ ['where.keyword']: e.detail.value, loadend: false, ['where.page']: 1 })
@@ -97,19 +121,14 @@ Page({
   set_where: function (e) {
     var dataset = e.target.dataset;
     switch (dataset.type) {
+      case '0':
+        wx.navigateTo({ url: "/pages/wgoods_cate/goods_cate" });
+        break;
       case '1':
-        return wx.navigateBack({
-          delta: 1,
-        })
+        this.setData({ condition: 1 });
         break;
       case '2':
-        if (this.data.price == 0)
-          this.data.price = 1;
-        else if (this.data.price == 1)
-          this.data.price = 2;
-        else if (this.data.price == 2)
-          this.data.price = 0;
-        this.setData({ price: this.data.price, stock: 0 });
+        this.setData({ condition: 3 });
         break;
       case '3':
         if (this.data.stock == 0)
@@ -142,8 +161,23 @@ Page({
     else if (this.data.stock == 2)
       this.data.where.salesOrder = 'asc';
     this.data.where.news = this.data.nows ? 1 : 0;
+    this.data.where.condition = this.data.condition;
     this.setData({ where: this.data.where });
   },
+  
+  //获取分类
+  loadCategoryData:function() {
+    let that = this;
+    getDetailCategory(that.data.where.sid).then(res => {
+      let clist = res.data;
+      let category = app.SplitArray(clist, that.data.category);
+      that.setData({
+        category : category
+      })
+    });
+  },
+
+
   //查找产品
   get_product_list: function (isPage) {
     let that = this;
@@ -152,7 +186,7 @@ Page({
     if (that.data.loading) return;
     if (isPage === true) that.setData({ productList: [] });
     that.setData({ loading: true, loadTitle: '' });
-    getProductslist(that.data.where).then(res=>{
+    getGoodsProducts(that.data.where).then(res=>{
       let list = res.data;
       let productList = app.SplitArray(list, that.data.productList);
       let loadend = list.length < that.data.where.limit;

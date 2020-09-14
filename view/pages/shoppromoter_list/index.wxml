@@ -1,0 +1,55 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class="promoter-list">
+    <view class='promoterHeader bg-color'>
+        <view class='headerCon acea-row row-between-wrapper'>
+            <view>
+                <view class='name'>推广商户数</view>
+                <view><text class='num'>{{first}}</text>户</view>
+            </view>
+            <view class='iconfont icon-tuandui'></view>
+        </view>
+    </view>
+    <view class='search acea-row row-between-wrapper'>
+        <view class='input'><input placeholder='点击搜索商家名称' placeholder-class='placeholder' value='{{keyword}}' bindblur='setKeyword'></input><text class='iconfont icon-guanbi'></text></view>
+        <view class='iconfont icon-sousuo2' bindtap='setRecordList'></view>
+    </view>
+    <view class='list'>
+        <view class="sortNav acea-row row-middle">
+            <view class="sortItem" data-sort="numberCount ASC" bindtap='setSort' wx:if="{{sort == 'numberCount DESC'}}">金额排序
+              <image src='/images/sort1.png'></image>
+            </view>
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'numberCount ASC'}}">金额排序
+              <image src='/images/sort3.png'></image>
+            </view>
+            <view class="sortItem" data-sort="numberCount DESC" bindtap='setSort' wx:else>金额排序
+              <image src='/images/sort2.png'></image>
+            </view>
+            <view class="sortItem" data-sort="orderCount ASC" bindtap='setSort' wx:if="{{sort == 'orderCount DESC'}}">订单排序
+              <image src='/images/sort1.png'></image>
+            </view>
+            <view class="sortItem" data-sort="" bindtap='setSort' wx:elif="{{sort == 'orderCount ASC'}}">订单排序
+              <image src='/images/sort3.png'></image>
+            </view>
+            <view class="sortItem" data-sort="orderCount DESC" bindtap='setSort' wx:else>订单排序
+              <image src='/images/sort2.png'></image>
+            </view>
+        </view>
+        <block wx:for="{{recordList}}" wx:key='index'>
+          <view class='item acea-row row-between-wrapper'>
+              <view class="picTxt acea-row row-between-wrapper">
+                  <view class='pictrue'><image src='{{item.image}}'></image></view>
+                  <view class='text'>
+                      <view class='name line1'>{{item.mer_name}}</view>
+                      <view>加入时间: {{item.time}}</view>
+                  </view>
+              </view>
+              <view class="right">
+                  <view>{{item.orderCount ? item.orderCount : 0}} 单</view>
+                  <view>{{item.numberCount ? item.numberCount : 0}} 元</view>
+              </view>
+          </view>
+        </block>
+    </view>
+</view>
+<authorize bind:onLoadFun='onLoadFun'></authorize>
+

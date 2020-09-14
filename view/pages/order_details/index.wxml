@@ -153,9 +153,17 @@
          <view>优惠券抵扣：</view>
          <view class='conter'>-￥{{orderInfo.coupon_price}}</view>
       </view>
-       <view class='item acea-row row-between' wx:if='{{orderInfo.use_integral > 0}}'>
-         <view>积分抵扣：</view>
-         <view class='conter'>-￥{{orderInfo.deduction_price}}</view>
+      <view class='item acea-row row-between' wx:if='{{orderInfo.pay_paypoint > 0}}'>
+         <view>消费积分抵扣：</view>
+         <view class='conter'>-￥{{orderInfo.pay_paypoint}}</view>
+      </view>
+      <view class='item acea-row row-between' wx:if='{{orderInfo.pay_repeatpoint > 0}}'>
+         <view>重消积分抵扣：</view>
+         <view class='conter'>-￥{{orderInfo.pay_repeatpoint}}</view>
+      </view>
+      <view class='item acea-row row-between' wx:if='{{orderInfo.give_rate > 0}}'>
+         <view>购物积分抵扣：</view>
+         <view class='conter'>-￥{{orderInfo.give_rate}}</view>
       </view>
       <view class='item acea-row row-between' wx:if="{{orderInfo.pay_postage > 0}}">
          <view>运费：</view>

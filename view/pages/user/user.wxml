@@ -18,20 +18,24 @@
    <view class='wrapper'>
       <view class='nav acea-row row-middle'>
          <view class='item' data-url='/pages/user_money/index' bindtap='goPages'>
-            <view>我的余额</view>
+            <view>余额</view>
             <view class='num'>{{userInfo.now_money || 0}}</view>
          </view>
-         <view class='item' wx:if="{{userInfo.is_promoter || userInfo.statu==2}}" data-url='/pages/user_spread_user/index' bindtap='goPages'>
-            <view>当前佣金</view>
-            <view class='num'>{{userInfo.brokerage_price || 0}}</view>
+         <view class='item' data-url='/pages/user_huokuan/index' bindtap='goPages'>
+            <view>货款</view>
+            <view class='num'>{{userInfo.huokuan || 0}}</view>
          </view>
-         <view class='item' wx:else data-url='/pages/user_integral/index' bindtap='goPages'>
-            <view>当前积分</view>
-            <view class='num'>{{userInfo.integral || 0}}</view>
+         <view class='item' data-url='/pages/user_paypoint/index?type=1' bindtap='goPages'>
+            <view>购物积分</view>
+            <view class='num'>{{userInfo.give_point || 0}}</view>
          </view>
-         <view class='item' data-url='/pages/user_coupon/index' bindtap='goPages'>
-            <view>优惠券</view>
-            <view class='num'>{{userInfo.couponCount || 0}}</view>
+         <view class='item' data-url='/pages/user_paypoint/index?type=2' bindtap='goPages'>
+            <view>消费积分</view>
+            <view class='num'>{{userInfo.pay_point || 0}}</view>
+         </view>
+         <view class='item' data-url='/pages/user_paypoint/index?type=3' bindtap='goPages'>
+            <view>重消积分</view>
+            <view class='num'>{{userInfo.repeat_point || 0}}</view>
          </view>
       </view>
       <view class='myOrder'>
@@ -77,21 +81,76 @@
            </view>
         </view>
       </view>
-      <view class='myService'>
-         <view class='title acea-row row-middle'>我的服务</view>
-         <view class='serviceList acea-row row-middle'>
-            <view class='item' wx:for="{{MyMenus}}" wx:key='index' bindtap='goPages' data-url='{{item.url}}' wx:if="{{item.url!='#' && item.url!='/pages/admin/index' && item.url!='/pages/service/index'}}">
-              <view class='pictrue'><image src='{{item.pic}}'></image></view>
-              <view>{{item.name}}</view>
-            </view>
-            <button class='item' open-type='contact' hover-class='none'>
-              <view class='pictrue'><image src='/images/customer.png'></image></view>
-              <view>联系客服</view>
-            </button>
+      <view class="myOrder1">
+         <view class="title">
+               <view class="title1"  data-url='/pages/finance/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/1a20b202009121458414680.png'></image></view>
+                  <view class="title1-2">财富中心</view>
+                  <view class="title1-3">查看我的财富<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_spread_user/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/53337202009121503024922.png'></image></view>
+                  <view class="title1-2">我的推广</view>
+                  <view class="title1-3">查看我的推广<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/payorder_list/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/4129e202009121505342947.png'></image></view>
+                  <view class="title1-2">消费统计</view>
+                  <view class="title1-3">查看消费订单<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_goods_collection/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/4b7e6202009121506516924.png'></image></view>
+                  <view class="title1-2">我的收藏</view>
+                  <view class="title1-3">查看我收藏的宝贝<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_address_list/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/29728202009121508195607.png'></image></view>
+                  <view class="title1-2">收货地址</view>
+                  <view class="title1-3">更改我的收货地址<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_coupon/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/b7346202009121513332615.png'></image></view>
+                  <view class="title1-2">我的抵扣券</view>
+                  <view class="title1-3" wx:if="{{userInfo.coupon_price>0}}" style="color:#f00;">金额：￥{{ userInfo.coupon_price }}<view class="iconfont icon-jiantou"></view></view>
+                  <view class="title1-3"  wx:else>查看我的抵扣券<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title" wx:if="{{userInfo.is_check==1}}">
+               <view class="title1"  data-url='/pages/order_cancellation/index' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/f27b0202009121513333690.png'></image></view>
+                  <view class="title1-2">订单核销</view>
+                  <view class="title1-3">扫码核销订单<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title" wx:if="{{userInfo.is_check==1}}">
+               <view class="title1"  data-url='/pages/admin/order_list/index?orderStatus=1' bindtap='goPages'>
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/83129202009121519556846.png'></image></view>
+                  <view class="title1-2">订单管理</view>
+                  <view class="title1-3">订单发货<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  bindtap="makePhone">
+                  <view class="title1-1"><image src='http://oss.dshqfsc.com/65ceb202009121522185618.png'></image></view>
+                  <view class="title1-2">联系客服</view>
+                  <view class="title1-3"><view class="iconfont icon-jiantou"></view></view>
+               </view>
          </view>
       </view>
    </view>
-   <image src='/images/support.png' class='support'></image>
+   <view class="foot">
+	  <view class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</view>
+	</view>
 </view> 
 
 <authorize bind:onLoadFun='onLoadFun' isGoIndex='{{isGoIndex}}' iShidden="{{iShidden}}" isAuto="{{isAuto}}"></authorize>

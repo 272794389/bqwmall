@@ -23,7 +23,7 @@
                    circular="{{circular}}" interval="{{interval}}" duration="{{duration}}" indicator-color="#999" indicator-active-color="#FFBA00">
             <swiper-item wx:if="{{fastList.length}}">
               <block wx:for="{{fastList}}" wx:key="index">
-               <navigator url=''>
+               <navigator url='/pages/goods_details_store/index?sid={{item.id}}&title={{item.cate_name}}'>
                   <view class='item' data-index='{{index}}'>
                      <view class='pictrue'><image  src='{{item.pic}}'></image></view>
                      <view>{{item.cate_name}}</view>
@@ -33,26 +33,32 @@
             </swiper-item>
             <swiper-item wx:if="{{sfastList.length}}">
               <block wx:for="{{sfastList}}" wx:key="index">
-                <view class='item' data-index='{{index}}'>
-                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
-                  <view>{{item.cate_name}}</view>
-                </view>
+                 <navigator url='/pages/goods_details_store/index?sid={{item.id}}&title={{item.cate_name}}'>
+                    <view class='item' data-index='{{index}}'>
+                      <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                      <view>{{item.cate_name}}</view>
+                    </view>
+                 </navigator>
               </block> 
             </swiper-item>
             <swiper-item wx:if="{{tfastList.length}}">
               <block wx:for="{{tfastList}}" wx:key="index">
-                <view class='item' data-index='{{index}}'>
-                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
-                  <view>{{item.cate_name}}</view>
-                </view>
+               <navigator url='/pages/goods_details_store/index?sid={{item.id}}&title={{item.cate_name}}'>
+                    <view class='item' data-index='{{index}}'>
+                      <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                      <view>{{item.cate_name}}</view>
+                    </view>
+                 </navigator>
               </block> 
             </swiper-item>
             <swiper-item wx:if="{{ffastList.length}}">
               <block wx:for="{{ffastList}}" wx:key="index">
-                <view class='item' data-index='{{index}}'>
-                  <view class='pictrue'><image  src='{{item.pic}}'></image></view>
-                  <view>{{item.cate_name}}</view>
-                </view>
+                <navigator url='/pages/goods_details_store/index?sid={{item.id}}&title={{item.cate_name}}'>
+                    <view class='item' data-index='{{index}}'>
+                      <view class='pictrue'><image  src='{{item.pic}}'></image></view>
+                      <view>{{item.cate_name}}</view>
+                    </view>
+                 </navigator>
               </block> 
             </swiper-item>
         </swiper>
@@ -117,7 +123,7 @@
             </view>
           </view>
       </view>
-      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多精挑细选商品  ></navigator>
+      <navigator class='morestyle' url='/pages/wgoods_list/goods_list'>去看更多精挑细选商品  ></navigator>
     </view>
     <view class='noCommodity' wx:else>
         <view class='pictrue'><image src='/images/noShopper.png'></image></view>
@@ -139,7 +145,7 @@
             </view>
           </view>
       </view>
-      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多精挑细选商品  ></navigator>
+       <navigator class='morestyle' url='/pages/cgoods_list/goods_list'>去看更多本地优惠套餐  ></navigator>
     </view>
     <view class='noCommodity' wx:else>
         <view class='pictrue'><image src='/images/noShopper.png'></image></view>
@@ -161,7 +167,7 @@
             </view>
           </view>
       </view>
-      <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多积分兑换商品  ></navigator>
+      <navigator class='morestyle' url='/pages/goods_list/goods_list'>去看更多积分兑换商品  ></navigator>
     </view>
     <view class='noCommodity' wx:else>
         <view class='pictrue'><image src='/images/noShopper.png'></image></view>
@@ -186,7 +192,7 @@
 			      </view>
 			    </view>
 		 </view>
-     <navigator class='morestyle' url='/pages/first-new-product/index?type=1'>去看更多周边优惠商家  ></navigator>
+     <navigator class='morestyle' url='/pages/goods_details_store/index'>去看更多周边优惠商家  ></navigator>
 	 </view>
    <view class='noCommodity' wx:else>
         <view class='pictrue'><image src='/images/noShopper.png'></image></view>

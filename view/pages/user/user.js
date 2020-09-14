@@ -33,7 +33,14 @@ Page({
       title:'您未获得推广权限'
     }
   },
-
+/**
+   * 拨打电话
+  */
+ makePhone: function () {
+  wx.makePhoneCall({
+    phoneNumber: '08596888801'
+  })
+},
   close:function(){
     this.setData({ switchActive:false});
   },

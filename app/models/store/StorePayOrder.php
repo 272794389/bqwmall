@@ -239,7 +239,7 @@ class StorePayOrder extends BaseModel
      */
     public static function jsPay($orderInfo)
     {
-        return MiniProgramService::jsPay(WechatUser::uidToOpenid($orderInfo['uid'], 'openid'),$orderInfo['order_id'],$orderInfo['pay_amount'],'user_pay','商家消费');
+        return MiniProgramService::jsPay(WechatUser::uidToOpenid($orderInfo['uid']),$orderInfo['order_id'],$orderInfo['pay_amount'],'user_pay','商家消费');
     }
 
     /**

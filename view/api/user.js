@@ -31,6 +31,14 @@ export function getUserInfo(){
 }
 
 /**
+ * 获取余额信息
+ * 
+*/
+export function getBalance(){
+  return request.get('user/balance');
+}
+
+/**
  * 修改用户信息
  * @param object
 */
@@ -80,6 +88,11 @@ export function spreadPeople(data){
   return request.post('spread/people',data);
 }
 
+
+export function getSpreadShop(data){
+  return request.post('spread/shop',data);
+}
+
 /**
  * 
  * 推广佣金明细
@@ -88,6 +101,43 @@ export function spreadPeople(data){
 */
 export function spreadCommission(type,data){
   return request.get('spread/commission/'+type,data);
+}
+
+/**
+ * 
+ * 余额提现明细
+ * @param int type 
+ * @param object data
+*/
+export function getWithdrawInfo(type,data){
+  return request.get('extract/withdraw/'+type,data);
+}
+
+/**
+ * 
+ * 余额提现总和
+ * @param int type
+*/
+export function getWithdrawStatic(type){
+  return request.get('extract/withdrawStatic/'+type);
+}
+/**
+ * 
+ * 消费记录明细
+ * @param int type 
+ * @param object data
+*/
+export function getPayOrderInfo(type,data){
+  return request.get('extract/payorderinfo/'+type,data);
+}
+
+/**
+ * 
+ * 消费统计
+ * @param 
+*/
+export function getPayInfo(){
+  return request.get('payinfo');
 }
 
 /**
@@ -114,6 +164,14 @@ export function spreadOrder(data){
 */
 export function extractCash(data){
   return request.post('extract/cash',data)
+}
+
+/**
+ * 货款提现申请
+ * @param object data
+*/
+export function postHuoCashInfo(data){
+  return request.post('extract/huo_cash',data)
 }
 
 /**
@@ -234,6 +292,21 @@ export function setSignIntegral(){
 export function getCommissionInfo(q, types) {
   return request.get("spread/commission/" + types, q);
 }
+
+/*
+ * 余额资金明细（types|0=全部,1=消费,2=充值,3=返佣,4=提现）
+ * */
+export function getPayLog(q, types) {
+  return request.get("spread/yurecord/" + types, q);
+}
+
+/*
+ * 货款明细（types|0=全部,1=支出,2=消费）
+ * */
+export function getPayHuokuanLog(q, types) {
+  return request.get("spread/huo_record/" + types, q);
+}
+
 /*
  * 签到用户信息
  * */
@@ -275,4 +348,34 @@ export function getBrokerageRank(q) {
 */
 export function getRechargeApi() {
   return request.get('recharge/index')
+}
+
+/**
+ * 
+ * 购物积分明细
+ * @param int type 
+ * @param object data
+*/
+export function getPayGiveLog(data,type){
+  return request.get('spread/give_record/'+type,data);
+}
+
+/**
+ * 
+ * 消费积分明细
+ * @param int type 
+ * @param object data
+*/
+export function getPayPointLog(data,type){
+  return request.get('spread/paypoint_record/'+type,data);
+}
+
+/**
+ * 
+ * 重消积分明细
+ * @param int type 
+ * @param object data
+*/
+export function getPayRepointLog(data,type){
+  return request.get('spread/repoint_record/'+type,data);
 }

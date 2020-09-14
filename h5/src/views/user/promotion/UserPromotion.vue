@@ -10,12 +10,12 @@
       <div class="num">{{ userInfo.now_money || 0 }}</div>
       <div class="profit acea-row row-between-wrapper">
         <div class="item">
-          <div>昨日收益</div>
-          <div class="money">{{ userInfo.yesterDay || 0 }}</div>
+          <div>累计收入</div>
+          <div class="money">{{ userInfo.in_amount || 0 }}</div>
         </div>
         <div class="item">
-          <div>累积已提</div>
-          <div class="money">{{ userInfo.extractTotalPrice || 0 }}</div>
+          <div>累计使用</div>
+          <div class="money">{{ userInfo.out_amount || 0 }}</div>
         </div>
       </div>
     </div>

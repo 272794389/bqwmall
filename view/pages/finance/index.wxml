@@ -1,0 +1,66 @@
+<navbar parameter='{{parameter}}'></navbar>
+<view class='user'>
+      <view class="myOrder1">
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_money/index' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的余额</view>
+                  <view class="title1-3">￥{{ userInfo.now_money || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title" wx:if="userInfo.store_name!=''">
+               <view class="title1"  data-url='/pages/user_huokuan/index' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的货款</view>
+                  <view class="title1-3">￥{{ userInfo.huokuan || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_paypoint/index?type=1' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的购物积分</view>
+                  <view class="title1-3">￥{{ userInfo.give_point || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_paypoint/index?type=2' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的消费积分</view>
+                  <view class="title1-3">￥{{ userInfo.pay_point || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_paypoint/index?type=3' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的重消积分</view>
+                  <view class="title1-3">￥{{ userInfo.repeat_point || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title" wx:if="{{ userInfo.stockAmount>0}}">
+               <view class="title1" >
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的股权</view>
+                  <view class="title1-3">{{ userInfo.stockAmount || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+         <view class="title">
+               <view class="title1"  data-url='/pages/user_coupon/index' bindtap='goPages'>
+                  <view class="title1-1"></view>
+                  <view class="title1-2">我的抵扣券</view>
+                  <view class="title1-3">￥{{ userInfo.coupon_price || 0 }}<view class="iconfont icon-jiantou"></view></view>
+               </view>
+         </view>
+        
+      </view>
+   </view>
+   <view class="foot">
+	  <view class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</view>
+	</view>
+
+<authorize bind:onLoadFun='onLoadFun' isGoIndex='{{isGoIndex}}' iShidden="{{iShidden}}" isAuto="{{isAuto}}"></authorize>
+<generalWindow 
+  generalActive='{{generalActive}}' 
+  generalContent='{{generalContent}}' 
+  bind:generalWindow='generalWindow'
+  wx:if='{{generalContent}}'
+></generalWindow>

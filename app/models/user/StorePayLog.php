@@ -270,6 +270,20 @@ class StorePayLog extends BaseModel
     
     }
     
+    /**
+     * 余额累计
+     * @param $uid
+     * @return float
+     */
+    public static function getUseMoneySum($uid,$flag)
+    {
+        if($flag==1){//支出
+            return self::where('uid', $uid)->where('use_money', '<',0)->sum('use_money');
+        }else{//收入
+            return self::where('uid', $uid)->where('use_money', '>',0)->sum('use_money');
+        }
+    
+    }
     
     
 }

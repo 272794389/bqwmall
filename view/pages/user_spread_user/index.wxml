@@ -2,18 +2,18 @@
 <view class='my-promotion'>
     <view class="header">
         <view class='name acea-row row-center-wrapper'>
-            <view>当前佣金</view>
+            <view>当前可用余额</view>
             <navigator url='/pages/user_spread_money/index?type=1' hover-class="none" class='record'>提现记录<text class='iconfont icon-xiangyou'></text></navigator>
         </view>
-        <view class='num'>{{userInfo.brokerage_price}}</view>
+        <view class='num'>{{userInfo.now_money}}</view>
         <view class='profit acea-row row-between-wrapper'>
             <view class='item'>
-              <view>昨日收益</view>
-              <view class='money'>{{userInfo.yesterDay}}</view>
+              <view>累计收入</view>
+              <view class='money'>{{userInfo.in_amount || 0}}</view>
             </view>
             <view class='item'>
-              <view>累积已提</view>
-              <view class='money'>{{userInfo.extractTotalPrice}}</view>
+              <view>累计使用</view>
+              <view class='money'>{{userInfo.out_amount || 0}}</view>
             </view>
         </view>
     </view>
@@ -27,10 +27,11 @@
             <text class='iconfont icon-tongji'></text>
             <view>推广人统计</view>
         </navigator>
-        <navigator url='/pages/user_spread_money/index?type=2' hover-class="none" class='item acea-row row-center-wrapper row-column'>
+        <navigator url='/pages/shoppromoter_list/index' hover-class="none" class='item acea-row row-center-wrapper row-column'>
             <text class='iconfont icon-qiandai'></text>
-            <view>佣金明细</view>
+            <view>推广商家统计</view>
         </navigator>
+        <!--
         <navigator url='/pages/promoter-order/index' hover-class="none" class='item acea-row row-center-wrapper row-column'>
             <text class='iconfont icon-dingdan'></text>
             <view>推广人订单</view>
@@ -43,6 +44,7 @@
             <text class='iconfont icon-paihang'></text>
             <view>佣金排行</view>
         </navigator>
+        -->
     </view>
 </view>
 <authorize bind:onLoadFun='onLoadFun'></authorize>

@@ -1,0 +1,22 @@
+.navbar .header {height: 96rpx;font-size: 30rpx;color: #050505;background-color: #fff;padding-right: 95rpx;}
+.navbar .header .item {position: relative;margin: 0 25rpx;}
+.navbar .header .item.on:before {position: absolute;width: 60rpx;height: 5rpx;background-repeat: no-repeat;content: "";background-image: linear-gradient(to right, #ff3366 0%, #ff6533 100%);bottom: -10rpx;left:50%;margin-left:-28rpx;}
+.navbar{position:fixed;background-color:#fff;top:0;left:0;z-index:999;width:100%;}
+.navbar .navbarH{position:relative;}
+.navbar .navbarH .navbarCon{position:absolute;bottom:0;height:100rpx;width:100%;}
+.icon-xiangzuo{color:#000;font-weight:bold;position:fixed;font-size:40rpx;width:100rpx;height:56rpx;line-height:54rpx;z-index:1000;left:33rpx;}
+
+.paybox{background: #fff;width: 96%;margin-left: 2%; margin-top: 50rpx;box-shadow: 10rpx 10rpx 20rpx #ccc;float:left;}
+.pay_box{width: 90%; margin-left: 5%;float:left;}
+.shop_name{line-height: 50rpx;margin-top: 30rpx;font-size: 40rpx;}
+.shop_amount{line-height: 100rpx;border-bottom: 1rpx solid #efefef;font-size: 50rpx;margin-top:20rpx;margin-bottom:50rpx;height: 100rpx;}
+.pay_btn{width:100%;margin-left:0;text-align: center;font-size: 40rpx;
+  line-height: 80rpx;
+  background: #ee450a;
+  margin-left: 2%;
+  margin-top: 20rpx;
+  margin-bottom: 50rpx;
+  color: #fff;
+  border-radius: 10rpx;}
+.shop_amount span{width:10%;}
+.inputystyle{width:90%;line-height: 150rpx;float: left; height: 100rpx; }

@@ -11,6 +11,14 @@
         <view hidden='{{currentTab != 0}}' class='list'>
           <form bindsubmit="subCash" report-submit='true'>
              <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>提现银行</view>
+                 <view class='input'><input disabled="disabled" value="中国农业银行" placeholder-class='placeholder' name="bankname"></input></view>
+             </view>
+             <view class='item acea-row row-between-wrapper'>
+                 <view class='name'>支行名称</view>
+                 <view class='input'><input placeholder='请输入农行支行名称' placeholder-class='placeholder' name="bank_address"></input></view>
+             </view>
+             <view class='item acea-row row-between-wrapper'>
                  <view class='name'>持卡人</view>
                  <view class='input'><input placeholder='请输入持卡人姓名' placeholder-class='placeholder' name="name"></input></view>
              </view>
@@ -18,6 +26,7 @@
                  <view class='name'>卡号</view>
                  <view class='input'><input type='number' placeholder='请填写卡号' placeholder-class='placeholder' name="cardnum"></input></view>
              </view>
+             <!--
               <view class='item acea-row row-between-wrapper'>
                  <view class='name'>银行</view>
                  <view class='input'>
@@ -27,11 +36,12 @@
                      </picker>
                  </view>
              </view>
+             -->
              <view class='item acea-row row-between-wrapper'>
                  <view class='name'>提现</view>
                  <view class='input'><input placeholder='最低提现金额{{minPrice}}' placeholder-class='placeholder' name="money" type='digit'></input></view>
              </view>
-             <view class='tip'>当前可提现金额: {{userInfo.brokerage_price}}</view>
+             <view class='tip'>当前可提现金额: {{userInfo.now_money}}，提现费率：{{ withdraw_fee }}%</view>
              <button formType="submit" class='bnt bg-color'>提现</button>
           </form>  
         </view>

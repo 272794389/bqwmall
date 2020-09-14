@@ -183,6 +183,16 @@ export function express(uni) {
   return request.get("order/express/" + uni);
 }
 
+
+/**
+ * 获取消费订单详情
+ * @param int id
+ * 
+*/
+export function getOrder(id){
+  return request.get('get_order/' + id, {}, { noAuth : true });
+}
+
 /**
  * 计算订单金额
  * @param key
@@ -191,4 +201,20 @@ export function express(uni) {
  */
 export function postOrderComputed(key, data) {
   return request.post("/order/computed/" + key, data);
+}
+
+/**
+ * 计算消费订单金额
+ * @param string cartId
+*/
+export function postPayOrderComputed(data){
+  return request.post('computed',data);
+}
+
+/**
+ * 消费订单支付
+ * @param string datga
+*/
+export function payOrder(data){
+  return request.post('pay_order',data);
 }

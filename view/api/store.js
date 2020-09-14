@@ -70,6 +70,23 @@ export function getProductDetail(id){
 }
 
 /**
+ * 获取商家详情
+ * @param int id
+ * 
+*/
+export function getStoreDetail(id){
+  return request.get('store/sdetail/' + id, {}, { noAuth : true });
+}
+
+/**
+ * 新增消费订单
+ * @param object data
+*/
+export function shopPay(data){
+  return request.post('shoppay',data);
+}
+
+/**
  * 产品分享二维码 推广员
  * @param int id
 */
@@ -95,6 +112,13 @@ export function getReplyConfig(id){
   return request.get('reply/config/'+id);
 } 
 
+/*
+ * 商品小分类
+ * */
+export function getDetailCategory(sid) {
+  return request.get("dcategory/" + sid, {}, { noAuth:true});
+}
+
 /**
  * 获取分类列表
  * 
@@ -109,6 +133,14 @@ export function getCategoryList(){
 */
 export function getProductslist(data){
   return request.get('products',data,{noAuth:true});
+}
+
+/**
+ * 获取网店产品列表
+ * @param object data
+*/
+export function getGoodsProducts(data){
+  return request.get('goods_products',data,{noAuth:true});
 }
 
 /**

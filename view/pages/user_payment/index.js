@@ -15,7 +15,7 @@ Page({
       'title': '余额充值',
       'color': false,
     },
-    navRecharge: ['账户充值','佣金转入'],
+    navRecharge: ['账户充值','货款转入'],
     active:0,
     number:'',
     focus:true,

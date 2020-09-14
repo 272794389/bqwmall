@@ -35,7 +35,7 @@
         <swiper-slide>
 		      <router-link tag="a" target="_blank"
 		        :to="{
-	               path: '/cgoods_list',
+	               path: '/store_list',
 	               query: { sid: item.id,cid:0, title: item.cate_name }
 	             }"
 		        class="item"
@@ -49,7 +49,7 @@
 		   <swiper-slide v-if="info.sfastList.length > 0">
 		      <router-link tag="a" target="_blank" 
 		         :to="{
-	               path: '/cgoods_list',
+	               path: '/store_list',
 	               query: { sid: item.id,cid:0, title: item.cate_name }
 	             }"
 		        class="item"
@@ -63,7 +63,7 @@
            <swiper-slide v-if="info.tfastList.length > 0">
 		      <router-link tag="a" target="_blank" 
 		        :to="{
-	               path: '/cgoods_list',
+	               path: '/store_list',
 	               query: { sid: item.id,cid:0, title: item.cate_name }
 	             }"
 		        class="item"
@@ -77,7 +77,7 @@
            <swiper-slide v-if="info.ffastList.length > 0">
 		      <router-link tag="a" target="_blank" 
 		        :to="{
-	               path: '/cgoods_list',
+	               path: '/store_list',
 	               query: { sid: item.id,cid:0, title: item.cate_name }
 	             }"
 		        class="item"

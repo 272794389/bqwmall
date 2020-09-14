@@ -1,6 +1,6 @@
 // pages/commission-details/index.js
 
-import { spreadCommission, spreadCount} from '../../api/user.js';
+import {getWithdrawInfo, getWithdrawStatic} from '../../api/user.js';
 
 Page({
 
@@ -11,7 +11,7 @@ Page({
     parameter: {
       'navbar': '1',
       'return': '1',
-      'title': '佣金明细',
+      'title': '提现记录',
       'color': true,
       'class': '0'
     },
@@ -45,9 +45,9 @@ Page({
   onShow: function () {
     var type = this.data.type;
     if (type == 1) {
-      this.setData({ 'parameter.title': '提现记录', name: '提现总额', recordType: 4 });
+      this.setData({ 'parameter.title': '余额提现记录', name: '提现总额', recordType: 1 });
     } else if (type == 2) {
-      this.setData({ 'parameter.title': '佣金记录', name: '佣金明细', recordType: 3 });
+      this.setData({ 'parameter.title': '货款提现记录', name: '提现总额', recordType: 2 });
     } else {
       wx.showToast({
         title: '参数错误',
@@ -72,7 +72,7 @@ Page({
     var recordList = that.data.recordList;
     var recordListNew = [];
     if (status == true) return ;
-    spreadCommission(recordType,{page:page,limit:limit}).then(res=>{
+    getWithdrawInfo(recordType,{page:page,limit:limit}).then(res=>{
       var len = res.data.length;
       var recordListData = res.data;
       recordListNew = recordList.concat(recordListData);
@@ -81,8 +81,8 @@ Page({
   },
   getRecordListCount:function(){
     var that = this;
-    spreadCount(that.data.recordType).then(res=>{
-      that.setData({ recordCount: res.data.count });
+    getWithdrawStatic(that.data.recordType).then(res=>{
+      that.setData({ recordCount: res.data.withdrawAmount });
     });
   },
   /**

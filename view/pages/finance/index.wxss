@@ -1,0 +1,14 @@
+.myOrder1{margin-top:15rpx;background:#fff;float: left;width: 100%;}
+.myOrder1{margin-top:15rpx;background:#fff;float: left;width: 100%;}
+.myOrder1 .title{width:98%;height: 80rpx;border-bottom: 1rpx solid #e5e5e5;padding-top: 8rpx;margin:auto;}
+.myOrder1 .title1{width:96%;margin:2%;display:block;float:left;font-size:26rpx;}
+.myOrder1 .title1-1{width:8%;float:left;}
+.myOrder1 .title1-1 image{width:35rpx;height:35rpx;}
+.myOrder1 .title1-2{width:42%;float:left;color:#333;}
+.myOrder1 .title1-3{width:50%;float:right;color:#999;text-align: right;}
+.myOrder1 .title1 .title1-3 .iconfont{font-size:25rpx;margin-left:7rpx;float: right; margin-top: 8rpx;}
+.foot{background-color: #F8F8F8;text-align: center; width: 100%;overflow: hidden;padding-bottom: 30rpx;padding-top: 30rpx;}
+.foot .foot1{width: 75%; margin: 0 auto;background: none;}
+.foot .foot1 .foot2{border-right: 1rpx solid #dcdcdc;font-size: 25rpx; padding-left: 20rpx; padding-right:20rpx;}
+.foot .foot1 .foot2:last-child{border-right: 0 none;}
+.foot .foot3{text-align: center;line-height:50rpx;color: #a2a2a2;font-size: 20rpx;padding-top: 10rpx;}

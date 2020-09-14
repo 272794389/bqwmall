@@ -1,6 +1,6 @@
 // pages/coupon-list/index.js
 
-import { getUserCoupons } from '../../api/api.js';
+import { getCouponsList } from '../../api/api.js';
 
 const app=getApp();
 Page({
@@ -38,7 +38,7 @@ Page({
   */
   getUseCoupons:function(){
     var that = this;
-    getUserCoupons(0).then(res=>{
+    getCouponsList(0).then(res=>{
       that.setData({ loading: true, couponsList: res.data });
     })
   },

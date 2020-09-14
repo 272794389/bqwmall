@@ -204,7 +204,9 @@ class UserController
             $user['switchUserInfo'][] = $request->user();
         }
         $user['subscribe'] = WechatUser::where('uid', $request->uid() ?? 0)->value('subscribe') ? true : false;
-         
+        
+        $user['in_amount'] = StorePayLog::getUseMoneySum($uid,0);//余额总收入
+        $user['out_amount'] = StorePayLog::getUseMoneySum($uid,1);//余额总支出
         //统计我的抵扣券金额
         $user['coupon_price']=GoodsCouponUser::where('uid',$request->uid())->where('is_fail',0)->value('sum(coupon_price-hamount)');
         return app('json')->successful($user);

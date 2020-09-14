@@ -1,0 +1,62 @@
+.navbar .header {height: 96rpx;font-size: 30rpx;color: #050505;background-color: #fff;padding-right: 95rpx;}
+.navbar .header .item {position: relative;margin: 0 25rpx;}
+.navbar .header .item.on:before {position: absolute;width: 60rpx;height: 5rpx;background-repeat: no-repeat;content: "";background-image: linear-gradient(to right, #ff3366 0%, #ff6533 100%);bottom: -10rpx;left:50%;margin-left:-28rpx;}
+.navbar{position:fixed;background-color:#fff;top:0;left:0;z-index:999;width:100%;}
+.navbar .navbarH{position:relative;}
+.navbar .navbarH .navbarCon{position:absolute;bottom:0;height:100rpx;width:100%;}
+.icon-xiangzuo{color:#000;font-weight:bold;position:fixed;font-size:40rpx;width:100rpx;height:56rpx;line-height:54rpx;z-index:1000;left:33rpx;}
+.storeBox { width: 100%; background-color: #fff; padding: 0 30rpx;float:left;}
+.storeBox-box {width: 100%;  height: auto;padding: 23rpx 0;float: left;}
+.store-phone{float:right;margin-left:10rpx;}
+.store-name {
+  color: #282828;
+  font-size: 50rpx;
+  font-weight: 800;
+  line-height: 60rpx;
+  padding-top: 20rpx;
+}
+.pingfen{float:left;width:100%;border-bottom: 1rpx solid #eee;color: #282828;padding-bottom: 20rpx;}
+.activity {
+  height: 40rpx;
+  padding-left: 20rpx;
+  border: 1rpx solid #f2857b;
+  color: #e93323;
+  font-size: 24rpx;
+  line-height: 40rpx;
+  position: relative;
+  margin: 0 15rpx 1rpx 0;
+  width: 40%;
+  float: left;
+  padding-left: 20rpx;
+  margin-right: 5%;
+  margin-bottom: 20rpx;
+}
+.activity:before {
+  content: " ";
+  position: absolute;
+  width: 7rpx;
+  height: 10rpx;
+  border-radius: 0 7rpx 7rpx 0;
+  border: 1px solid #f2857b;
+  background-color: #fff;
+  bottom: 50%;
+  left: -2rpx;
+  margin-bottom: -7rpx;
+  border-left-color: #fff;
+}
+.activity:after {
+  content: " ";
+  position: absolute;
+  width: 7rpx;
+  height: 10rpx;
+  border-radius: 7rpx 0 0 7rpx;
+  border: 1px solid #f2857b;
+  background-color: #fff;
+  right: -2rpx;
+  bottom: 50%;
+  margin-bottom: -5rpx;
+  border-right-color: #fff;
+}
+.service{margin-top:15rpx; margin-bottom: 10rpx;padding-bottom: 15rpx;}
+.service_label{background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABwklEQVQ4T42TsUscQRSH57295kAksbJIJVgIm9t5ewTksLXQ2uJKbULSieQ/SJvYJpAibQLaamEbD4vMvBkUIgTSJEWKYIIIW82+MMuurBvJ3RYLs29+3zzefgOq83jvH4nIuojsK6WSuhwAYA8ATrIs+9GOQHvBzPsA8DyEkA+Hwy/tmjFmJUkSKyJviGivqd0CmFlEZDPP8+NuV+21tXYDAI6IqMpWL2vtOEmSiyzLLv4Xbmre+zSEkOZ5/gEmk8lCv9//RkQPZgk3e5j5T1EUS8DMTxFxMuvpxpgBIi4g4q+yLEfgnLvWWs/Pcrr3fiwiu4i4PRgMLmM2dnBDRHPTANbal4i40uv1ttM0vYn7YzYCromo6oCZfxLRYhfmnDsUke9EtNv57VUHv4noYQ14opR6T0Rpa1iXAPBOa/26C47ZOIOdEMJZIw4z30KY+SqKpbX+2A3XYq1Cre5XrXW/2WSMGSLiZ6XUGhGd3jcf51wBAMuVSFFhETmZZmEDqm1cj0rfURkRH0/zIVpYluX5HZVb5DEAvEXEtS6oDn4SkWdR4X8uU/OhVnsLAF6JCFYXBqAUkRdFURyMRqOr9kz+Au2z5ibdus0rAAAAAElFTkSuQmCC');background-size: 30rpx;background-repeat: no-repeat; padding-left: 40rpx;background-position-y: center;width: 33%;
+    line-height: 40rpx;color: #282828;float:left;}
