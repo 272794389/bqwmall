@@ -82,7 +82,8 @@ class StorePayOrder extends BaseModel
         //计算优惠券优惠金额
         //判断该商家是否支持抵扣券抵扣
         $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
-        ->whereFindinSet('product_id', $store_id)
+        //->whereFindinSet('product_id', $store_id)
+        ->where('belong',$storeInfo['belong'])
         ->field('*')
         ->order('coupon_price', 'DESC')
         ->select();
@@ -136,7 +137,8 @@ class StorePayOrder extends BaseModel
         //计算优惠券优惠金额
         //判断该商家是否支持抵扣券抵扣
         $couponList = StoreCoupon::where('status',1)->where('is_del',0)->where('use_min_price','<=',$total_amount)
-        ->whereFindinSet('product_id', $orderinfo['store_id'])
+        //->whereFindinSet('product_id', $orderinfo['store_id'])
+        ->where('belong',$storeInfo['belong'])
         ->field('*')
         ->order('coupon_price', 'DESC')
         ->select();
@@ -389,7 +391,7 @@ class StorePayOrder extends BaseModel
                     }else if($i==2&&$feeRate['rec_t']>0){//第三代推荐人
                         $use_amount = $runamount*$feeRate['rec_t']/100;
                     }
-                    if($use_amount>0){
+                    if($use_amount>0.012){
                         $fee = $use_amount*$feeRate['fee_rate']/100;
                         $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                         $use_amount = $use_amount - $fee - $repeat_point;
@@ -448,7 +450,7 @@ class StorePayOrder extends BaseModel
             if($res){
                 $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
             }
-            if($res&&$use_amount>0){
+            if($res&&$use_amount>0.012){
                 $res = StorePayLog::expend($uinfo['uid'], $orderInfo['id'], 0, $use_amount, 0, 0, 0,$repeat_point,$fee, '商家推荐奖励');
             }
             if($uinfo['phone']&&$sms_open>0){//推荐奖励
@@ -488,7 +490,7 @@ class StorePayOrder extends BaseModel
                 $fee = $use_amount*$feeRate['fee_rate']/100;
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $districtAmount = $use_amount - $fee - $repeat_point;
-                if($res&&$districtAmount>0){
+                if($res&&$districtAmount>0.012){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
                     $uinfo = User::getUserInfo($districtInfo['agent_uid']);
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
@@ -507,10 +509,10 @@ class StorePayOrder extends BaseModel
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
-                if($res&&$districtAmount>0){
+                if($res&&$districtAmount>0.012){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
-                if($res&&$districtAmount>0){
+                if($res&&$districtAmount>0.012){
                     $res = StorePayLog::expend($districtInfo['agent_uid'], $orderInfo['id'], 0, $districtAmount, 0, 0, 0,$repeat_point,$fee, '地区代理商奖励');
                 }
             }
@@ -519,7 +521,7 @@ class StorePayOrder extends BaseModel
                 $fee = $use_amount*$feeRate['fee_rate']/100;
                 $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                 $cityAmount = $use_amount - $fee - $repeat_point;
-                if($res&&$cityAmount){
+                if($res&&$cityAmount>0.012){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
                     $uinfo = User::getUserInfo($cityInfo['agent_uid']);
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
@@ -538,10 +540,10 @@ class StorePayOrder extends BaseModel
                         'remark' => '感谢您的支持'
                     ], Url::buildUrl('/user/account')->suffix('')->domain(true)->build());
                 }
-                if($res&&$cityAmount){
+                if($res&&$cityAmount>0.012){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'repeat_point', $repeat_point, 'uid');
                 }
-                if($res&&$cityAmount){
+                if($res&&$cityAmount>0.012){
                     $res = StorePayLog::expend($cityInfo['agent_uid'], $orderInfo['id'], 0, $cityAmount, 0, 0, 0,$repeat_point,$fee, '城市代理商奖励');
                 }
             }

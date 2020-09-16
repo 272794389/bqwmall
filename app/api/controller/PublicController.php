@@ -365,14 +365,16 @@ class PublicController
         $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');
         //获取商家抵扣券
         $couponList = StoreCoupon::where('status',1)->where('is_del',0)
-        ->whereFindinSet('product_id', $id)
+        //->whereFindinSet('product_id', $id)
+        ->where('belong',$storeInfo['belong'])
         ->field('*')
         ->order('coupon_price', 'asc')
         ->limit(2)
         ->select();
         //获取商家抵扣券
         $acouponList = StoreCoupon::where('status',1)->where('is_del',0)
-        ->whereFindinSet('product_id', $id)
+        //->whereFindinSet('product_id', $id)
+        ->where('belong',$storeInfo['belong'])
         ->field('*')
         ->order('coupon_price', 'asc')
         ->select();
