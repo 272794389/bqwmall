@@ -102,9 +102,9 @@ class SystemStore extends BaseModel
         $count = $model->count();
         if ($where['excel'] == 0) {
             $model = $model->page((int)$where['page'], (int)$where['limit']);
-            $data = ($data = $model->order('parent_id desc')->select()) && count($data) ? $data->toArray() : [];
-        }else{
             $data = ($data = $model->order('id desc')->select()) && count($data) ? $data->toArray() : [];
+        }else{
+            $data = ($data = $model->order('parent_id desc')->select()) && count($data) ? $data->toArray() : [];
         }
         
         //$data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
