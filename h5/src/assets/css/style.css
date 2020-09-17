@@ -1736,7 +1736,11 @@ border-radius:0.3rem;color:#fff;line-height:0.5rem;text-align:center;bottom:0.17
 .service_label{background-image:url('../images/dui.png');background-size: 0.3rem;background-repeat: no-repeat; padding-left: 0.4rem;background-position-y: center;width: 33%;
     line-height: 0.4rem;color: #282828;}
 .more_sy{background-image:url('../images/genduo.png');padding-left: .1rem;background-position-y: center;background-position-x: right;color: #2f77f1;width: 66%;float: left;font-size: 0.2rem; text-align: center;margin-left: 12%;margin-top: 0.2rem;background-repeat: no-repeat;}
-
+.font-img{background-image:url('../images/style.png');padding-left: .1rem;float: left;background-size:100% 100%;text-align: center;background-repeat: no-repeat;    width: .5rem;
+    height: .5rem;
+    margin-top: 0.05rem;
+    margin-right: 0.2rem;
+}
 
 
 

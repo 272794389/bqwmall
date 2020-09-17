@@ -2,10 +2,10 @@
   <div class="productList" ref="container">
     <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
-        <div class="samebox""><span @click="set_where(0)" class="on">选择分类</span></div>
-        <div class="input acea-row row-between-wrapper"  style="width: 4.4rem;">
+        <div class="samebox""><div class="font-img" @click="set_where(0)"></div></div>
+        <div class="input acea-row row-between-wrapper"  style="width: 5.4rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 3.48rem;"/>
+          <input placeholder="搜索商品信息" v-model="where.keyword"  style="width: 4.48rem;"/>
         </div>
         <div
           class="iconfont"
@@ -286,7 +286,7 @@ export default {
     padding: 0 .2rem;
     margin-top: 1.9rem;
 }
-.samebox{width: 2rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox{width: 0.8rem;height: 0.6rem;line-height: 0.6rem;}
 .samebox span{float: left; width: 1.6rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {

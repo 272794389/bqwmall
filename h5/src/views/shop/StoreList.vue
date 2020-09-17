@@ -4,9 +4,9 @@
      <form @submit.prevent="submitForm">
       <div class="search bg-color-red acea-row row-between-wrapper">
         <div class="samebox"">
-           <span @click="set_where(0)">分类</span>
+           <div class="font-img" @click="set_where(0)"></div>
            <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
-           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="max-width:1.7rem;width: auto;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
+           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="width: 0.9rem;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
            <CitySelect
               ref="cityselect"
               v-model="show2"
@@ -18,9 +18,9 @@
               area=""
             ></CitySelect>
         </div>
-        <div class="input acea-row row-between-wrapper"  style="width: 3.3rem;">
+        <div class="input acea-row row-between-wrapper"  style="width: 3.3rem;margin-right:0.5rem;">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商家信息" v-model="where.keyword"  style="width: 2.0rem;"/>
+          <input placeholder="搜索商家信息" v-model="where.keyword"  style="width: 2.3rem;"/>
         </div>
       </div>
     </form>
@@ -378,8 +378,8 @@ export default {
 </script>
 
 <style scoped>
-.samebox{width: 3.8rem;height: 0.6rem;line-height: 0.6rem;}
-.samebox span{float: left; width: 0.7rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
+.samebox{width: 3.0rem;height: 0.6rem;line-height: 0.6rem;}
+.samebox span{float: left; width: 0.9rem; color: #fff;  text-align: center; height: 0.4rem;line-height: 0.4rem; margin-top: 0.1rem; margin-right: 0.2rem;}
 .samebox .on{border: 1px solid #fff;border-radius: 0.1rem;}
 .noCommodity {
   border-top: 3px solid #f5f5f5;

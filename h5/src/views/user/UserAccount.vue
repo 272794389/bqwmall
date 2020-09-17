@@ -42,33 +42,8 @@
           <div class="pictrue"><img src="@assets/images/record3.png" /></div>
           <div>收入记录</div>
         </router-link>
-        <router-link class="item" :to="'/user/integral'">
-          <div class="pictrue"><img src="@assets/images/record4.png" /></div>
-          <div>积分中心</div>
-        </router-link>
       </div>
-      <div class="advert acea-row row-between-wrapper">
-        <router-link
-          class="item acea-row row-between-wrapper"
-          :to="'/user/sign'"
-        >
-          <div class="text">
-            <div class="name">签到领积分</div>
-            <div>赚积分抵现金</div>
-          </div>
-          <div class="pictrue"><img src="@assets/images/gift.png" /></div>
-        </router-link>
-        <router-link
-          class="item on acea-row row-between-wrapper"
-          :to="'/user/get_coupon'"
-        >
-          <div class="text">
-            <div class="name">领取优惠券</div>
-            <div>满减享优惠</div>
-          </div>
-          <div class="pictrue"><img src="@assets/images/money.png" /></div>
-        </router-link>
-      </div>
+      
       <!--
       <div class="list">
         <div class="item acea-row row-between-wrapper">

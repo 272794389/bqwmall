@@ -214,7 +214,7 @@ class UserBillController
                     $urlCode = $imageInfo['dir'];
                 } else $urlCode = $imageInfo['att_dir'];
                 if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
-                $siteUrlHttps = set_http_type($siteUrl, 0);
+                $siteUrlHttps = set_http_type($siteUrl, 1);
                 $filelink = [
                     'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
                     'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
