@@ -37,6 +37,13 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">选择时间：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input time-w" name="user_time" lay-verify="user_time"  id="user_time" placeholder=" - ">
+                                </div>
+                            </div>
+                            
+                            <div class="layui-inline">
                                 <div class="layui-input-inline">
                                     <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit="search" lay-filter="search">
                                         <i class="layui-icon layui-icon-search"></i>搜索</button>
@@ -141,6 +148,7 @@
     layList.search('search',function(where){
         layList.reload(where);
     });
+    layList.date('user_time');
     //excel下载
     layList.search('export',function(where){
         where.excel = 1;

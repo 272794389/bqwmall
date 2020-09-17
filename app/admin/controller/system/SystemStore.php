@@ -30,6 +30,7 @@ class SystemStore extends AuthController
             ['limit', 20],
             ['name', ''],
             ['parent_id', ''],
+            ['user_time', ''],
             ['excel', 0],
             ['type', $this->request->param('type')]
         ]);

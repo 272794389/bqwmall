@@ -89,12 +89,19 @@ class SystemStore extends BaseModel
             $model = $model->where('parent_id',$where['parent_id']);
         }
         
+        if ($where['user_time'] != '') {
+            list($startTime, $endTime) = explode(' - ', $where['user_time']);
+            $endTime = strtotime($endTime) + 24 * 3600;
+            $model = $model->where("add_time > " . strtotime($startTime) . " and add_time < " . $endTime);
+        }
+        
+        
         if (isset($where['type']) && $where['type'] != '' && ($data = self::setData($where['type']))) {
             $model = $model->where($data);
         }
         $count = $model->count();
         if ($where['excel'] == 0) $model = $model->page((int)$where['page'], (int)$where['limit']);
-        $data = ($data = $model->order('id desc')->select()) && count($data) ? $data->toArray() : [];
+        $data = ($data = $model->order('parent_id desc')->select()) && count($data) ? $data->toArray() : [];
         
        
         //$data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
