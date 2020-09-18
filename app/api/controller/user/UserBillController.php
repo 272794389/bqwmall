@@ -183,165 +183,201 @@ class UserBillController
             $siteUrl = sys_config('site_url');
             $routineSpreadBanner = sys_data('routine_spread_banner');
             if (!count($routineSpreadBanner)) return app('json')->fail('暂无海报');
-            if ($type == 1) {
-                //小程序
-                $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
-                $imageInfo = SystemAttachment::getInfo($name, 'name');
-                //检测远程文件是否存在
-                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
-                    $imageInfo = null;
-                    SystemAttachment::where(['name' => $name])->delete();
-                }
-                if (!$imageInfo) {
-                    $res = RoutineCode::getShareCode($user['uid'], 'spread', '', '');
-                    if (!$res) return app('json')->fail('二维码生成失败');
-                    $uploadType = (int)sys_config('upload_type', 1);
-                    $upload = new Upload($uploadType, [
-                        'accessKey' => sys_config('accessKey'),
-                        'secretKey' => sys_config('secretKey'),
-                        'uploadUrl' => sys_config('uploadUrl'),
-                        'storageName' => sys_config('storage_name'),
-                        'storageRegion' => sys_config('storage_region'),
-                    ]);
-                    $res = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
-                    if ($res === false) {
-                        return app('json')->fail($upload->getError());
+            
+            $userInfo = User::where('uid',$user['uid'])->find();
+            $i = 1;
+            if ($type == 1) { //小程序
+                if($userInfo['routine_imgurl']!=''){
+                    foreach ($routineSpreadBanner as $key => &$item) {
+                        if($i==1){
+                           $item['poster'] = $userInfo['routine_imgurl'];
+                        }else if($i==2){
+                           $item['poster'] = $userInfo['wx_imgurl']; 
+                        }
+                        $i +=1;
                     }
-                    $imageInfo = $upload->getUploadInfo();
-                    $imageInfo['image_type'] = $uploadType;
-                    SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
-                    RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'time' => time(), 'qrcode_url' => $imageInfo['dir']]);
-                    $urlCode = $imageInfo['dir'];
-                } else $urlCode = $imageInfo['att_dir'];
-                if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
-                $siteUrlHttps = set_http_type($siteUrl, 1);
-                $filelink = [
-                    'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
-                    'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
-                ];
-                if (!file_exists($filelink['Bold'])) return app('json')->fail('缺少字体文件Bold');
-                if (!file_exists($filelink['Normal'])) return app('json')->fail('缺少字体文件Normal');
-                foreach ($routineSpreadBanner as $key => &$item) {
-                    $posterInfo = '海报生成失败:(';
-                    $config = array(
-                        'image' => array(
-                            array(
-                                'url' => $urlCode,     //二维码资源
-                                'stream' => 0,
-                                'left' => 114,
-                                'top' => 790,
-                                'right' => 0,
-                                'bottom' => 0,
-                                'width' => 120,
-                                'height' => 120,
-                                'opacity' => 100
-                            )
-                        ),
-                        'text' => array(
-                            array(
-                                'text' => $user['nickname'],
-                                'left' => 250,
-                                'top' => 840,
-                                'fontPath' => $rootPath . 'public' . DS . $filelink['Bold'],     //字体文件
-                                'fontSize' => 16,             //字号
-                                'fontColor' => '40,40,40',       //字体颜色
-                                'angle' => 0,
-                            ),
-                            array(
-                                'text' => '邀请您加入' . sys_config('site_name'),
-                                'left' => 250,
-                                'top' => 880,
-                                'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
-                                'fontSize' => 16,             //字号
-                                'fontColor' => '40,40,40',       //字体颜色
-                                'angle' => 0,
-                            )
-                        ),
-                        'background' => $item['pic']
-                    );
-                    $resRoutine = $resRoutine && $posterInfo = UtilService::setSharePoster($config, 'routine/spread/poster');
-                    if (!is_array($posterInfo)) return app('json')->fail($posterInfo);
-                    SystemAttachment::attachmentAdd($posterInfo['name'], $posterInfo['size'], $posterInfo['type'], $posterInfo['dir'], $posterInfo['thumb_path'], 1, $posterInfo['image_type'], $posterInfo['time'], 2);
-                    if ($resRoutine) {
-                        if ($posterInfo['image_type'] == 1)
-                            $item['poster'] = $siteUrlHttps . $posterInfo['dir'];
-                        else
-                            $item['poster'] = set_http_type($posterInfo['dir'], 0);
-                        $item['poster'] = str_replace('\\', '/', $item['poster']);
+                }else{
+                    $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_routine.jpg';
+                    $imageInfo = SystemAttachment::getInfo($name, 'name');
+                    //检测远程文件是否存在
+                    if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
+                        $imageInfo = null;
+                        SystemAttachment::where(['name' => $name])->delete();
                     }
-                }
-            } else if ($type == 2) {
-                //公众号
-                $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_wap.jpg';
-                $imageInfo = SystemAttachment::getInfo($name, 'name');
-                //检测远程文件是否存在
-                if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
-                    $imageInfo = null;
-                    SystemAttachment::where(['name' => $name])->delete();
-                }
-                if (!$imageInfo) {
-                    $codeUrl = set_http_type($siteUrl . '?spread=' . $user['uid'], 1);//二维码链接
-                    $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
-                    if (is_string($imageInfo)) return app('json')->fail('二维码生成失败', ['error' => $imageInfo]);
-                    SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
-                    $urlCode = $imageInfo['dir'];
-                } else $urlCode = $imageInfo['att_dir'];
-                if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
-                $siteUrl = set_http_type($siteUrl, 1);
-                $filelink = [
-                    'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
-                    'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
-                ];
-                if (!file_exists($filelink['Bold'])) return app('json')->fail('缺少字体文件Bold');
-                if (!file_exists($filelink['Normal'])) return app('json')->fail('缺少字体文件Normal');
-                foreach ($routineSpreadBanner as $key => &$item) {
-                    $posterInfo = '海报生成失败:(';
-                    $config = array(
-                        'image' => array(
-                            array(
-                                'url' => $urlCode,     //二维码资源
-                                'stream' => 0,
-                                'left' => 130,
-                                'top' => 380,
-                                'right' => 0,
-                                'bottom' => 0,
-                                'width' => 350,
-                                'height' => 350,
-                                'opacity' => 100
-                            )
-                        ),
-                        'text' => array(
-                            array(
-                                'text' => $user['nickname'],
-                                'left' => 130,
-                                'top' => 840,
-                                'fontPath' => $rootPath . 'public' . DS . $filelink['Bold'],     //字体文件
-                                'fontSize' => 26,             //字号
-                                'fontColor' => '40,40,40',       //字体颜色
-                                'angle' => 0,
-                            ),
-                            array(
-                                'text' => '邀请您加入' . sys_config('site_name'),
-                                'left' => 130,
-                                'top' => 880,
-                                'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
-                                'fontSize' => 18,             //字号
-                                'fontColor' => '40,40,40',       //字体颜色
-                                'angle' => 0,
-                            )
-                        ),
-                        'background' => $item['pic']
-                    );
-                    $resWap = $resWap && $posterInfo = UtilService::setSharePoster($config, 'wap/spread/poster');
-                    if (!is_array($posterInfo)) return app('json')->fail($posterInfo);
-                    SystemAttachment::attachmentAdd($posterInfo['name'], $posterInfo['size'], $posterInfo['type'], $posterInfo['dir'], $posterInfo['thumb_path'], 1, $posterInfo['image_type'], $posterInfo['time'], 2);
-                    if ($resWap) {
-                        if ($posterInfo['image_type'] == 1)
-                            $item['wap_poster'] = $siteUrl . $posterInfo['thumb_path'];
-                        else
-                            $item['wap_poster'] = UtilService::setHttpType($posterInfo['thumb_path'], 1);
+                    if (!$imageInfo) {
+                        $res = RoutineCode::getShareCode($user['uid'], 'spread', '', '');
+                        if (!$res) return app('json')->fail('二维码生成失败');
+                        $uploadType = (int)sys_config('upload_type', 1);
+                        $upload = new Upload($uploadType, [
+                            'accessKey' => sys_config('accessKey'),
+                            'secretKey' => sys_config('secretKey'),
+                            'uploadUrl' => sys_config('uploadUrl'),
+                            'storageName' => sys_config('storage_name'),
+                            'storageRegion' => sys_config('storage_region'),
+                        ]);
+                        $res = $upload->to('routine/spread/code')->validate()->stream($res['res'], $name);
+                        if ($res === false) {
+                            return app('json')->fail($upload->getError());
+                        }
+                        $imageInfo = $upload->getUploadInfo();
+                        $imageInfo['image_type'] = $uploadType;
+                        SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+                        RoutineQrcode::setRoutineQrcodeFind($res['id'], ['status' => 1, 'time' => time(), 'qrcode_url' => $imageInfo['dir']]);
+                        $urlCode = $imageInfo['dir'];
+                    } else $urlCode = $imageInfo['att_dir'];
+                    if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
+                    $siteUrlHttps = set_http_type($siteUrl, 1);
+                    $filelink = [
+                        'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
+                        'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
+                    ];
+                    if (!file_exists($filelink['Bold'])) return app('json')->fail('缺少字体文件Bold');
+                    if (!file_exists($filelink['Normal'])) return app('json')->fail('缺少字体文件Normal');
+                    foreach ($routineSpreadBanner as $key => &$item) {
+                        if($i==2){
+                            $posterInfo = '海报生成失败:(';
+                            $config = array(
+                                'image' => array(
+                                    array(
+                                        'url' => $urlCode,     //二维码资源
+                                        'stream' => 0,
+                                        'left' => 130,
+                                        'top' => 380,
+                                        'right' => 0,
+                                        'bottom' => 0,
+                                        'width' => 350,
+                                        'height' => 350,
+                                        'opacity' => 100
+                                    )
+                                ),
+                                'text' => array(
+                                    array(
+                                        'text' => $user['nickname'],
+                                        'left' => 130,
+                                        'top' => 840,
+                                        'fontPath' => $rootPath . 'public' . DS . $filelink['Bold'],     //字体文件
+                                        'fontSize' => 26,             //字号
+                                        'fontColor' => '40,40,40',       //字体颜色
+                                        'angle' => 0,
+                                    ),
+                                    array(
+                                        'text' => '邀请您加入' . sys_config('site_name'),
+                                        'left' => 130,
+                                        'top' => 880,
+                                        'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
+                                        'fontSize' => 18,             //字号
+                                        'fontColor' => '40,40,40',       //字体颜色
+                                        'angle' => 0,
+                                    )
+                                ),
+                                'background' => $item['pic']
+                            );
+                            $resRoutine = $resRoutine && $posterInfo = UtilService::setSharePoster($config, 'routine/spread/poster');
+                            if (!is_array($posterInfo)) return app('json')->fail($posterInfo);
+                            SystemAttachment::attachmentAdd($posterInfo['name'], $posterInfo['size'], $posterInfo['type'], $posterInfo['dir'], $posterInfo['thumb_path'], 1, $posterInfo['image_type'], $posterInfo['time'], 2);
+                            if ($resRoutine) {
+                                if ($posterInfo['image_type'] == 1){
+                                    $item['poster'] = $siteUrlHttps . $posterInfo['dir'];
+                                } else{
+                                    $item['poster'] = set_http_type($posterInfo['dir'], 1);
+                                }      
+                                 $item['poster'] = str_replace('\\', '/', $item['poster']);
+                                 User::where('uid',$user['uid'])->update(['routine_imgurl' =>  $item['poster']]);
+                            }
+                      }else if($i==2){
+                        $item['poster'] = $userInfo['wx_imgurl'];
+                     }    
+                      $i+=1;
+                  }
+              }
+            } else if ($type == 2) { //公众号
+                if($userInfo['wx_imgurl']!=''){
+                    foreach ($routineSpreadBanner as $key => &$item) {
+                        if($i==1){
+                            $item['wap_poster'] = $userInfo['wx_imgurl'];
+                        }else if($i==2){
+                            $item['wap_poster'] = $userInfo['routine_imgurl'];
+                        }
+                        $i +=1;
                     }
-                }
+                }else{
+                    $name = $user['uid'] . '_' . $user['is_promoter'] . '_user_wap.jpg';
+                    $imageInfo = SystemAttachment::getInfo($name, 'name');
+                    //检测远程文件是否存在
+                    if (isset($imageInfo['att_dir']) && strstr($imageInfo['att_dir'], 'http') !== false && curl_file_exist($imageInfo['att_dir']) === false) {
+                        $imageInfo = null;
+                        SystemAttachment::where(['name' => $name])->delete();
+                    }
+                    if (!$imageInfo) {
+                        $codeUrl = set_http_type($siteUrl . '?spread=' . $user['uid'], 1);//二维码链接
+                        $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+                        if (is_string($imageInfo)) return app('json')->fail('二维码生成失败', ['error' => $imageInfo]);
+                        SystemAttachment::attachmentAdd($imageInfo['name'], $imageInfo['size'], $imageInfo['type'], $imageInfo['dir'], $imageInfo['thumb_path'], 1, $imageInfo['image_type'], $imageInfo['time'], 2);
+                        $urlCode = $imageInfo['dir'];
+                    } else $urlCode = $imageInfo['att_dir'];
+                    if ($imageInfo['image_type'] == 1) $urlCode = $siteUrl . $urlCode;
+                    $siteUrl = set_http_type($siteUrl, 1);
+                    $filelink = [
+                        'Bold' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
+                        'Normal' => 'static' . DS . 'font' . DS . 'Alibaba-PuHuiTi-Regular.otf',
+                    ];
+                    if (!file_exists($filelink['Bold'])) return app('json')->fail('缺少字体文件Bold');
+                    if (!file_exists($filelink['Normal'])) return app('json')->fail('缺少字体文件Normal');
+                    foreach ($routineSpreadBanner as $key => &$item) {
+                        if($i==1){
+                            $posterInfo = '海报生成失败:(';
+                            $config = array(
+                                'image' => array(
+                                    array(
+                                        'url' => $urlCode,     //二维码资源
+                                        'stream' => 0,
+                                        'left' => 130,
+                                        'top' => 380,
+                                        'right' => 0,
+                                        'bottom' => 0,
+                                        'width' => 350,
+                                        'height' => 350,
+                                        'opacity' => 100
+                                    )
+                                ),
+                                'text' => array(
+                                    array(
+                                        'text' => $user['nickname'],
+                                        'left' => 130,
+                                        'top' => 840,
+                                        'fontPath' => $rootPath . 'public' . DS . $filelink['Bold'],     //字体文件
+                                        'fontSize' => 26,             //字号
+                                        'fontColor' => '40,40,40',       //字体颜色
+                                        'angle' => 0,
+                                    ),
+                                    array(
+                                        'text' => '邀请您加入' . sys_config('site_name'),
+                                        'left' => 130,
+                                        'top' => 880,
+                                        'fontPath' => $rootPath . 'public' . DS . $filelink['Normal'],     //字体文件
+                                        'fontSize' => 18,             //字号
+                                        'fontColor' => '40,40,40',       //字体颜色
+                                        'angle' => 0,
+                                    )
+                                ),
+                                'background' => $item['pic']
+                            );
+                            $resWap = $resWap && $posterInfo = UtilService::setSharePoster($config, 'wap/spread/poster');
+                            if (!is_array($posterInfo)) return app('json')->fail($posterInfo);
+                            SystemAttachment::attachmentAdd($posterInfo['name'], $posterInfo['size'], $posterInfo['type'], $posterInfo['dir'], $posterInfo['thumb_path'], 1, $posterInfo['image_type'], $posterInfo['time'], 2);
+                            if ($resWap) {
+                                if ($posterInfo['image_type'] == 1)
+                                    $item['wap_poster'] = $siteUrl . $posterInfo['thumb_path'];
+                                    else
+                                        $item['wap_poster'] = UtilService::setHttpType($posterInfo['thumb_path'], 1);
+                            }
+                            User::where('uid',$user['uid'])->update(['wx_imgurl' =>  $item['wap_poster']]);
+                     }else if($i==2){
+                        $item['wap_poster'] = $userInfo['routine_imgurl'];
+                     }  
+                     $i +=1;
+                   }
+                }  
             }
             if ($resRoutine && $resWap) return app('json')->successful($routineSpreadBanner);
             else return app('json')->fail('生成图片失败');

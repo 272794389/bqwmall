@@ -5,6 +5,7 @@ namespace app\admin\model\finance;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use app\models\user\UserBill;
+use app\models\system\SystemStore;
 use app\admin\model\user\User;
 use crmeb\services\PHPExcelService;
 
@@ -35,6 +36,16 @@ class StorePayLog extends BaseModel
     {
         $data = ($data = self::setWhereList($where)->page((int)$where['page'], (int)$where['limit'])->select()) && count($data) ? $data->toArray() : [];
         $count = self::setWhereList($where)->count();
+        foreach ($data as &$item) {
+            $storeinfo = SystemStore::where('user_id', $item['uid'])->field('mer_name')->find();
+            if($storeinfo){
+                $item['mer_name'] = $storeinfo['mer_name'];
+            }else{
+                $item['mer_name'] = '';
+            }
+            
+            
+        }
         return compact('data', 'count');
     }
 
@@ -81,7 +92,6 @@ class StorePayLog extends BaseModel
         }
         $model = self::getModelTime($time, self::alias('A')
             ->join('user B', 'B.uid=A.uid')
-            ->join('system_store C','C.user_id=A.uid')
             ->order('A.add_time desc'), 'A.add_time');
         if (trim($where['belong_t']) != '') {//记录类型
             $model = $model->where('A.belong_t', $where['belong_t']);
@@ -102,7 +112,7 @@ class StorePayLog extends BaseModel
         if ($where['nickname'] != '') {
             $model = $model->where('B.nickname|B.uid|B.phone', 'like', "%$where[nickname]%");
         }
-        return $model->field(['A.*', 'FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time', 'B.uid', 'B.nickname','B.phone','C.mer_name']);
+        return $model->field(['A.*', 'FROM_UNIXTIME(A.add_time,"%Y-%m-%d %H:%i:%s") as add_time', 'B.uid', 'B.nickname','B.phone']);
     }
 
     
