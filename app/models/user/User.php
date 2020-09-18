@@ -385,6 +385,18 @@ class User extends BaseModel
     {
         return self::edit(['avatar' => $avatar, 'nickname' => $nickname], $uid, 'uid');
     }
+    
+    /**
+     * 修改个人信息
+     * @param $avatar 头像
+     * @param $nickname 昵称
+     * @param $uid 用户uid
+     * @return bool
+     */
+    public static function editUserCenter($avatar, $nickname,$realname, $uid)
+    {
+        return self::edit(['avatar' => $avatar, 'nickname' => $nickname,'real_name' => $realname], $uid, 'uid');
+    }
 
     /**
      * TODO 获取推广人数 一级

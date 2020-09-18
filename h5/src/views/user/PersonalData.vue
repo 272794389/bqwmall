@@ -74,6 +74,12 @@
           ></span>
         </div>
       </div>
+      <div class="item acea-row row-between-wrapper">
+        <div>真实姓名</div>
+        <div class="input acea-row row-between-wrapper">
+          <input type="text" :value="real_name" v-model="real_name"  class="id" />
+        </div>
+      </div>
       <div v-if="!userInfo.phone">
         <router-link
           :to="'/user/binding'"
@@ -142,6 +148,7 @@ export default {
         "Authori-zation": "Bearer " + this.$store.state.app.token
       },
       avatar: "",
+      real_name:"",
       isWeixin: false,
       currentAccounts: 0,
       switchUserInfo: [],
@@ -192,6 +199,7 @@ export default {
     getUserInfo: function() {
       let that = this;
       getUser().then(res => {
+        that.real_name = res.data.real_name;
         let switchUserInfo = res.data.switchUserInfo;
         for (let i = 0; i < switchUserInfo.length; i++) {
           if (switchUserInfo[i].uid == that.userInfo.uid) that.userIndex = i;
@@ -213,10 +221,13 @@ export default {
     },
 
     submit: function() {
+      let that = this;
       let userInfo = this.switchUserInfo[this.userIndex];
+      const { real_name } = that;
       postUserEdit({
         nickname: trim(this.userInfo.nickname),
-        avatar: userInfo.avatar
+        avatar: userInfo.avatar,
+        real_name: real_name
       }).then(
         res => {
           this.$store.dispatch("USERINFO", true);
