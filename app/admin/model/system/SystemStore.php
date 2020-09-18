@@ -153,6 +153,78 @@ class SystemStore extends BaseModel
         
         return compact('count', 'data');
     }
+    
+    /**
+     * 获取业务员业绩列表
+     * @param $where
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function getYjStoreList($where)
+    {
+        $model = new self();
+        if (isset($where['parent_id']) && $where['parent_id'] != '') {
+            $model = $model->where('parent_id',$where['parent_id']);
+        }
+        $today = implode(' - ', [date('Y/m/d'), date('Y/m/d', strtotime('+1 day'))]);
+        $week = implode(' - ', [
+            date('Y/m/d', (time() - ((date('w') == 0 ? 7 : date('w')) - 1) * 24 * 3600)),
+            date('Y-m-d', (time() + (7 - (date('w') == 0 ? 7 : date('w'))) * 24 * 3600))
+        ]);
+        $month = implode(' - ', [date('Y/m') . '/01', date('Y/m') . '/' . date('t')]);
+        
+       // $model = $model->group('parent_id')->order('id desc')->page((int)$where['page'], (int)$where['limit']);
+        
+        list($startTime, $endTime) = explode(' - ', $today);
+        list($wstartTime, $wendTime) = explode(' - ', $week);
+        list($mstartTime, $mendTime) = explode(' - ', $month);
+        $count = $model->group('parent_id')->count();
+        if ($where['excel'] == 0)  $model = $model->group('parent_id')->page((int)$where['page'], (int)$where['limit']);
+        $data = ($data = $model->group('parent_id')->select()) && count($data) ? $data->toArray() : [];
+        
+       // $data = ($data = $model->group('parent_id')->order('parent_id asc')->select()) && count($data) ? $data->toArray() : [];
+       // echo "count=".$count;
+    
+        //$data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
+        foreach ($data as &$item) {
+            $shopuser = User::where('uid',$item['parent_id'])->find();
+            $item['operator']=$shopuser['real_name'];
+            $item['telphone']=$shopuser['phone'];
+            $model1 = self::where('parent_id',$item['parent_id'])->where('add_time', '>', strtotime($startTime));
+            $model1 = $model1->where('add_time', '<', (int)bcadd(strtotime($endTime), 86400, 0));
+            $item['today'] = $model1->count();
+            $model1 = self::where('parent_id',$item['parent_id'])->where('add_time', '>', strtotime($wstartTime));
+            $model1 = $model1->where('add_time', '<', (int)bcadd(strtotime($wendTime), 86400, 0));
+            $item['week'] = $model1->count();
+            $model1 = self::where('parent_id',$item['parent_id'])->where('add_time', '>', strtotime($mstartTime));
+            $model1 = $model1->where('add_time', '<', (int)bcadd(strtotime($mendTime), 86400, 0));
+            $item['month'] = $model1->count();
+            $model1 = self::where('parent_id',$item['parent_id']);
+            $item['counts'] = $model1->count();
+        }
+        if ($where['excel'] == 1) {
+            $export = [];
+            foreach ($data as $index => $item) {
+                $export[] = [
+                    $item['parent_id'],
+                    $item['operator'],
+                    $item['telphone'],
+                    $item['today'],
+                    $item['week'],
+                    $item['month'],
+                    $item['counts']
+                ];
+            }
+            PHPExcelService::setExcelHeader(['业务员id', '姓名', '联系电话', '今日上线（家）', '本周上线（家）', '本月上线（家）', '总上线（家）'])
+                ->setExcelTile('佰仟万平台业务员业绩台账', '业绩台账' . time(), ' 生成台账时间：' . date('Y-m-d H:i:s', time()))
+                ->setExcelContent($export)
+                ->ExcelSave();
+        }
+    
+        return compact('count', 'data');
+    }
 
     /**
      * 获取连表查询条件

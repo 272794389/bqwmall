@@ -37,6 +37,30 @@ class SystemStore extends AuthController
         return JsonService::successlayui(SystemStoreModel::getStoreList($where));
     }
     
+    /**
+     * 业绩列表
+     */
+    public function yjlist()
+    {
+        $where = UtilService::getMore([
+            ['page', 1],
+            ['limit', 20],
+            ['name', ''],
+            ['parent_id', ''],
+            ['excel', 0]
+        ]);
+        return JsonService::successlayui(SystemStoreModel::getYjStoreList($where));
+    }
+    
+    /**
+     * 业绩显示
+     * @return string
+     */
+    public function yjindex()
+    {
+        return $this->fetch();
+    }
+    
     
     /**
      * 显示创建资源表单页.

@@ -48,6 +48,7 @@ class StorePayOrder extends AuthController
                 date('Y') . '/01/01', date('Y/m/d', strtotime(date('Y') . '/01/01 + 1year -1 day'))
             ])
         ];
+        
         $this->assign('where', $where);
         $this->assign('limitTimeList', $limitTimeList);
         $this->assign(StorePayOrderModel::payStatistics());
