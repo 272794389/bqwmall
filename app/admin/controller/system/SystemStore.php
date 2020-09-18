@@ -107,6 +107,7 @@ class SystemStore extends AuthController
     
     //生成订单二维码
     public function tui_qrcode($id){
+        /*
         $store_id = $id;
         if(!$store_id) return $this->failed('数据不存在');
         $storeInfo = SystemStoreModel::get($store_id);
@@ -132,7 +133,42 @@ class SystemStore extends AuthController
         $imageInfo = SystemAttachment::getInfo($name, 'name');
         $ermaImg = $imageInfo['att_dir'];
         $this->assign(compact('ermaImg'));
+        return $this->fetch();*/
+        $store_id = $id;
+        if(!$store_id) return $this->failed('数据不存在');
+        $storeInfo = SystemStoreModel::get($store_id);
+        $erma_url='';
+        if ($storeInfo){
+            $storeInfo = $storeInfo->toArray();
+            $uid = $storeInfo['user_id'];
+            $erma_url= $storeInfo['erma_url'];
+        }
+        $ermaImg = $erma_url;
+        if(!$erma_url){
+            //$siteUrl = sysConfig('site_url');
+            $siteUrl = "https://www.dshqfsc.com";
+            $codeUrl = UtilService::setHttpType($siteUrl, 1)."/sdetail/".$store_id."?spread=".$uid;//二维码链接
+            $name = date("Y-m-d")."-order-sale-".time().".jpg";
+            $imageInfo = UtilService::getQRCodePath($codeUrl, $name);
+            if(!$imageInfo) return app('json')->fail('二维码生成失败');
+            if (!$imageInfo) return app('json')->fail('二维码生成失败');
+            $data =[];
+            //计算二维码图片地址
+            $arr = array();
+            $arr = explode("//",$siteUrl);
+            $farr = explode(".",$arr[1]);
+            $ermaImg = 'img';
+            if($farr[0]!='www'){
+                $ermaImg = $farr[0]."-".$ermaImg;
+            }
+            // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
+            $data['erma_url']="http://oss.dshqfsc.com/".$name;
+            $ermaImg = $data['erma_url'];
+            SystemStoreModel::edit($data,$store_id);
+        }
+        $this->assign(compact('ermaImg'));
         return $this->fetch();
+        
     }
     
     

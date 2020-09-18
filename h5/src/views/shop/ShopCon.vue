@@ -107,6 +107,8 @@
 <script>
 import {swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
+import { mapGetters } from "vuex";
+import { getUser } from "@api/user";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
 import ShareRedPackets from "@components/ShareRedPackets";
@@ -116,17 +118,11 @@ import StorePoster from "@components/StorePoster";
 import ShareInfo from "@components/ShareInfo";
 import Reta from "@components/Star";
 import debounce from "lodash.debounce";
-import {
-  getProductDetail,
-  getProductCode,
-  storeListApi,
-  getStoreDetail
-} from "@api/store";
-import {getUserInfo} from "@api/user";
+import { VUE_APP_API_URL } from "@utils";
+import {getProductDetail, getProductCode,storeListApi,getStoreDetail} from "@api/store";
 import { isWeixin } from "@utils/index";
 import { wechatEvevt } from "@libs/wechat";
 import { imageBase64 } from "@api/public";
-import { mapGetters } from "vuex";
 import cookie from "@utils/store/cookie";
 let NAME = "GoodsCon";
 const LONGITUDE = "user_longitude";
@@ -147,6 +143,7 @@ export default {
       mapShow: false,
       mapKey: cookie.get(MAPKEY),
       id: 0,
+      isWeixin: false,
       storeInfo: {},
       goodList: [],
       labelList: [],
@@ -176,6 +173,8 @@ export default {
     this.id = this.$route.params.id;
     this.storeInfo.slider_image = [];
     this.productCon();
+    this.User();
+    this.isWeixin = isWeixin();
     window.addEventListener("scroll", this.handleScroll);
   },
   methods: {
@@ -184,6 +183,13 @@ export default {
       let opacity = top / 350;
       opacity = opacity > 1 ? 1 : opacity;
       this.opacity = opacity;
+    },
+    User: function() {
+      let that = this;
+      getUser().then(res => {
+        that.userInfo = res.data;
+        that.orderStatusNum = res.data.orderStatusNum;
+      });
     },
     goPay(item) {
         this.$router.push({ path: "/shoppay/" + item.id });
