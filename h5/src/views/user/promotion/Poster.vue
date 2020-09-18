@@ -7,7 +7,6 @@
           v-for="(item, index) in info"
           :key="index"
         >
-        {{item.wap_poster}}
           <img class="slide-image" :src="item.wap_poster" v-if="item.wap_poster!=''"/>
         </swiperSlide>
       </swiper>
