@@ -141,7 +141,7 @@ class SystemStore extends AuthController
         if ($storeInfo){
             $storeInfo = $storeInfo->toArray();
             $uid = $storeInfo['user_id'];
-            $erma_url= $storeInfo['erma_url'];
+            $erma_url= $storeInfo['tuima_url'];
         }
         $ermaImg = $erma_url;
         if(!$erma_url){
@@ -162,8 +162,8 @@ class SystemStore extends AuthController
                 $ermaImg = $farr[0]."-".$ermaImg;
             }
             // $orderImg = $orderImg.".".$farr[1].".".$farr[2]."/".$name;
-            $data['erma_url']="http://oss.dshqfsc.com/".$name;
-            $ermaImg = $data['erma_url'];
+            $data['tuima_url']="http://oss.dshqfsc.com/".$name;
+            $ermaImg = $data['tuima_url'];
             SystemStoreModel::edit($data,$store_id);
         }
         $this->assign(compact('ermaImg'));
