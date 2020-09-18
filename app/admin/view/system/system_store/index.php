@@ -89,6 +89,9 @@
                     <script type="text/html" id="link_name">
                              {{d.link_name}}<br/> {{d.link_phone}}
                     </script>
+                    <script type="text/html" id="parent_id">
+                             {{d.parent_id}}<br/> {{d.operator}}
+                    </script>
                     <script type="text/html" id="checkboxstatus">
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
                                lay-text='通过|待审核' {{ d.status== 1 ? 'checked' : '' }}>
@@ -131,7 +134,7 @@
             {field: 'license', title: '营业执照', templet: '#licenseurl',},
             {field: 'mer_name', title: '商家名称', width: '6%'},
             {field: 'link_name', title: '商家联系人', templet: '#link_name', width: '8%'},
-            {field: 'parent_id', title: '商家推荐人', width: '6%'},
+            {field: 'parent_id', title: '商家推荐人', width: '6%',templet:'#parent_id'},
             {field: 'name', title: '门店名称', width: '8%'},
             {field: 'phone', title: '门店电话', width: '6%'},
             {field: 'address', title: '地址', templet: '#address',width: '12%'},

@@ -104,25 +104,26 @@ class SystemStore extends BaseModel
         $data = ($data = $model->order('id desc')->select()) && count($data) ? $data->toArray() : [];
         
         //$data = $model->page((int)$where['page'], (int)$where['limit'])->order('id desc')->select();
-        if ($where['excel'] == 1) {
-            foreach ($data as &$item) {
-                if($item['belong_t']==0){
-                    $item['belong_name'] = "商品中心";
-                }else if($item['belong_t']==1){
-                    $item['belong_name'] = "网店";
-                }else if($item['belong_t']==2){
-                    $item['belong_name'] = "周边的店";
-                }else if($item['belong_t']==3){
-                    $item['belong_name'] = "服务中心";
-                }
-                $shopuser = User::where('uid',$item['user_id'])->find();
-                if($shopuser['spread_uid']>0){
-                    $spreadInfo = User::where('uid',$shopuser['spread_uid'])->find();
-                    $item['yewu']="业务员id:【".$shopuser['spread_uid']."】,姓名：【".$spreadInfo['real_name']."】,电话：【".$spreadInfo['phone']."】";
-                }else{
-                    $item['yewu']="无业务员";
-                }
+        foreach ($data as &$item) {
+            if($item['belong_t']==0){
+                $item['belong_name'] = "商品中心";
+            }else if($item['belong_t']==1){
+                $item['belong_name'] = "网店";
+            }else if($item['belong_t']==2){
+                $item['belong_name'] = "周边的店";
+            }else if($item['belong_t']==3){
+                $item['belong_name'] = "服务中心";
             }
+            $shopuser = User::where('uid',$item['parent_id'])->find();
+            if($item['parent_id']>0){
+                $item['yewu']="业务员id:【".$shopuser['uid']."】,姓名：【".$shopuser['real_name']."】,电话：【".$shopuser['phone']."】";
+                $item['operator'] = "【".$shopuser['real_name']."】";
+            }else{
+                $item['yewu']="无业务员";
+                $item['operator'] = "【无】";
+            }
+        }
+        if ($where['excel'] == 1) {
             $export = [];
             foreach ($data as $index => $item) {
                 $export[] = [
