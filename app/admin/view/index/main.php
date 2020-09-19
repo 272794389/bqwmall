@@ -119,6 +119,70 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">昨</span>
+                    <h5>消费订单</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.xd_num.data}</h1>
+                    <div class="stat-percent font-bold text-navy">
+                        {$first_line.xd_num.percent}%
+                        {if condition='$first_line.xd_num.is_plus egt 0'}<i class="fa {if condition='$first_line.xd_num.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理">昨日支付订单数</a></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">今</span>
+                    <h5>消费订单</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.nd_num.data}</h1>
+                    <div class="stat-percent font-bold text-navy">
+                        {$first_line.nd_num.percent}%
+                        {if condition='$first_line.nd_num.is_plus egt 0'}<i class="fa {if condition='$first_line.nd_num.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理">今日支付订单数</a></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">昨</span>
+                    <h5>消费金额</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.xd_price.data}</h1>
+                    <div class="stat-percent font-bold text-navy">
+                        {$first_line.xd_price.percent}%
+                        {if condition='$first_line.xd_price.is_plus egt 0'}<i class="fa {if condition='$first_line.xd_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理">昨日支付订单数</a></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 ui-sortable">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">今</span>
+                    <h5>消费金额</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins">{$first_line.nd_price.data}</h1>
+                    <div class="stat-percent font-bold text-navy">
+                        {$first_line.nd_price.percent}%
+                        {if condition='$first_line.nd_price.is_plus egt 0'}<i class="fa {if condition='$first_line.nd_price.is_plus eq 1'}fa-level-up{else /}fa-level-down{/if}"></i>{/if}
+                    </div>
+                    <small><a href="javascript:;" class="opFrames" data-name="订单管理">今日支付订单数</a></small>
+                </div>
+            </div>
+        </div>
 
     </div>
 <div id="app">

@@ -7,6 +7,8 @@ use think\facade\Config;
 use app\admin\model\order\StoreOrder as StoreOrderModel;//订单
 use app\admin\model\system\{SystemConfig, SystemMenus, SystemRole};
 use app\admin\model\user\{User, UserExtract as UserExtractModel, User as UserModel};
+use app\admin\model\order\{StorePayOrder as StorePayOrderModel};
+
 use app\admin\model\store\{StoreProduct, StoreProductReply as StoreProductReplyModel, StoreProduct as ProductModel};
 
 /**
@@ -78,6 +80,43 @@ class Index extends AuthController
             'percent' => abs($now_month_order_p - $pre_month_order_p),
             'is_plus' => $now_month_order_p - $pre_month_order_p > 0 ? 1 : ($now_month_order_p - $pre_month_order_p == 0 ? -1 : 0)
         ];
+        
+        
+        //消费订单数->昨日
+        $now_day_porder_p = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', 'yesterday')->count();
+        $pre_day_porder_p = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $pre_day)->where('pay_time', '<', $now_day)->count();
+        $first_line['xd_num'] = [
+            'data' => $now_day_porder_p ? $now_day_porder_p : 0,
+            'percent' => abs($now_day_porder_p - $pre_day_porder_p),
+            'is_plus' => $now_day_porder_p - $pre_day_porder_p > 0 ? 1 : ($now_day_porder_p - $pre_day_porder_p == 0 ? -1 : 0)
+        ];
+        //消费交易额->昨天
+        $now_month_porder_p = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', 'yesterday')->sum('pay_amount');
+        $pre_month_porder_p = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $beforyester_day)->where('pay_time', '<', $pre_day)->sum('pay_amount');
+        $first_line['xd_price'] = [
+            'data' => $now_month_porder_p > 0 ? $now_month_porder_p : 0,
+            'percent' => abs($now_month_porder_p - $pre_month_porder_p),
+            'is_plus' => $now_month_porder_p - $pre_month_porder_p > 0 ? 1 : ($now_month_porder_p - $pre_month_porder_p == 0 ? -1 : 0)
+        ];
+        
+        //消费订单数->今日
+        $now_day_porder_x = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', $now_day)->count();
+        $pre_day_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $pre_day)->where('pay_time', '<', $now_day)->count();
+        $first_line['nd_num'] = [
+            'data' => $now_day_porder_x ? $now_day_porder_x : 0,
+            'percent' => abs($now_day_porder_x - $pre_day_porder_x),
+            'is_plus' => $now_day_porder_x - $pre_day_porder_x > 0 ? 1 : ($now_day_porder_x - $pre_day_porder_x == 0 ? -1 : 0)
+        ];
+        //消费交易额->今日
+        $now_month_porder_x = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', $now_day)->sum('pay_amount');
+        $pre_month_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $pre_day)->where('pay_time', '<', $now_day)->sum('pay_amount');
+        $first_line['nd_price'] = [
+            'data' => $now_month_porder_x > 0 ? $now_month_porder_x : 0,
+            'percent' => abs($now_month_porder_x - $pre_month_porder_x),
+            'is_plus' => $now_month_porder_x - $pre_month_porder_x > 0 ? 1 : ($now_month_porder_x - $pre_month_porder_x == 0 ? -1 : 0)
+        ];
+        
+       
 
         //交易额->月
         $now_month_order_p = StoreOrderModel::where('paid', 1)->whereTime('pay_time', 'month')->sum('pay_price');
