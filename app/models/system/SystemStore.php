@@ -7,7 +7,7 @@ use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use app\models\store\StoreCategory;
 use app\models\user\StorePayLog;
-
+use app\models\user\User;
 
 /**
  * 门店自提 model
@@ -303,7 +303,9 @@ class SystemStore extends BaseModel
         $model = $model->group('u.id');
         $model = $model->order($orderBy);
         $model = $model->page($page, $limit);
-        $list = $model->select();
+        $list = $model->select()->each(function ($item) {
+            $item['childCount'] = User::getUserSpreadCount($item['user_id']);//累计推荐人数
+        });
         if ($list) return $list->toArray();
         else return [];
     }

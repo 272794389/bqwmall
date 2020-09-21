@@ -3459,5 +3459,27 @@ class StoreOrder extends BaseModel
         $count = self::setOrderProductReplyWhere($where)->count();
         return compact('list', 'count');
     }
+    
+    /**
+     * 获取用户购买次数
+     * @param int $uid
+     * @return int|string
+     */
+    public static function getUserCountPay($uid = 0)
+    {
+        if (!$uid) return 0;
+        return self::where('uid', $uid)->where('paid', 1)->count();
+    }
+    
+    /**
+     * 获取用户购买金额
+     * @param int $uid
+     * @return int|string
+     */
+    public static function getUserSumPay($uid = 0)
+    {
+        if (!$uid) return 0;
+        return self::where('uid', $uid)->where('paid', 1)->field('sum(pay_price) as pay_price')->find();
+    }
 
 }

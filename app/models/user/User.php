@@ -4,6 +4,7 @@
 namespace app\models\user;
 
 use app\models\store\StoreOrder;
+use app\models\store\StorePayOrder;
 use app\models\store\StoreProduct;
 use app\models\system\SystemStore;
 use crmeb\services\SystemConfigService;
@@ -502,18 +503,32 @@ class User extends BaseModel
         $model = new self;
         if ($orderBy === '') $orderBy = 'u.add_time desc';
         $model = $model->alias(' u');
-        $sql = StoreOrder::where('o.paid', 1)->group('o.uid')->field(['SUM(o.pay_price) as numberCount', 'o.uid', 'o.order_id'])
-            ->where('o.is_del', 0)->where('o.is_system_del', 0)->alias('o')->fetchSql(true)->select();
-        $model = $model->join("(" . $sql . ") p", 'u.uid = p.uid', 'LEFT');
         $model = $model->where('u.uid', 'IN', $uid);
-        $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time,u.spread_count as childCount,u.pay_count as orderCount,p.numberCount");
+        $model = $model->field("u.uid,u.nickname,u.avatar,from_unixtime(u.add_time,'%Y/%m/%d') as time");
         if (strlen(trim($keyword))) $model = $model->where('u.nickname|u.phone', 'like', "%$keyword%");
         $model = $model->group('u.uid');
         $model = $model->order($orderBy);
         $model = $model->page($page, $limit);
-        $list = $model->select();
+        $list = $model->select()->each(function ($item) {
+            $item['childCount'] = self::getUserSpreadCount($item['uid']);//累计推荐人数
+            $item['orderCount'] = StoreOrder::getUserCountPay($item['uid']);//累计下单数
+            $omap = StoreOrder::getUserSumPay($item['uid']);
+            $item['numberCount'] = $omap['pay_price'];//累计下单数 
+            
+            //计算消费笔数及消费金额
+            $item['orderCount'] += StorePayOrder::getUserCountPay($item['uid']);//累计下单数
+            $omap = StorePayOrder::getUserSumPay($item['uid']);
+            $item['numberCount'] += $omap['pay_price'];//累计下单数
+        });
         if ($list) return $list->toArray();
         else return [];
+    }
+    
+    public static function getUserSpreadCount($uid = 0)
+    {
+        if (!$uid) return 0;
+        $counts = self::where('spread_uid', $uid)->count('uid');
+        return $counts ? $counts : 0;
     }
 
     /**

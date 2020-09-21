@@ -100,7 +100,7 @@ class Index extends AuthController
         ];
         
         //消费订单数->今日
-        $now_day_porder_x = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', $now_day)->count();
+        $now_day_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>',$now_day)->count();
         $pre_day_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $pre_day)->where('pay_time', '<', $now_day)->count();
         $first_line['nd_num'] = [
             'data' => $now_day_porder_x ? $now_day_porder_x : 0,
@@ -108,7 +108,7 @@ class Index extends AuthController
             'is_plus' => $now_day_porder_x - $pre_day_porder_x > 0 ? 1 : ($now_day_porder_x - $pre_day_porder_x == 0 ? -1 : 0)
         ];
         //消费交易额->今日
-        $now_month_porder_x = StorePayOrderModel::where('paid', 1)->whereTime('pay_time', $now_day)->sum('pay_amount');
+        $now_month_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>',$now_day)->sum('pay_amount');
         $pre_month_porder_x = StorePayOrderModel::where('paid', 1)->where('pay_time', '>', $pre_day)->where('pay_time', '<', $now_day)->sum('pay_amount');
         $first_line['nd_price'] = [
             'data' => $now_month_porder_x > 0 ? $now_month_porder_x : 0,
@@ -194,10 +194,10 @@ class Index extends AuthController
                 for ($i = -30; $i < 0; $i++) {
                     $datalist[date('m-d', strtotime($i . ' day'))] = date('m-d', strtotime($i . ' day'));
                 }
-                $order_list = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("FROM_UNIXTIME(add_time,'%m-%d') as day,count(*) as count,sum(pay_price) as price")
-                    ->group("FROM_UNIXTIME(add_time, '%Y%m%d')")
-                    ->order('add_time asc')
+                $order_list = StorePayOrderModel::where('pay_time', 'between time', [$datebefor, $dateafter])
+                    ->field("FROM_UNIXTIME(pay_time,'%m-%d') as day,count(*) as count,sum(pay_amount) as price")
+                    ->group("FROM_UNIXTIME(pay_time, '%Y%m%d')")
+                    ->order('pay_time asc')
                     ->select()->toArray();
                 if (empty($order_list)) return Json::fail('无数据');
                 foreach ($order_list as $k => &$v) {
@@ -231,8 +231,8 @@ class Index extends AuthController
                 $chartdata['series'][] = ['name' => $chartdata['legend'][0], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['price']];//分类1值
                 $chartdata['series'][] = ['name' => $chartdata['legend'][1], 'type' => 'bar', 'itemStyle' => $series, 'data' => $data['count']];//分类2值
                 //统计总数上期
-                $pre_total = StoreOrderModel::where('add_time', 'between time', [$pre_datebefor, $pre_dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                $pre_total = StorePayOrderModel::where('pay_time', 'between time', [$pre_datebefor, $pre_dateafter])
+                    ->field("count(*) as count,sum(pay_amount) as price")
                     ->find();
                 if ($pre_total) {
                     $chartdata['pre_cycle']['count'] = [
@@ -243,8 +243,8 @@ class Index extends AuthController
                     ];
                 }
                 //统计总数
-                $total = StoreOrderModel::where('add_time', 'between time', [$datebefor, $dateafter])
-                    ->field("count(*) as count,sum(pay_price) as price")
+                $total = StorePayOrderModel::where('pay_time', 'between time', [$datebefor, $dateafter])
+                    ->field("count(*) as count,sum(pay_amount) as price")
                     ->find();
                 if ($total) {
                     $cha_count = intval($pre_total['count']) - intval($total['count']);

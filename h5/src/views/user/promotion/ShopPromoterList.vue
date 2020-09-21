@@ -55,6 +55,9 @@
             </div>
           </div>
           <div class="right">
+            <div>
+              <span class="font-color-red">{{ val.childCount }}</span> 人
+            </div>
             <div>{{ val.orderCount? val.orderCount : 0  }} 单</div>
             <div>{{ val.numberCount ? val.numberCount : 0 }} 元</div>
           </div>
