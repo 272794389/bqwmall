@@ -18,6 +18,7 @@ use crmeb\services\QrcodeService;
 use crmeb\services\SystemConfigService;
 use crmeb\services\UtilService;
 use crmeb\services\upload\Upload;
+use think\facade\Db;
 
 /**
  * 商品类
@@ -214,7 +215,8 @@ class StoreProductController
         $data['system_store'] = ($res = SystemStore::getStoreDispose($storeInfo['store_id'])) ? $res : [];
         $data['good_list'] = StoreProduct::getGoodList(18, 'image,store_name,price,id,ot_price');
         $data['mapKey'] = sys_config('tengxun_map_key');
-        $data['store_self_mention'] = (int)sysConfig('store_self_mention') ?? 0;//门店自提是否开启
+        $store_self_mention = Db::name('system_config')->where('id',143)->value('value');
+        $data['store_self_mention'] = (int)$store_self_mention ?? 0;//门店自提是否开启
         $data['activity'] = StoreProduct::activity($data['storeInfo']['id'],false);
         return app('json')->successful($data);
     }

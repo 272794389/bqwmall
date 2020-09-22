@@ -285,18 +285,22 @@ class StorePayOrder extends BaseModel
         $res = true;
         $dikou=0;
         $pay_pointer=0;
+        $flag=0;$total_amount=0;$pay_amount=0;$huokuan=0;$pointer=0;$coupon_amount=0;$shopaward=0;$faward=0;$saward=0;$fagent=0;$sagent=0;$fprerent=0;$sprerent=0;$out_amount=0;$feet=0;$profit=0;
+        $total_amount = $orderInfo['total_amount'];
         if($orderInfo['pay_give']>0&&$orderInfo['pay_flag']==1){//购物积分抵扣
             $res = false !== User::bcDec($uid, 'give_point', $orderInfo['pay_give'], 'uid');
             if($res){
                 $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, -$orderInfo['pay_give'], 0,0,0, '商家消费' . floatval($orderInfo['total_amount']) . '元抵扣');
             }
             $dikou = $orderInfo['pay_give'];
+            $pointer = $orderInfo['pay_give'];
         }else if($orderInfo['pay_point']>0&&$orderInfo['pay_flag']==2){//消费积分抵扣
             $res = false !== User::bcDec($uid, 'pay_point', $orderInfo['pay_point'], 'uid');
             if($res){
                 $res = StorePayLog::expend($uid, $orderInfo['id'], 0, 0, 0, 0,-$orderInfo['pay_point'],0,0, '商家消费' . floatval($orderInfo['total_amount']) . '元抵扣');
             }
             $dikou = $orderInfo['pay_point'];
+            $pointer = $orderInfo['pay_point'];
         }else if($orderInfo['coupon_amount']>0&&$orderInfo['pay_flag']==3){//有使用抵扣券
             $coupon_price = $orderInfo['coupon_amount'];
             $couponList = GoodsCouponUser::getAllCouponList($uid,0);
@@ -335,6 +339,7 @@ class StorePayOrder extends BaseModel
                 }
             }
             $dikou = $orderInfo['coupon_amount'];
+            $coupon_amount= $orderInfo['coupon_amount'];
         }else if($orderInfo['pay_pointer']>0&&$orderInfo['pay_flag']==0){//判断是否有赠送积分
             $res = false !== User::bcInc($uid, 'pay_point',$orderInfo['pay_pointer'], 'uid');
             $pay_pointer = $orderInfo['pay_pointer'];
@@ -345,6 +350,7 @@ class StorePayOrder extends BaseModel
         
         //给商家结算货款
         $amount = $orderInfo['total_amount']*(100-$storeInfo['sett_rate'])/100;
+        $huokuan = $amount;
         if($res){
             $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $amount, 'uid');
             if($res){
@@ -372,6 +378,9 @@ class StorePayOrder extends BaseModel
         
         //用于分配整体利润
         $runamount = ($orderInfo['total_amount'] - $amount - $dikou)*(100-$feeRate['plat_rate'])/100;
+        $profit = $runamount;
+        $out_amount = ($orderInfo['total_amount'] - $amount - $dikou)*$feeRate['plat_rate']/100;
+        $pay_amount = $orderInfo['pay_amount'];
         $use_amount = 0;
         $fee=0;
         $repeat_point=0;
@@ -397,6 +406,15 @@ class StorePayOrder extends BaseModel
                         $use_amount = $use_amount - $fee - $repeat_point;
                         if($res){
                             $res = false !== User::bcInc($spread_uid, 'now_money', $use_amount, 'uid');
+                            if($i==0){//第一代奖励
+                                $faward = $use_amount;
+                                $feet += $fee;
+                                $profit = $profit-$use_amount-$repeat_point;
+                            }else if($i==1){//第二代推荐人
+                                $saward = $use_amount;
+                                $feet += $fee;
+                                $profit = $profit-$use_amount-$repeat_point;
+                            }
                         }
                         if($res){
                             $res = false !== User::bcInc($spread_uid, 'repeat_point', $repeat_point, 'uid');
@@ -444,8 +462,11 @@ class StorePayOrder extends BaseModel
             $fee = $use_amount*$feeRate['fee_rate']/100;
             $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
             $use_amount = $use_amount - $fee - $repeat_point;
+            $feet +=$fee;
             if($res){
                 $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
+                $shopaward = $use_amount;
+                $profit = $profit-$use_amount-$repeat_point;
             }
             if($res){
                 $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
@@ -493,6 +514,9 @@ class StorePayOrder extends BaseModel
                 if($res&&$districtAmount>0.012){
                     $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
                     $uinfo = User::getUserInfo($districtInfo['agent_uid']);
+                    $sagent = $districtAmount;
+                    $profit = $profit-$districtAmount-$repeat_point;
+                    $feet +=$fee;
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$districtAmount."元！";
@@ -524,6 +548,9 @@ class StorePayOrder extends BaseModel
                 if($res&&$cityAmount>0.012){
                     $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
                     $uinfo = User::getUserInfo($cityInfo['agent_uid']);
+                    $fagent = $cityAmount;
+                    $profit = $profit-$cityAmount-$repeat_point;
+                    $feet +=$fee;
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的代理商您好，您的账户收到一笔代理商奖励，奖励金额：".$cityAmount."元！";
@@ -594,6 +621,9 @@ class StorePayOrder extends BaseModel
                 if($res&&$districtAmount>0){
                     $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $districtAmount, 'uid');
                     $uinfo = User::getUserInfo($districtInfo['inspect_uid']);
+                    $sprerent = $districtAmount;
+                    $profit = $profit-$districtAmount-$repeat_point;
+                    $feet +=$fee;
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$districtAmount."元！";
@@ -625,6 +655,9 @@ class StorePayOrder extends BaseModel
                 if($res&&$cityAmount){
                     $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $cityAmount, 'uid');
                     $uinfo = User::getUserInfo($cityInfo['inspect_uid']);
+                    $fprerent = $cityAmount;
+                    $profit = $profit-$cityAmount-$repeat_point;
+                    $feet +=$fee;
                     if($uinfo['phone']&&$sms_open>0){//推荐奖励
                         $data['code'] = '1';
                         $content = "尊敬的区域总监您好，您的账户收到一笔区域奖励，奖励金额：".$cityAmount."元！";
@@ -706,10 +739,28 @@ class StorePayOrder extends BaseModel
                 'keyword4' => $orderInfo['total_amount'],
                 'remark' => '感谢您的支持'
             ], Url::buildUrl('/customer/myorder/'.$orderInfo['check_id'])->suffix('')->domain(true)->build());
-            
         }
-        
-        
+        $data=[
+            'idno' => $orderInfo['order_id'],
+            'flag' => 0,
+            'total_amount' => $total_amount,
+            'pay_amount' => $pay_amount,
+            'huokuan' => $huokuan,
+            'pointer' => $pointer,
+            'coupon_amount' => $coupon_amount,
+            'shopaward' => $shopaward,
+            'faward' => $faward,
+            'saward' => $saward,
+            'fagent' => $fagent,
+            'sagent' => $sagent,
+            'fprerent' => $fprerent,
+            'sprerent' => $sprerent,
+            'out_amount' => $out_amount,
+            'fee' => $feet,
+            'profit' => $profit,
+            'add_time' => time(),
+        ];
+        StoreProfitDetail::create($data);
         $res1 = self::where('order_id',$orderInfo['order_id'])->update(['paid'=>1,'pay_type'=>$paytype,'pay_time'=>time()]);
         $res2 = $res1 && $res;
         self::checkTrans($res2);
