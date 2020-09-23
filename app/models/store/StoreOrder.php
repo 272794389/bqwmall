@@ -1161,6 +1161,10 @@ class StoreOrder extends BaseModel
         $feeRate = DataConfig::where('id', 1)->find();
         //短信发送开关
         $sms_open = $feeRate['sms_open'];
+        //利润表数据
+        $flag=0;$total_amount=0;$pay_amount=0;$huokuan=0;$pointer=0;$coupon_amount=0;$shopaward=0;$faward=0;$saward=0;$fagent=0;$sagent=0;$fprerent=0;$sprerent=0;$out_amount=0;$feet=0;$profit=0;
+        $total_amount = $order['total_price'];
+        $pay_amount = $order['pay_price'];
         // 单个商品订单不拆分
         self::beginTrans();
         if (count($cartIds) <= 1){
@@ -1174,6 +1178,7 @@ class StoreOrder extends BaseModel
             if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
                 $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $carinfo['huokuan'], 'uid');
                 if($res){
+                    $huokuan = $carinfo['huokuan'];
                     $res = StorePayLog::expend($storeInfo['user_id'], $order['id'], 1, 0, $carinfo['huokuan'], 0, 0,0,0, '商品订单结算');
                 }
                 //给商家发送支付成功提醒
@@ -1193,6 +1198,8 @@ class StoreOrder extends BaseModel
                 }
             }
             //计算商家推荐人提成
+            $profit = $carinfo['profit'];
+            $out_amount = $carinfo['profit'];
             $uinfo = User::where('uid',$storeInfo['parent_id'])->find();
             if($carinfo['profit']>0&&$storeInfo['parent_id']>0&&$feeRate['shop_rec']>0){
                 $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
@@ -1201,6 +1208,9 @@ class StoreOrder extends BaseModel
                 $use_amount = $use_amount - $fee - $repeat_point;
                 if($res){
                     $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
+                    $shopaward = $use_amount;
+                    $profit = $profit-$use_amount-$repeat_point;
+                    $feet +=$fee;
                 }
                 if($res){
                     $res = false !== User::bcInc($uinfo['uid'], 'repeat_point', $repeat_point, 'uid');
@@ -1257,6 +1267,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $districtAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$districtAmount>0){
+                        $sagent = $districtAmount;
+                        $profit = $profit-$districtAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
                         $uinfo = User::getUserInfo($districtInfo['agent_uid']);
                         if($uinfo['phone']&&$sms_open>0){//代理商提成
@@ -1289,6 +1302,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $cityAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$cityAmount){
+                        $fagent = $cityAmount;
+                        $profit = $profit-$cityAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
                         $uinfo = User::getUserInfo($cityInfo['agent_uid']);
                         if($uinfo['phone']&&$sms_open>0){//代理商提成
@@ -1359,6 +1375,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $districtAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$districtAmount>0){
+                        $sprerent = $districtAmount;
+                        $profit = $profit-$districtAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $districtAmount, 'uid');
                         $uinfo = User::getUserInfo($districtInfo['inspect_uid']);
                         if($uinfo['phone']&&$sms_open>0){//总监提成
@@ -1390,6 +1409,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $cityAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$cityAmount){
+                        $fprerent = $cityAmount;
+                        $profit = $profit-$cityAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $cityAmount, 'uid');
                         $uinfo = User::getUserInfo($cityInfo['inspect_uid']);
                         if($uinfo['phone']&&$sms_open>0){//总监提成
@@ -1522,6 +1544,7 @@ class StoreOrder extends BaseModel
                 if($carinfo['huokuan']>0&&$storeInfo['user_id']>0){
                     $res = false !== User::bcInc($storeInfo['user_id'], 'huokuan', $carinfo['huokuan'], 'uid');
                     if($res){
+                        $huokuan = $huokuan+$carinfo['huokuan'];
                         $res = StorePayLog::expend($storeInfo['user_id'], $rs['id'], 1, 0, $carinfo['huokuan'], 0, 0,0,0, '商品订单结算');
                     }
                     if($sms_open>0){
@@ -1543,11 +1566,16 @@ class StoreOrder extends BaseModel
                 //计算商家推荐人提成
                 $uinfo = User::where('uid',$storeInfo['parent_id'])->find();
                 if($carinfo['profit']>0&&$storeInfo['parent_id']>0&&$feeRate['shop_rec']>0){
+                    $profit = $profit+$carinfo['profit'];
+                    $out_amount = $out_amount+$carinfo['profit'];
                     $use_amount = $carinfo['profit']*$feeRate['shop_rec']/100;
                     $fee = $use_amount*$feeRate['fee_rate']/100;
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $use_amount = $use_amount - $fee - $repeat_point;
                     if($res&&$use_amount){
+                        $shopaward = $shopaward+$use_amount;
+                        $profit = $profit-$use_amount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($uinfo['uid'], 'now_money', $use_amount, 'uid');
                     }
                     if($res){
@@ -1591,6 +1619,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $districtAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$districtAmount>0){
+                        $sagent = $sagent+$districtAmount;
+                        $profit = $profit-$districtAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($districtInfo['agent_uid'], 'now_money', $districtAmount, 'uid');
                         $uinfo = User::getUserInfo($districtInfo['agent_uid']);
                         if($uinfo['phone']&&$sms_open>0){//代理商提成
@@ -1622,6 +1653,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $cityAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$cityAmount){
+                        $fagent = $fagent+$cityAmount;
+                        $profit = $profit-$cityAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($cityInfo['agent_uid'], 'now_money', $cityAmount, 'uid');
                         $uinfo = User::getUserInfo($cityInfo['agent_uid']);
                         if($uinfo['phone']&&$sms_open>0){//代理商提成
@@ -1692,6 +1726,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $districtAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$districtAmount>0){
+                        $sprerent = $sprerent+$districtAmount;
+                        $profit = $profit-$districtAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($districtInfo['inspect_uid'], 'now_money', $districtAmount, 'uid');
                         $uinfo = User::getUserInfo($districtInfo['inspect_uid']);
                         if($uinfo['phone']&&$sms_open>0){//总监奖励
@@ -1723,6 +1760,9 @@ class StoreOrder extends BaseModel
                     $repeat_point = $use_amount*$feeRate['repeat_rate']/100;
                     $cityAmount = $use_amount - $fee - $repeat_point;
                     if($res&&$cityAmount){
+                        $fprerent = $fprerent+$cityAmount;
+                        $profit = $profit-$cityAmount-$repeat_point;
+                        $feet +=$fee;
                         $res = false !== User::bcInc($cityInfo['inspect_uid'], 'now_money', $cityAmount, 'uid');
                         $uinfo = User::getUserInfo($cityInfo['inspect_uid']);
                         if($uinfo['phone']&&$sms_open>0){//总监奖励
@@ -1802,7 +1842,7 @@ class StoreOrder extends BaseModel
                     if($i==0&&$feeRate['rec_f']>0){//第一代推荐人
                         $use_amount = $runamount*$feeRate['rec_f']/100;
                     }else if($i==1&&$feeRate['rec_s']>0){//第二代推荐人
-                        $use_amount = $runamount*$feeRate['rec_f']/100;
+                        $use_amount = $runamount*$feeRate['rec_s']/100;
                     }else if($i==2&&$feeRate['rec_t']>0){//第三代推荐人
                         $use_amount = $runamount*$feeRate['rec_t']/100;
                     }
@@ -1812,6 +1852,15 @@ class StoreOrder extends BaseModel
                         $use_amount = $use_amount - $fee - $repeat_point;
                         if($res){
                             $res = false !== User::bcInc($spread_uid, 'now_money', $use_amount, 'uid');
+                            if($i==0){//第一代奖励
+                                $faward = $use_amount;
+                                $feet += $fee;
+                                $profit = $profit-$use_amount-$repeat_point;
+                            }else if($i==1){//第二代推荐人
+                                $saward = $use_amount;
+                                $feet += $fee;
+                                $profit = $profit-$use_amount-$repeat_point;
+                            }
                         }
                         if($res){
                             $res = false !== User::bcInc($spread_uid, 'repeat_point', $repeat_point, 'uid');
@@ -1851,6 +1900,35 @@ class StoreOrder extends BaseModel
                 }
             } 
         }
+        if($order['point_pay']>0){
+           $pointer = $order['pay_paypoint']+$order['pay_repeatpoint']+$order['give_rate'];
+        }
+        
+        if($order['coupon_pay']>0){
+            $coupon_amount = $order['coupon_price'];
+        }
+        
+        $data=[
+            'idno' => $order['order_id'],
+            'flag' => 1,
+            'total_amount' => $total_amount,
+            'pay_amount' => $pay_amount,
+            'huokuan' => $huokuan,
+            'pointer' => $pointer,
+            'coupon_amount' => $coupon_amount,
+            'shopaward' => $shopaward,
+            'faward' => $faward,
+            'saward' => $saward,
+            'fagent' => $fagent,
+            'sagent' => $sagent,
+            'fprerent' => $fprerent,
+            'sprerent' => $sprerent,
+            'out_amount' => $out_amount,
+            'fee' => $feet,
+            'profit' => $profit,
+            'add_time' => time(),
+        ];
+        StoreProfitDetail::create($data);
         
         //判断是否有赠送抵扣券
         foreach ($productList as $product){

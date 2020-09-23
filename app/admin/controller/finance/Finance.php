@@ -11,6 +11,7 @@ use app\admin\controller\AuthController;
 use app\admin\model\user\{User,UserBill};
 use app\admin\model\finance\FinanceModel;
 use app\admin\model\finance\StorePayLog;
+use app\admin\model\finance\StoreProfitDetail;
 use crmeb\services\{UtilService as Util,JsonService as Json};
 
 /**
@@ -58,6 +59,12 @@ class Finance extends AuthController
         return $this->fetch();
     }
     
+    //资金监控
+    public function incindex()
+    {
+        return $this->fetch();
+    }
+    
     
     /**
      * 显示资金记录ajax列表
@@ -76,7 +83,35 @@ class Finance extends AuthController
         return Json::successlayui(StorePayLog::getLogList($where));
     }
     
+    /**
+     * 显示资金利润记录ajax列表
+     */
+    public function payprofitlist()
+    {
+        $where = Util::getMore([
+            ['start_time', ''],
+            ['end_time', ''],
+            ['idno', ''],
+            ['limit', 20],
+            ['page', 1],
+            ['belong_t', ''],
+        ]);
+        return Json::successlayui(StoreProfitDetail::getList($where));
+    }
     
+    /**
+     *保存利润监控的excel表格
+     */
+    public function save_profit_export()
+    {
+        $where = Util::getMore([
+            ['start_time', ''],
+            ['end_time', ''],
+            ['idno', ''],
+            ['belong_t', ''],
+        ]);
+        StoreProfitDetail::SaveExport($where);
+    }
     
     
 

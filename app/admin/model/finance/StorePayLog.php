@@ -78,10 +78,11 @@ class StorePayLog extends BaseModel
                 $value['add_time'],
             ];
         }
+        /*
         PHPExcelService::setExcelHeader(['会员ID', '昵称', '记录类型', '余额', '货款','购物积分','消费积分','重消积分','手续费','备注', '创建时间'])
             ->setExcelTile('资金监控', '资金监控', date('Y-m-d H:i:s', time()))
             ->setExcelContent($export)
-            ->ExcelSave();
+            ->ExcelSave();*/
     }
 
     public static function setWhereList($where)
