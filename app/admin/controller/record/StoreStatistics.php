@@ -10,7 +10,7 @@ namespace app\admin\controller\record;
 
 use app\admin\controller\AuthController;
 use crmeb\services\UtilService as Util;
-use app\admin\model\record\StoreStatistics as StatisticsModel;
+use app\admin\model\record\{StoreStatistics as StatisticsModel,ProfitStatics as ProfitStaticsModel};
 
 /**
  * Class StoreStatistics
@@ -47,35 +47,52 @@ class StoreStatistics extends AuthController
             ['name' => '支出', 'type' => 'line', 'data' => []],
             ['name' => '盈利', 'type' => 'line', 'data' => []],
         ];
-        $orderinfos = StatisticsModel::getOrderInfo($where);
+        $orderinfos = ProfitStaticsModel::getStaticsInfo($where);
         $orderinfo = $orderinfos['orderinfo'];
         $orderDays = [];
-        if (empty($orderinfo)) {
+         if (empty($orderinfo)) {
             $orderDays[] = date('Y-m-d', time());
             $Statistic[0]['data'][] = 0;
             $Statistic[1]['data'][] = 0;
             $Statistic[2]['data'][] = 0;
         }
         foreach ($orderinfo as $info) {
-            $orderDays[] = $info['pay_time'];
-            $Statistic[0]['data'][] = $info['total_price'] + $info['pay_postage'];
-            $Statistic[1]['data'][] = $info['coupon_price'] + $info['deduction_price'] + $info['cost'];
-            $Statistic[2]['data'][] = ($info['total_price'] + $info['pay_postage']) - ($info['coupon_price'] + $info['deduction_price'] + $info['cost']);
+            $orderDays[] = $info['add_time'];
+            $Statistic[0]['data'][] = $info['total_amount'];
+            $Statistic[1]['data'][] = ($info['huokuan'] + $info['pointer']+ $info['coupon_amount']+ $info['shopaward']+ $info['faward']+ $info['saward']+ $info['fagent']
+            + $info['sagent']+ $info['fprerent']+ $info['sprerent']+ $info['out_amount']+$info['fee']);
+            $Statistic[2]['data'][] = $info['profit'];
         }
-        $price = $orderinfos['price'] + $orderinfos['postage'];
-        $cost = $orderinfos['deduction'] + $orderinfos['coupon'] + $orderinfos['cost'];
-        $Consumption = StatisticsModel::getConsumption($where)['number'];
+        
         $header = [
-            ['name' => '总营业额', 'class' => 'fa-line-chart', 'value' => '￥' . $price, 'color' => 'red'],
-            ['name' => '总支出', 'class' => 'fa-area-chart', 'value' => '￥' . ($cost + $extension), 'color' => 'lazur'],
-            ['name' => '总盈利', 'class' => 'fa-bar-chart', 'value' => '￥' . bcsub($price, $cost, 0), 'color' => 'navy'],
-            ['name' => '新增消费', 'class' => 'fa-pie-chart', 'value' => '￥' . ($Consumption == 0 ? 0 : $Consumption), 'color' => 'yellow']
+            ['name' => '交易总额', 'class' => 'fa-line-chart', 'value' => '￥' . $orderinfos['total_amount'], 'color' => 'red'],
+            ['name' => '实收总额', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['pay_amount'], 'color' => 'lazur'],
+            ['name' => '支付货款', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['huokuan'], 'color' => 'lazur'],
+            ['name' => '积分抵扣', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['pointer'], 'color' => 'lazur'],
+            ['name' => '抵扣券抵扣', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['coupon_amount'], 'color' => 'lazur'],
+            ['name' => '支付商家推荐佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['shopaward'], 'color' => 'lazur'],
+            ['name' => '支付一代推荐佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['faward'], 'color' => 'lazur'],
+            ['name' => '支付二代推荐佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['saward'], 'color' => 'lazur'],
+            ['name' => '支付市级代理商佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['fagent'], 'color' => 'lazur'],
+            ['name' => '支付地区代理商佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['sagent'], 'color' => 'lazur'],
+            ['name' => '支付市级总监佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['fprerent'], 'color' => 'lazur'],
+            ['name' => '支付地区总监佣金', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['sprerent'], 'color' => 'lazur'],
+            ['name' => '支付运营成本', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['out_amount'], 'color' => 'lazur'],
+            ['name' => '收取手续费', 'class' => 'fa-area-chart', 'value' => '￥' . $orderinfos['fee'], 'color' => 'lazur'],
+            ['name' => '总盈利', 'class' => 'fa-bar-chart', 'value' => '￥' . $orderinfos['profit'], 'color' => 'navy']
         ];
         $data = [
-            ['value' => $orderinfos['cost'], 'name' => '商品成本'],
-            ['value' => $orderinfos['coupon'], 'name' => '优惠券抵扣'],
-            ['value' => $orderinfos['deduction'], 'name' => '积分抵扣'],
-            ['value' => $extension, 'name' => '推广人佣金']
+            ['value' => $orderinfos['huokuan'], 'name' => '支付货款'],
+            ['value' => $orderinfos['coupon_amount'], 'name' => '优惠券抵扣'],
+            ['value' => $orderinfos['pointer'], 'name' => '积分抵扣'],
+            ['value' => $orderinfos['shopaward'], 'name' => '商家推荐佣金'],
+            ['value' => $orderinfos['faward'], 'name' => '一代推荐佣金'],
+            ['value' => $orderinfos['saward'], 'name' => '二代推荐佣金'],
+            ['value' => $orderinfos['fagent'], 'name' => '市级代理商佣金'],
+            ['value' => $orderinfos['sagent'], 'name' => '地区代理商佣金'],
+            ['value' => $orderinfos['fprerent'], 'name' => '市级总监佣金'],
+            ['value' => $orderinfos['sprerent'], 'name' => '地区总监佣金'],
+            ['value' => $orderinfos['fee'], 'name' => '运营成本']
         ];
 
         $this->assign(StatisticsModel::systemTable($where));

@@ -61,7 +61,7 @@
         </div>
         <div class="layui-col-sm12">
             <div class="layui-card">
-                <div class="layui-card-header">发放优惠券(张):</div>
+                <div class="layui-card-header">发放积分:</div>
                 <div class="layui-card-body layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-btn-container" ref="echarts_list" id="echarts_list" style="height:400px"></div>
@@ -71,7 +71,7 @@
         </div>
         <div class="layui-col-sm12">
             <div class="layui-card">
-                <div class="layui-card-header">使用优惠券（元）:</div>
+                <div class="layui-card-header">使用积分:</div>
                 <div class="layui-card-body layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-btn-container" ref="echarts_use" id="echarts_list" style="height:400px"></div>
@@ -108,23 +108,23 @@
 
             },
             methods: {
-                getCouponBadgeList:function(){
+                getScoreBadgeList:function(){
                     var that=this;
-                    layList.baseGet(layList.U({a:'getCouponBadgeList',q:{data:this.data}}),function (rem) {
+                    layList.baseGet(layList.U({a:'getCScoreBadgeList',q:{data:this.data}}),function (rem) {
                         that.badge=rem.data;
                     });
                 },
-                getConponCurve:function(){
+                getScoreCurve:function(){
                     var that=this;
-                    layList.baseGet(layList.U({a:'getConponCurve',q:{data:this.data,limit:this.limit}}),function (rem) {
-                        var quxian=that.setoption(rem.data.seriesdata,rem.data.date,rem.data.zoom,true);
-                        that.myChart.list.setOption(quxian);
-                        var useConpon=that.setoption(rem.data.compon_data,rem.data.compon_date,rem.data.compon_zoom);
-                        that.myChart.use.setOption(useConpon);
+                    layList.baseGet(layList.U({a:'getCScoreCurve',q:{data:this.data,limit:this.limit}}),function (rem) {
+                        var dataCurve=that.setoption(rem.data.seriesdata,rem.data.date,rem.data.zoom,true);
+                        that.myChart.list.setOption(dataCurve);
+                        var dataCurve=that.setoption(rem.data.deduction_seriesdata,rem.data.deduction_date,rem.data.deduction_zoom);
+                        that.myChart.use.setOption(dataCurve);
                     });
                 },
                 setoption:function(seriesdata,xdata,Zoom,isUse){
-                    var text=isUse ? '发放优惠券趋势图':'使用优惠券趋势图';
+                    var text=isUse ? '发放积分趋势图':'使用积分趋势图';
                     this.option={
                         title: {text:text,x:'center'},
                         xAxis : [{type : 'category', data :xdata,}],
@@ -158,12 +158,12 @@
                 },
                 refresh:function () {
                     this.data='';
-                    this.getCouponBadgeList();
-                    this.getConponCurve();
+                    this.getScoreBadgeList();
+                    this.getScoreCurve();
                 },
                 search:function(){
-                    this.getCouponBadgeList();
-                    this.getConponCurve();
+                    this.getScoreBadgeList();
+                    this.getScoreCurve();
                 },
                 setChart:function(name,myChartname){
                     this.myChart[myChartname]=echarts.init(name);
@@ -172,17 +172,13 @@
             mounted:function () {
                 this.setChart(this.$refs.echarts_list,'list');
                 this.setChart(this.$refs.echarts_use,'use');
-                this.getCouponBadgeList();
-                this.getConponCurve();
-                var that=that;
+                this.getScoreBadgeList();
+                this.getScoreCurve();
                 layList.laydate.render({
                     elem:this.$refs.date_time,
                     trigger:'click',
                     eventElem:this.$refs.time,
                     range:true,
-                    change:function (value) {
-                        that.data=value;
-                    }
                 });
             }
         })

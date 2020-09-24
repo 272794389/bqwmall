@@ -9,7 +9,7 @@ namespace app\admin\model\ump;
 use app\admin\model\wechat\WechatUser as UserModel;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
-
+use think\facade\Db;
 /**
  * Class StoreCategory
  * @package app\admin\model\store
@@ -97,5 +97,64 @@ class GoodsCouponUser extends BaseModel
             $data['end_time'] = $data['add_time'] + $coupon['coupon_time'] * 86400;
             $res = self::create($data);
             return $res;
+    }
+    
+    //获取优惠劵头部信息
+    public static function getCouponBadgeList($where){
+        return [
+            [
+                'name'=>'总发放优惠券',
+                'field'=>'张',
+                'count'=>self::getModelTime($where, new self())->count(),
+                'background_color'=>'layui-bg-blue',
+                'col'=>4,
+            ],
+            [
+                'name'=>'发放优惠券金额',
+                'field'=>'元',
+                'count'=>self::getModelTime($where,Db::name('goods_coupon_user'))->sum('coupon_price'),
+                'background_color'=>'layui-bg-blue',
+                'col'=>4,
+            ],
+            [
+            'name'=>'累计使用金额',
+            'field'=>'元',
+            'count'=>self::getModelTime($where,Db::name('goods_coupon_use'))->sum('coupon_price'),
+            'background_color'=>'layui-bg-blue',
+            'col'=>4,
+            ]
+        ];
+    }
+    //获取优惠劵图表
+    public static function getConponCurve($where,$limit=20){
+        //优惠劵发放记录
+        $list=self::getModelTime($where, Db::name('goods_coupon_user')
+            ->field(['FROM_UNIXTIME(add_time,"%Y-%m-%d") as _add_time','count(*) as counts'])->group('_add_time')->order('_add_time asc'))->select();
+            $date=[];
+            $seriesdata=[];
+            $zoom='';
+            foreach ($list as $item){
+                $date[]=$item['_add_time'];
+                $seriesdata[]=$item['counts'];
+            }
+            unset($item);
+            if(count($date)>$limit){
+                $zoom=$date[$limit-5];
+            }
+            //优惠劵使用记录
+            $componList=self::getModelTime($where,Db::name('goods_coupon_use')->field(['FROM_UNIXTIME(add_time,"%Y-%m-%d") as _add_time','sum(coupon_price) as coupon_price'])
+                ->group('_add_time')->order('_add_time asc'))->select();
+                count($componList) && $componList=$componList->toArray();
+                $compon_date=[];
+                $compon_data=[];
+                $compon_zoom='';
+                foreach($componList as $item){
+                    $compon_date[]=$item['_add_time'];
+                    $compon_data[]=$item['coupon_price'];
+                }
+                if(count($compon_date)>$limit){
+                    $compon_zoom=$compon_date[$limit-5];
+                }
+                return compact('date','seriesdata','zoom','compon_date','compon_data','compon_zoom');
     }
 }

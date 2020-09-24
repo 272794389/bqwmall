@@ -7,7 +7,7 @@ use app\models\user\UserBill;
 use crmeb\services\PHPExcelService;
 use think\facade\Db;
 
-class StoreStatistics extends BaseModel
+class ProfitStatics extends BaseModel
 {
     /**
      * 数据表主键
@@ -19,7 +19,7 @@ class StoreStatistics extends BaseModel
      * 模型名称
      * @var string
      */
-    protected $name = 'store_order';
+    protected $name = 'profit_detail';
 
     use ModelTrait;
 
@@ -53,31 +53,56 @@ class StoreStatistics extends BaseModel
         return $price;
     }
 
+   
+    
     /**
      * 获取营业数据
      */
-    public static function getOrderInfo($where)
+    public static function getStaticsInfo($where)
     {
-        $orderinfo = self::getTimeWhere($where)
-            ->field('sum(total_price) total_price,sum(cost) cost,sum(pay_postage) pay_postage,sum(pay_price) pay_price,sum(coupon_price) coupon_price,sum(deduction_price) deduction_price,from_unixtime(pay_time,\'%Y-%m-%d\') pay_time')
-            ->order('pay_time')->where('paid',1)->where('refund_status',0)
-            ->group('from_unixtime(pay_time,\'%Y-%m-%d\')')->select()->toArray();
-        $price = 0;
-        $postage = 0;
-        $deduction = 0;
-        $coupon = 0;
-        $cost = 0;
+        $orderinfo = self::getTime($where)->field('sum(total_amount) total_amount,sum(pay_amount) pay_amount,sum(huokuan) huokuan,sum(pointer) pointer,sum(coupon_amount) coupon_amount,sum(shopaward) shopaward,
+            sum(faward) faward,sum(saward) saward,sum(fagent) fagent,sum(sagent) sagent,sum(fprerent) fprerent,sum(sprerent) sprerent,sum(out_amount) out_amount,sum(fee) fee,sum(profit) profit, from_unixtime(add_time,\'%Y-%m-%d\') add_time')
+        ->order('add_time')
+        ->group('from_unixtime(add_time,\'%Y-%m-%d\')')->select()->toArray();
+        $total_amount = 0;
+        $pay_amount = 0;
+        $huokuan = 0;
+        $pointer = 0;
+        $coupon_amount = 0;
+        $shopaward = 0;
+        $faward  = 0;
+        $saward  = 0;
+        $fagent  = 0;
+        $sagent  = 0;
+        $fprerent  = 0;
+        $sprerent  = 0;
+        $out_amount  = 0;
+        $fee  = 0;
+        $profit  = 0;
         foreach ($orderinfo as $info) {
-            $price = bcadd($price, $info['total_price'], 2);//应支付
-            $postage = bcadd($postage, $info['pay_postage'], 2);//邮费
-            $deduction = bcadd($deduction, $info['deduction_price'], 2);//抵扣
-            $coupon = bcadd($coupon, $info['coupon_price'], 2);//优惠券
-            $cost = bcadd($cost, $info['cost'], 2);//成本
+            $total_amount = bcadd($total_amount, $info['total_amount'], 2);//成交额
+            $pay_amount = bcadd($pay_amount, $info['pay_amount'], 2);//实际支付金额
+            $huokuan = bcadd($huokuan, $info['huokuan'], 2);//货款
+            $pointer = bcadd($pointer, $info['pointer'], 2);//积分抵扣
+            $coupon_amount = bcadd($coupon_amount, $info['coupon_amount'], 2);//抵扣券抵扣
+            
+            $shopaward = bcadd($shopaward, $info['shopaward'], 2);//商家推荐奖励
+            $faward = bcadd($faward, $info['faward'], 2);//一代推荐奖励
+            $saward = bcadd($saward, $info['saward'], 2);//二代推荐奖励
+            $fagent = bcadd($fagent, $info['fagent'], 2);//市级代理商
+            $sagent = bcadd($sagent, $info['sagent'], 2);//地区代理商
+            
+            $fprerent = bcadd($fprerent, $info['fprerent'], 2);//市级总监
+            $sprerent = bcadd($sprerent, $info['sprerent'], 2);//地区总监
+            $out_amount = bcadd($out_amount, $info['out_amount'], 2);//运营成本
+            $fee = bcadd($fee, $info['fee'], 2);//手续费
+            $profit = bcadd($profit, $info['profit'], 2);//利润
         }
-        return compact('orderinfo', 'price', 'postage', 'deduction', 'coupon', 'cost');
+        return compact('orderinfo','total_amount', 'pay_amount', 'huokuan', 'pointer', 'coupon_amount', 'shopaward', 'faward', 'saward', 'fagent', 'sagent', 'fprerent', 'sprerent', 'out_amount', 'fee', 'profit');
     }
     
     
+
     /**
      * 处理where条件
      */

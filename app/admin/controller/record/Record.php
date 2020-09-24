@@ -10,6 +10,9 @@ namespace app\admin\controller\record;
 use app\admin\controller\AuthController;
 use app\admin\model\store\{StoreProduct, StoreCouponUser};
 use app\admin\model\order\StoreOrder;
+use app\admin\model\order\StorePayOrder;
+use app\admin\model\finance\StorePayLog;
+use app\admin\model\ump\GoodsCouponUser;
 use app\admin\model\ump\{StoreBargain, StoreSeckill, StoreCombination};
 use crmeb\services\{JsonService, UtilService as Util};
 use app\admin\model\user\{User, UserBill, UserExtract};
@@ -41,6 +44,19 @@ class Record extends AuthController
         ]);
         return $this->fetch();
     }
+    
+    /**
+     * 显示订单记录
+     */
+    public function chart_xorder()
+    {
+        $this->assign([
+            'is_layui' => true,
+            'year' => get_month()
+        ]);
+        return $this->fetch();
+    }
+    
 
     public function get_echarts_order()
     {
@@ -52,6 +68,14 @@ class Record extends AuthController
         return JsonService::successful(StoreOrder::getEchartsOrder($where));
     }
 
+    public function get_echarts_xorder()
+    {
+        $where = Util::getMore([
+            ['data', ''],
+        ]);
+        return JsonService::successful(StorePayOrder::getEchartsOrder($where));
+    }
+    
     /**
      * 显示产品记录
      */
@@ -148,21 +172,77 @@ class Record extends AuthController
         ]);
         return $this->fetch();
     }
-
+    
     /**
-     * 获取积分头部信息
+     * 显示购物积分统计
      */
-    public function getScoreBadgeList($data = '')
+    public function chart_gscore()
     {
-        return JsonService::successful(UserBill::getScoreBadgeList(compact('data')));
+        $this->assign([
+            'is_layui' => true,
+            'year' => get_month()
+        ]);
+        return $this->fetch();
+    }
+    
+    /**
+     * 显示重消积分统计
+     */
+    public function chart_cscore()
+    {
+        $this->assign([
+            'is_layui' => true,
+            'year' => get_month()
+        ]);
+        return $this->fetch();
     }
 
     /**
-     * 获取积分曲线图和柱状图
+     * 获取重消积分头部信息
+     */
+    public function getCScoreBadgeList($data = '')
+    {
+        return JsonService::successful(StorePayLog::getCScoreBadgeList(compact('data')));
+    }
+    
+    /**
+     * 获取重消积分曲线图和柱状图
+     */
+    public function getCScoreCurve($data = '', $limit = 20)
+    {
+        return JsonService::successful(StorePayLog::getCScoreCurve(compact('data', 'limit')));
+    }
+    
+    /**
+     * 获取消费积分头部信息
+     */
+    public function getScoreBadgeList($data = '')
+    {
+        return JsonService::successful(StorePayLog::getScoreBadgeList(compact('data')));
+    }
+
+    /**
+     * 获取消费积分曲线图和柱状图
      */
     public function getScoreCurve($data = '', $limit = 20)
     {
-        return JsonService::successful(UserBill::getScoreCurve(compact('data', 'limit')));
+        return JsonService::successful(StorePayLog::getScoreCurve(compact('data', 'limit')));
+    }
+    
+    /**
+     * 获取购物积分头部信息
+     */
+    public function getGScoreBadgeList($data = '')
+    {
+        return JsonService::successful(StorePayLog::getGScoreBadgeList(compact('data')));
+    }
+    
+    /**
+     * 获取购物积分曲线图和柱状图
+     */
+    public function getGScoreCurve($data = '', $limit = 20)
+    {
+        return JsonService::successful(StorePayLog::getGScoreCurve(compact('data', 'limit')));
     }
 
     /**
@@ -182,7 +262,7 @@ class Record extends AuthController
      */
     public function getCouponBadgeList($data = '')
     {
-        return JsonService::successful(StoreCouponUser::getCouponBadgeList(compact('data')));
+        return JsonService::successful(GoodsCouponUser::getCouponBadgeList(compact('data')));
     }
 
     /**
@@ -190,7 +270,7 @@ class Record extends AuthController
      */
     public function getConponCurve($data = '')
     {
-        return JsonService::successful(StoreCouponUser::getConponCurve(compact('data')));
+        return JsonService::successful(GoodsCouponUser::getConponCurve(compact('data')));
     }
 
     /**
@@ -245,19 +325,19 @@ class Record extends AuthController
     //获取用户返佣柱状图
     public function getUserBillBrokerage($data = '')
     {
-        return JsonService::successful(UserBill::getUserBillChart(compact('data')));
+        return JsonService::successful(StorePayLog::getUserBillChart(compact('data')));
     }
 
     //获取用户返佣头部信息
     public function getRebateBadge($data = '')
     {
-        return JsonService::successful(UserBill::getRebateBadge(compact('data')));
+        return JsonService::successful(StorePayLog::getRebateBadge(compact('data')));
     }
 
     //获得 返佣列表,带分页
     public function getFanList($page = 1, $limit = 20)
     {
-        return JsonService::successful(UserBill::getFanList(compact('page', 'limit')));
+        return JsonService::successful(StorePayLog::getFanList(compact('page', 'limit')));
     }
 
     //获得 返佣总次数
@@ -671,6 +751,7 @@ class Record extends AuthController
         return JsonService::successlayui(StoreCombination::getBargainRefundList($where));
     }
 
+    
     /**
      * 获取销量
      */

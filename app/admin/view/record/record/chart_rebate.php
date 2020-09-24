@@ -144,9 +144,7 @@
                                 </div>
                                 <div class="layui-col-md5 layui-col-sm5">
                                     <div class="layui-colla-content layui-show" style="border: none">
-                                        <p style="color: #836FFF">订单编号:{{item.order_id}}</p>
                                         <p style="color:#B03060">返利时间:{{item.add_time}}</p>
-                                        <p style="color:#388E8E">买 家 I D:{{item.down_uid}}</p>
                                         <p style="color:#333333" v-show="item.spread_uid!=0">上 级 I D:{{item.spread_uid}}</p>
                                     </div>
                                 </div>
@@ -158,7 +156,7 @@
                                 </div>
                             </td>
                             <td>{{item.level==0? '顶级':item.level+'级分销'}}</td>
-                            <td>{{item.number}}</td>
+                            <td>{{item.use_money}}</td>
                         </tr>
                         <tr v-show="FanYongList.length<=0" style="text-align: center">
                             <td colspan="3">暂无数据</td>
