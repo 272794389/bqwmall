@@ -364,7 +364,7 @@ class StorePayOrder extends BaseModel
                     'keyword2' => '客户扫码消费',
                     'keyword3' => $amount,
                     'keyword4' => $storeInfo['mer_name'],
-                    'keyword5' => '客户扫码消费成功，款项已进入货款，请注意查收！',
+                    'keyword5' => '客户扫码消费成功，消费金额'.$orderInfo['total_amount'].'元，结算货款'.$amount.'元，请注意查收！',
                     'remark' => '点击查看货款记录'
                 ], Url::buildUrl('/user/huokuan')->suffix('')->domain(true)->build());
                 if($sms_open>0){
