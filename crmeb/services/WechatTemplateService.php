@@ -77,6 +77,12 @@ class WechatTemplateService implements ProviderInterface
     //管理员提现审核通知
     const CASHAUDIT_SUCCESS = 'OPENTM203192847';
     
+    //提现失败通知
+    const CASH_FAIL = 'OPENTM406026568';
+    
+    //提现成功通知
+    const CASHF_SUCCESS = 'OPENTM409879070';
+    
     
     
 

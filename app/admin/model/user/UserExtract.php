@@ -114,12 +114,12 @@ class UserExtract extends BaseModel
                 break;
         }
         if (strtolower($User['user_type']) == 'wechat') {
-            WechatTemplateService::sendTemplate(WechatUser::where('uid', $uid)->value('openid'), WechatTemplateService::USER_BALANCE_CHANGE, [
-                'first' => $mark,
-                'keyword1' => '余额提现',
+            WechatTemplateService::sendTemplate(WechatUser::where('uid', $uid)->value('openid'), WechatTemplateService::CASH_FAIL, [
+                'first' => '提现失败，请仔细核对银行信息，或联系客服',
+                'keyword1' => $extract_number,
                 'keyword2' => date('Y-m-d H:i:s', time()),
-                'keyword3' => $extract_number,
-                'remark' => '错误原因:' . $fail_msg
+                'keyword3' => $fail_msg,
+                'remark' => '感谢你的使用！客服热线：0859-6888801'
             ], Url::buildUrl('/user/cashrecord')->suffix('')->domain(true)->build());
         } else if (strtolower($User['user_type']) == 'routine') {
             RoutineTemplate::sendExtractFail($uid, $fail_msg, $extract_number, $User['nickname']);
@@ -150,12 +150,12 @@ class UserExtract extends BaseModel
             if (strtolower($wechatUserInfo->user_type) == 'routine') {
                 RoutineTemplate::sendExtractSuccess($data['uid'], $extractNumber, $wechatUserInfo->nickname);
             } else if (strtolower($wechatUserInfo->user_type) == 'wechat') {
-                WechatTemplateService::sendTemplate($wechatUserInfo->openid, WechatTemplateService::USER_BALANCE_CHANGE, [
-                    'first' => $mark,
-                    'keyword1' => '余额提现',
+                WechatTemplateService::sendTemplate($wechatUserInfo->openid, WechatTemplateService::CASHF_SUCCESS, [
+                    'first' => '您已提现成功',
+                    'keyword1' => $extractNumber,
                     'keyword2' => date('Y-m-d H:i:s', time()),
-                    'keyword3' => $extractNumber,
-                    'remark' => '点击查看我的余额明细'
+                    'keyword3' => $data['bank_name'],
+                    'remark' => '感谢你的使用！客服热线：0859-6888801'
                 ], Url::buildUrl('/user/cashrecord')->suffix('')->domain(true)->build());
             }
         }

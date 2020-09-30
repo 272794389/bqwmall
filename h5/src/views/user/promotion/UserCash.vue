@@ -23,16 +23,19 @@
         <div class="item acea-row row-between-wrapper">
           <div class="name">银行</div>
           <div class="input">
-            <input  v-model="post.bankname" disabled="disabled"/>
-            <!--
+            <!--<input  v-model="post.bankname" disabled="disabled"/> -->
+            
             <select v-model="post.bankname">
-              <option value="">请选择银行</option>
-              <option value="中国银行">中国银行</option>
+              <option value="请选择银行">请选择银行</option>
+              <option value="中国银行" >中国银行</option>
               <option value="中国工商银行">中国工商银行</option>
               <option value="中国农业银行">中国农业银行</option>
               <option value="中国建设银行">中国建设银行</option>
+              <option value="贵州农信">贵州农信</option>
+              <option value="贵州银行">贵州银行</option>
+              <option value="贵阳银行">贵阳银行</option>
             </select>
-            -->
+           
           </div>
         </div>
         <div class="item acea-row row-between-wrapper">
@@ -142,7 +145,7 @@ export default {
         alipay_code: "",
         money: "",
         name: "",
-        bankname: "中国农业银行",
+        bankname: "请选择银行",
         bank_address:"",
         cardnum: "",
         weixin: ""
@@ -170,6 +173,15 @@ export default {
           that.minPrice = res.data.minPrice;
           that.withdraw_fee = res.data.withdraw_fee;
           that.commissionCount = res.data.use_money;
+          
+          if(res.data.bankname){
+             that.post.bankname = res.data.bankname;
+             that.post.bank_address=res.data.bank_address;
+             that.post.name=res.data.uname;
+             that.post.cardnum=res.data.cardnum;
+          }else{
+             that.post.bankname = "请选择银行";
+          }
         },
         function(err) {
           that.$dialog.message(err.msg);
@@ -251,15 +263,33 @@ export default {
       }
     },
     save: function(info) {
-      postCashInfo(info).then(
-        res => {
-          this.$dialog.message(res.msg);
-          this.$router.push({ path: "/user/audit" });
-        },
-        error => {
-          this.$dialog.message(error.msg);
-        }
-      );
+      this.$dialog.confirm({
+              mes: "请务必填写支行名称，以确保准时到账！",
+              opts: [
+                {
+                  txt: "确认提现",
+                  color: false,
+                  callback: () => {
+                    postCashInfo(info).then(
+				        res => {
+				          this.$dialog.message(res.msg);
+				          this.$router.push({ path: "/user/audit" });
+				        },
+				        error => {
+				          this.$dialog.message(error.msg);
+				        }
+				      );
+                  }
+                },
+                {
+                  txt: "取消",
+                  color: false,
+                  callback: () => {
+                   
+                  }
+                }
+              ]
+       });
     }
   }
 };

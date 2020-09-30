@@ -5,6 +5,7 @@ namespace app\api\controller\user;
 use app\admin\model\system\SystemConfig;
 use app\models\store\StoreOrder;
 use app\models\user\UserBill;
+use app\models\user\UserBank;
 use app\models\user\UserExtract;
 use app\Request;
 use crmeb\services\UtilService;
@@ -53,6 +54,13 @@ class UserExtractController
         //查询提现手续费率
         $withdraw_fee = Db::name('data_config')->where('id',1)->value('withdraw_fee');
         $data['withdraw_fee'] = $withdraw_fee;
+        $bankinfo = UserBank::where('uid',$user['uid'])->find();
+        if($bankinfo){
+            $data['bankname'] = $bankinfo['bankname'];
+            $data['bank_address'] = $bankinfo['bank_address'];
+            $data['uname'] = $bankinfo['uname'];
+            $data['cardnum'] = $bankinfo['cardnum'];
+        }
         
         $extractBank = sys_config('user_extract_bank') ?? []; //提现银行
         $extractBank = str_replace("\r\n", "\n", $extractBank);//防止不兼容
@@ -68,6 +76,7 @@ class UserExtractController
      */
     public function cash(Request $request)
     {
+        $uid = $request->uid();
         $extractInfo = UtilService::postMore([
             ['alipay_code', ''],
             ['extract_type', ''],
@@ -79,9 +88,27 @@ class UserExtractController
             ['weixin', ''],
         ], $request);
         if (!preg_match('/^[0-9]*$/',$extractInfo['money'])) return app('json')->fail('提现金额输入有误');
+        if($extractInfo['bankname'] =='请选择银行'){
+            return app('json')->fail('请选择提现银行');
+        }
+        if($extractInfo['bank_address'] ==''){
+            return app('json')->fail('请填写开户支行');
+        }
+        if($extractInfo['name'] ==''){
+            return app('json')->fail('请填写持卡人姓名');
+        }
+        if($extractInfo['cardnum'] ==''){
+            return app('json')->fail('请填卡号');
+        }
         if (!$extractInfo['cardnum'] =='')
             if (!preg_match('/^([1-9]{1})(\d{14}|\d{18})$/',$extractInfo['cardnum']))
                 return app('json')->fail('银行卡号输入有误');
+            
+        $bank = UserBank::where('uid',$uid)->find();
+        if(!$bank){
+            UserBank::createBank($uid,$extractInfo['bankname'],$extractInfo['bank_address'],$extractInfo['name'],$extractInfo['cardnum']);
+        }
+                
         if (UserExtract::userExtract($request->user(), $extractInfo))
             return app('json')->successful('申请提现成功!');
         else
@@ -95,6 +122,7 @@ class UserExtractController
      */
     public function huo_cash(Request $request)
     {
+        $uid = $request->uid();
         $extractInfo = UtilService::postMore([
             ['alipay_code', ''],
             ['extract_type', ''],
@@ -106,13 +134,30 @@ class UserExtractController
             ['weixin', ''],
         ], $request);
         if (!preg_match('/^[0-9]*$/',$extractInfo['money'])) return app('json')->fail('提现金额输入有误');
+        
+        if($extractInfo['bankname'] =='请选择银行'){
+            return app('json')->fail('请选择提现银行');
+        }
+        if($extractInfo['bank_address'] ==''){
+            return app('json')->fail('请填写开户支行');
+        }
+        if($extractInfo['name'] ==''){
+            return app('json')->fail('请填写持卡人姓名');
+        }
+        if($extractInfo['cardnum'] ==''){
+            return app('json')->fail('请填卡号');
+        }
         if (!$extractInfo['cardnum'] =='')
             if (!preg_match('/^([1-9]{1})(\d{14}|\d{18})$/',$extractInfo['cardnum']))
                 return app('json')->fail('银行卡号输入有误');
-                if (UserExtract::userHuoExtract($request->user(), $extractInfo))
-                    return app('json')->successful('申请提现成功!');
-                    else
-                        return app('json')->fail(UserExtract::getErrorInfo('提现失败'));
+        $bank = UserBank::where('uid',$uid)->find();
+        if(!$bank){
+            UserBank::createBank($uid,$extractInfo['bankname'],$extractInfo['bank_address'],$extractInfo['name'],$extractInfo['cardnum']);
+        }
+        if (UserExtract::userHuoExtract($request->user(), $extractInfo))
+            return app('json')->successful('申请提现成功!');
+            else
+                return app('json')->fail(UserExtract::getErrorInfo('提现失败'));
     }
     
     
