@@ -12,7 +12,7 @@
       </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">推荐人id</div>
-        <input type="text" placeholder="商家推荐人id" v-model="userInfo.spread_uid" required />
+        <input type="text" placeholder="商家推荐人id" v-model="store.parent_id" required />
       </div>
       <div class="item acea-row row-between-wrapper">
         <div class="name">商家联系电话</div>
@@ -242,6 +242,7 @@ export default {
       store: {
         is_default: 0 ,
         is_show:1,
+        parent_id:0,
         image:'',
         license:'',
         idCardz:'',
@@ -271,6 +272,7 @@ export default {
       let that = this;
       getUser().then(res => {
         that.userInfo = res.data;
+        that.store.parent_id = res.data.spread_uid;
       });
     },
     getUserAddress: function() {
