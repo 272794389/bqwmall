@@ -18,7 +18,7 @@
     <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/search'" class="search acea-row row-middle">
-        <span class="iconfont icon-xiazai5"></span>搜索商品
+        <span class="iconfont icon-xiazai5"></span>搜索商家
       </router-link>
     </div>
     <div class="slider-banner banner">

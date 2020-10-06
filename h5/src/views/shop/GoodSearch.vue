@@ -5,20 +5,27 @@
         <div class="input acea-row row-between-wrapper">
           <span class="iconfont icon-sousuo2"></span>
           <form @submit.prevent="submit"></form>
-          <input type="text" placeholder="点击搜索商品" v-model="search" />
+          <input type="text" placeholder="点击搜索商家" v-model="search" />
         </div>
         <div class="bnt" @click="submit">搜索</div>
       </div>
       <div v-if="keywords.length">
         <div class="title">热门搜索</div>
         <div class="list acea-row">
-          <div
-            class="item"
-            v-for="key of keywords"
-            :key="key"
-            @click="toSearch(key)"
-          >
-            {{ key }}
+          <div class="item"  @click="toSearch('童装')">
+                                       童装
+          </div>
+          <div class="item"  @click="toSearch('火锅')">
+                                       火锅
+          </div>
+          <div class="item"  @click="toSearch('炭烤')">
+                                       炭烤
+          </div>
+          <div class="item"  @click="toSearch('KTV')">
+               KTV
+          </div>
+          <div class="item"  @click="toSearch('酒吧')">
+                                        酒吧
           </div>
         </div>
       </div>
@@ -61,7 +68,8 @@ export default {
       this.toSearch(search);
     },
     toSearch(s) {
-      this.$router.push({ path: "/goods_list", query: { s } });
+      //this.$router.push({ path: "/goods_list", query: { s } });
+      this.$router.push({ path: "/store_list", query: { s } });
     },
     getData() {
       getSearchKeyword().then(res => {

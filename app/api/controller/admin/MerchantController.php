@@ -226,17 +226,19 @@ class MerchantController
         // TODO 验证权限
         $uid = $request->uid();
         $service = StoreService::where('uid',$uid)->find();
-        if(!$service) return app('json')->fail('权限不足');
+        $counts = SystemStore::where('user_id',$uid)->count();
+        if(!$service&&!$counts){ return app('json')->fail('权限不足');}
         $q = UtilService::getMore([
             ['store_id', ''],
         ], $request);
-        if($service['store_id']!=$q['store_id']){
-            return app('json')->fail('权限不足');
+        if(!$counts){
+            if($service['store_id']!=$q['store_id']){
+                return app('json')->fail('权限不足');
+            }
+            if($service['is_admin']!=1){
+                return app('json')->fail('权限不足');
+            }
         }
-        if($service['is_admin']!=1){
-            return app('json')->fail('权限不足');
-        }
-        
         
         $list = StoreService::getMerService($q['store_id']);
         return app('json')->successful(

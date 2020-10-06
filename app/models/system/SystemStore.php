@@ -180,7 +180,12 @@ class SystemStore extends BaseModel
                 $query->name('store_category')->where('pid', $sid)->field('id')->select();
             });
         }
-        if (!empty($keyword)) $model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        if (!empty($keyword)){
+            $sql = [];
+            $sql[] = '(`mer_name` LIKE "%' . $keyword . '%"  OR `introduction` LIKE "%' . $keyword . '%")';
+            $model = $model->where(implode(' OR ', $sql));
+            //$model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
+        }
         $baseOrder = '';
         if ($salesOrder) {
             $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
