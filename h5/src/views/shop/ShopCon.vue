@@ -1,5 +1,9 @@
 <template>
 <div>
+  <div class="followCode" v-if="followCode">
+      <div class="pictrue"><img :src="followUrl" /></div>
+      <div class="mask" @click="closeFollowCode"></div>
+  </div>
   <div class="product-con storeBox"  ref="box" @scroll.native="onScroll">
     <div class="superior" id="title2">
       <div class="store-name">{{ storeInfo.name }}</div>
@@ -31,16 +35,14 @@
            <a class="store-phone" :href="'tel:' + storeInfo.phone" ><span class="iconfont icon-dadianhua01" style="color:#666;"></span ></a>
         </div>
         <div class="pingfent addressUlr" style="height:0.8rem;line-height: 0.6rem;"> <span class="location">{{ storeInfo.detailed_address }}</span> <span  class="daohang" @click.stop="showMaoLocation(storeInfo)"><div class="iconfont icon-jiantou"></div></span></div>
-       
+        <div class="pingfent payUlr" style="height:0.8rem;line-height: 0.6rem;">我已消费，向商家结账<span  class="daohang" @click="goPay(storeInfo)"><div class="iconfont icon-jiantou"></div></span></div>
      </div>
-     <div class="pay_btn" @click="goPay(storeInfo)">点击向商家付款</div>
+     <div class="focus_btn" @click="followTap" v-if="subscribe!=1">关注并绑定手机领取300元抵扣券</div>
+     <div class="pay_btn" @click="goPay(storeInfo)" v-else>点击向商家结账</div>
      <div class="productList">
-     <div v-if="goodList.length > 0">
-      <div class="title acea-row row-center-wrapper" style="line-height:0.8rem;line-height: 0.8rem;font-size: 0.4rem; font-weight: bold;justify-content: left;">
-        <div class="titleTxt">商家为您推荐</div>
-      </div>
-      
-    </div>
+     <div class="title acea-row row-center-wrapper" style="line-height:0.8rem;line-height: 0.8rem;font-size: 0.4rem; font-weight: bold;justify-content: left;">
+       <div class="titleTxt">为您推荐</div>
+     </div>
   </div>
  </div>
  
@@ -79,8 +81,7 @@
       </iframe>
     </div>
  </div>
- <div class="list acea-row row-between-wrapper" ref="container" style="margin-top:0rem;">
-      
+ <div class="list acea-row row-between-wrapper" ref="container" style="margin-top:0rem;padding-bottom: 1rem;">
          <div class="wrapper" v-if="goodList.length>0" style="width:100%;">
 		      <div class="productList" ref="container">
 		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
@@ -103,11 +104,59 @@
 				</div>
 		    </div>
 	  </div>
+	  <div class="wrapper" v-else-if="tgoodList.length>0" style="width:100%;">
+		      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in tgoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+		    <div class="morestyle"><router-link :to="{path: '/tgoods_list',query: {cid:storeInfo.cat_id }}" >去看更多商品&nbsp;></router-link></div>
+	  </div>
+	  <div class="wrapper" v-else style="width:100%;">
+		      <div class="productList" ref="container">
+		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
+				      <div @click="goDetail(item)" v-for="(item, index) in ogoodList" :key="index" class="item" :title="item.store_name">
+					        <div class="pictrue">
+					          <img :src="item.image"/> 
+					        </div>
+					        <div class="text">
+					          <div class="name pline1">{{ item.store_name }}</div>
+					          <div class="money font-color-red">
+					                                   ￥<span class="num">{{ item.price }}</span>
+					              <span class="shou">原价{{ item.ot_price }}</span>
+					          </div>
+					          <div class="money">
+					              <span class="activity" v-if="item.coupon_price>0">可用券抵扣{{ item.coupon_price }}元</span>
+					              <span class="shou" style="margin-left:0px;" v-else>已售{{ item.sales }}{{ item.unit_name }}</span>
+					          </div>
+					        </div>
+				      </div>
+				</div>
+		    </div>
+		    <div class="morestyle"><router-link :to="{path: '/wgoods_list/'}" >去看更多商品&nbsp;></router-link></div>
+	  </div>
+</div>
 </template>
 <script>
 import {swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
 import { mapGetters } from "vuex";
+
 import { getUser } from "@api/user";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
@@ -122,7 +171,7 @@ import { VUE_APP_API_URL } from "@utils";
 import {getProductDetail, getProductCode,storeListApi,getStoreDetail} from "@api/store";
 import { isWeixin } from "@utils/index";
 import { wechatEvevt } from "@libs/wechat";
-import { imageBase64 } from "@api/public";
+import { imageBase64,follow } from "@api/public";
 import cookie from "@utils/store/cookie";
 let NAME = "GoodsCon";
 const LONGITUDE = "user_longitude";
@@ -144,8 +193,14 @@ export default {
       mapKey: cookie.get(MAPKEY),
       id: 0,
       isWeixin: false,
+      followUrl: "",
+      subscribe: false,
+      followHid: false,
+      followCode: false,
       storeInfo: {},
       goodList: [],
+      tgoodList: [],
+      ogoodList: [],
       labelList: [],
       couponList:[],
       lock: false,
@@ -172,6 +227,7 @@ export default {
     document.addEventListener("scroll", this.onScroll, false);
     this.id = this.$route.params.id;
     this.storeInfo.slider_image = [];
+    this.getFollow();
     this.productCon();
     this.User();
     this.isWeixin = isWeixin();
@@ -184,11 +240,30 @@ export default {
       opacity = opacity > 1 ? 1 : opacity;
       this.opacity = opacity;
     },
+    closeFollow() {
+      this.followHid = false;
+    },
+    followTap() {
+      this.followCode = true;
+      this.followHid = false;
+    },
+    closeFollowCode() {
+      this.followCode = false;
+      this.followHid = true;
+    },
+    getFollow() {
+      follow()
+        .then(res => {
+          this.followUrl = res.data.path;
+        })
+        .catch(() => {});
+    },
     User: function() {
       let that = this;
       getUser().then(res => {
         that.userInfo = res.data;
         that.orderStatusNum = res.data.orderStatusNum;
+        that.subscribe = res.data.subscribe;
       });
     },
     goPay(item) {
@@ -326,7 +401,9 @@ export default {
         .then(res => {
           that.$set(that, "storeInfo", res.data.storeInfo);
           that.$set(that, "labelList", res.data.label_list || []);
-          that.$set(that, "goodList", res.data.good_list || []);
+          that.$set(that, "goodList", res.data.good_list || []);//商家商品
+          that.$set(that, "tgoodList", res.data.tgood_list || []);//同类商品
+          that.$set(that, "ogoodList", res.data.ogood_list || []);//推荐商品
           that.$set(that, "couponList", res.data.coupon_list || []);
          that.mapKey = res.data.mapKey;
         })
@@ -447,4 +524,21 @@ export default {
     margin-bottom: -.05rem;
     border-right-color: #fff;
 }
+.followCode .pictrue {
+    width: 5rem;
+    height: 7.2rem;
+    border-radius: 12px;
+    left: 50%;
+    top: 50%;
+    margin-left: -2.5rem;
+    margin-top: -3.6rem;
+    position: fixed;
+    z-index: 100000;
+}
+.followCode .pictrue img {
+    width: 100%;
+    height: 100%;
+}
+.morestyle{width: 96%;margin-left: 2%; text-align: center;line-height: 1rem;background: #fff;margin-top: 0.2rem;}
+.morestyle a{color: #14adfb;font-weight: 700;}
 </style>

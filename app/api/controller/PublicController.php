@@ -362,7 +362,10 @@ class PublicController
         }
         $data['storeInfo'] = $storeInfo;
         $data['mapKey'] = sys_config('tengxun_map_key');
-        $data['good_list'] = StoreProduct::getStoreGoodList($id,30, '*');
+        $data['good_list'] = StoreProduct::getStoreGoodList($id,50, '*');
+        $data['tgood_list'] = StoreProduct::getListByBelong($storeInfo['belong_t'],$storeInfo['cat_id'],30, '*');
+        $data['ogood_list'] = StoreProduct::getTuiList(30, '*');
+        
         //获取商家抵扣券
         $couponList = StoreCoupon::where('status',1)->where('is_del',0)
         //->whereFindinSet('product_id', $id)

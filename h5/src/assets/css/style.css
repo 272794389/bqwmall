@@ -1720,9 +1720,12 @@ border-radius:0.3rem;color:#fff;line-height:0.5rem;text-align:center;bottom:0.17
 .productList .nav .condition{margin-left:0.5rem;}
 .shopaddress{text-overflow: ellipsis;display: -webkit-box;-webkit-box-orient: vertical;overflow: hidden;-webkit-line-clamp: 1;}
 .pay_btn{width: 96%; text-align: center;line-height: 0.8rem;background: #EE450A;margin-left: 2%;margin-top: 0.2rem;margin-bottom: 0.5rem;color: #fff;border-radius: 0.1rem;}
+.focus_btn{width: 96%; text-align: center;line-height: 0.8rem;background: #36ae1b;margin-left: 2%;margin-top: 0.2rem;margin-bottom: 0.5rem;color: #fff;border-radius: 0.1rem;}
 
 .addressUlr{background-image:url('../images/addresst.png');background-size: 0.3rem;background-position-y: center;background-repeat: no-repeat; padding-left: 0.4rem;}
 .ktime{background-image:url('../images/timet.png');background-size: 0.28rem;background-position-y: center;background-repeat: no-repeat; padding-left: 0.4rem;}
+.payUlr{background-image:url('../images/pay.png');background-size: 0.35rem;background-position-y: center;background-repeat: no-repeat; padding-left: 0.4rem;}
+
 .gui{background-image:url('../images/gui.png');background-size: 0.3rem;background-repeat: no-repeat; padding-left: 0.4rem;background-position-y: center;}
 .index .wrapper .title{background-image:url('../images/bckjin.png');background-size: 100%;background-repeat: no-repeat;padding-top:0.34rem;padding:0.1rem 0.3rem;}
 .index .wrapper .title .text .jname{color: #282828; font-size: .35rem; margin-bottom: .05rem; position: relative;}

@@ -2,7 +2,7 @@
   <div class="paybox">
     <div class="pay_box">
        <div class="shop_name">商家：{{storeInfo.name}}</div>
-       <div class="shop_amount"><span style="font-size:0.3rem; color:#999">￥</span><input type="text" placeholder="" v-model="amount" /></div>
+       <div class="shop_amount"><span style="font-size:0.7rem; color:#000">￥</span><input type="text" placeholder="" v-model="amount" /></div>
        <div class="pay_btn" @click="confirm" type="text">立即付款</div>
     </div>
 </template>
@@ -21,7 +21,7 @@ export default {
   data: function() {
   const { checkId=0 } = this.$route.query;
     return {
-      amount: 0, //消费金额
+      amount: '', //消费金额
       id: 0,
       checkId:0,
       isWeixin: false,
@@ -91,7 +91,7 @@ export default {
 .shop_amount{line-height: 1rem;border-bottom: 1px solid #efefef;font-size: 0.5rem;margin-top:0.2rem;margin-bottom:0.5rem;}
 .pay_btn{width:100%;margin-left:0rem;}
 .shop_amount span{width:10%;}
-.shop_amount input{width:90%;}
+.shop_amount input{width:80%;}
 .codeVal {
   width: 1.5rem;
   height: 0.5rem;

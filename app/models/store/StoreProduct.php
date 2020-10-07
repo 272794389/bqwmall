@@ -90,6 +90,22 @@ class StoreProduct extends BaseModel
         return $list;
     }
     
+    public static function getListByBelong($belong_t,$cat_id,$limit = 18, $field = '*'){
+        
+        $list = self::validWhere()->where('belong_t', $belong_t)->where('cate_id',$cat_id)->order('sort desc')->limit($limit)->field($field)->select();
+        $list = count($list) ? $list->toArray() : [];
+       
+        return $list;
+    }
+    
+    public static function getTuiList($limit = 18, $field = '*'){
+        $list = self::validWhere()->where('is_best', 1)->order('sort desc')->limit($limit)->field($field)->select();
+        $list = count($list) ? $list->toArray() : [];
+        return $list;  
+    }
+    
+    
+    
     // 批量获取商品
     public static function getListByIds($ids = []){
         $rs =self::where('id','in',$ids)->select();

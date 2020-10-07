@@ -205,6 +205,7 @@ const router = new Router({
         name: "ShopCon",
         meta: {
           title: "商家详情",
+          footer: true,
           keepAlive: false
         },
         component: () => import("@views/shop/ShopCon.vue")
