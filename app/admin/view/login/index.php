@@ -1,10 +1,17 @@
+<?php
+switch ($_SERVER["HTTP_HOST"]) {
+case "www.dshqfsc.com":
+header("location:/");
+break;
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow" />
-    <title>登录管理系统 -  Powered by CRMEB!</title>
+    <title>登录管理系统 </title>
     <meta name="generator" content="CRMEB! v2.5" />
     <meta name="author" content="CRMEB! Team and CRMEB UI Team" />
     <link href="{__FRAME_PATH}css/bootstrap.min.css?v=3.4.0" rel="stylesheet">
@@ -50,7 +57,7 @@
     </div>
 </div>
 <div class="footer" style=" position: fixed;bottom: 0;width: 100%;left: 0;margin: 0;opacity: 0.8;">
-    <div class="pull-right">© 2017-2020 <a href="http://www.crmeb.com/" target="_blank">CRMEB</a>
+    <div class="pull-right">© 2017-2020 <a href="http://www.dshqfsc.com/" target="_blank">baiqianwan.vip</a>
     </div>
 </div>
 
