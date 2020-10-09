@@ -31,6 +31,7 @@ use crmeb\services\{
     SystemConfigService,
     UtilService
 };
+use think\facade\Db;
 
 /**
  * 订单类
@@ -414,7 +415,8 @@ class StoreOrderController
         if (!$order) return app('json')->fail('订单不存在');
         $order = $order->toArray();
         //是否开启门店自提
-        $store_self_mention = sys_config('store_self_mention');
+        $store_self_mention = Db::name('system_config')->where('id',143)->value('value');
+        $store_self_mention = (int)$store_self_mention ?? 0;//门店自提是否开启
         //关闭门店自提后 订单隐藏门店信息
         if ($store_self_mention == 0) $order['shipping_type'] = 1;
         if ($order['verify_code']) {
