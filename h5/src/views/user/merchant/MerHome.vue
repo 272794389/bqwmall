@@ -57,7 +57,6 @@
 </template>
 <script>
 import { getMerHome } from "@api/merchant";
-
 export default {
   name: "UserPromotion",
   components: {},
