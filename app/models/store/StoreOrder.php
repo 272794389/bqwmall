@@ -2682,6 +2682,27 @@ class StoreOrder extends BaseModel
     }
     
     
+    /**
+     * 获取 今日 昨日 本月 订单金额
+     * @return mixed
+     */
+    public static function getPayOrderTimeData($uid)
+    {
+        $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
+        $data['total_Price'] = number_format(StorePayOrder::alias('a')->join('system_store s', 'a.store_id = s.id')->where('a.pay_time', '>', $pre_day)->where('s.user_id',$uid)->where('a.refund_status',0)->value('sum(pay_amount)'), 2) ?? 0;
+        $data['total_count'] = StorePayOrder::alias('a')->join('system_store s', 'a.store_id = s.id')->where('a.pay_time', '>', $pre_day)->where('s.user_id',$uid)->where('a.refund_status',0)->count();
+        $data['refund_Price'] = number_format(StorePayOrder::alias('a')->join('system_store s', 'a.store_id = s.id')->where('a.pay_time', '>', $pre_day)->where('s.user_id',$uid)->where('a.refund_status',1)->value('sum(refund_amount)'), 2) ?? 0;
+        
+        return $data;
+    }
+    
+    public static function getPayOrderDetail($order_id){
+        $data = StorePayOrder::where('id',$order_id)->where('refund_status',0)->find();
+        $data = $data ? $data->toArray() : [];
+        return $data;
+    }
+    
+    
 
     /**
      * 获取某个用户的订单统计数据
@@ -3012,6 +3033,21 @@ class StoreOrder extends BaseModel
         if ($page) $model = $model->page($page, $limit);
         return $model->select();
     }
+    
+    public static function getMyPayOrderDataPriceList($uid,$page, $limit,$store_id)
+    {
+        $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
+        if (!$limit) return [];
+        $model = StorePayOrder::alias('a')->join('system_store b', 'a.store_id = b.id')->join('user c', 'b.user_id = c.uid')->where('a.pay_time','>',$pre_day);
+        $model = $model->field('a.id,a.total_amount,a.pay_amount,a.refund_status,FROM_UNIXTIME(a.pay_time, \'%Y-%m-%d %h:%i:%s\') as time,c.nickname,c.phone');
+        $model = $model->order('a.pay_time DESC');
+        if ($page) $model = $model->page($page, $limit);
+        return $model->select();
+    }
+    
+    
+    
+    
 
     /**
      * 前台订单管理订单列表获取

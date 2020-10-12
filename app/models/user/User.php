@@ -443,7 +443,7 @@ class User extends BaseModel
         if (!$uid) return false;
         $uidSubordinate = self::where('spread_uid', $uid)->column('uid');
         if (!count($uidSubordinate)) return 0;
-        return SystemStore::where('parent_id',$uid)->count();
+        return SystemStore::where('parent_id',$uid)->where('is_del',0)->where('status',1)->count();
     }
     
     

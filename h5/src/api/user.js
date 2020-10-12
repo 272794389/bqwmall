@@ -389,6 +389,13 @@ export function rechargeWechat(data) {
 }
 
 /*
+ * 公众号退款
+ * */
+export function refundWechat(data) {
+  return request.post("/recharge/refund", data);
+}
+
+/*
  * 退出登录
  * */
 export function getLogout() {

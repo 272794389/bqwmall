@@ -45,6 +45,13 @@
         <span class="iconfont icon-xiaolian"></span>
         <div>我的业绩</div>
       </router-link>
+      <router-link
+        class="item acea-row row-center-wrapper row-column"
+        :to="'/customer/payorder/'+ service.uid" v-if="service.uid>0"
+      >
+        <span class="iconfont icon-tuikuanzhong"></span>
+        <div>预收款管理</div>
+      </router-link>
     </div>
   </div>
 </template>

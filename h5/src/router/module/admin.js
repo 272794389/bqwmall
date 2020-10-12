@@ -20,6 +20,26 @@ export default [
     component: () => import("@views/orderAdmin/AdminMyOrder.vue")
   },
   {
+    path: "/customer/payorder/:check_id",
+    name: "AdminPayOrder",
+    meta: {
+      title: "预收款订单",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/orderAdmin/AdminPayOrder.vue")
+  },
+  {
+    path: "/customer/refundorder/:order_id",
+    name: "AdminPayOrderDetail",
+    meta: {
+      title: "预收款退款",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/orderAdmin/AdminRefundOrder.vue")
+  },
+  {
     path: "/customer/orders/:types?",
     name: "AdminOrderList",
     meta: {

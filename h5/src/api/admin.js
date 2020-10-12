@@ -14,6 +14,14 @@ export function getMyOrderStatistics(id) {
   return request.get("/admin/order/mystaticstics/" + id, {}, { login: false });
 }
 
+export function getPayOrderStatistics(id) {
+	  return request.get("/admin/order/paystaticstics/" + id, {}, { login: false });
+	}
+
+export function getOrderDetail(id) {
+	  return request.get("/admin/order/payorderdetail/" + id, {}, { login: false });
+	}
+
 /**
  * 订单月统计
  */
@@ -30,6 +38,10 @@ export function getMyStatisticsMonth(where) {
 
 export function getMyPayStatisticsMonth(where) {
 	  return request.get("/admin/order/mypaydata", where, { login: true });
+	}
+
+export function getMyPayOrderStatisticsMonth(where) {
+	  return request.get("/admin/order/mypayorderdata", where, { login: true });
 	}
 
 

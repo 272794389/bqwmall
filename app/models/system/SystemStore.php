@@ -302,7 +302,7 @@ class SystemStore extends BaseModel
         $sql = StorePayLog::where('o.order_id','>', 0)->where('o.huokuan', '>', 0)->where('o.belong_t', '<', 2)->group('o.uid')->field(['SUM(o.huokuan) as numberCount,count(1) as orderCount', 'o.uid','o.huokuan', 'o.order_id'])
         ->alias('o')->fetchSql(true)->select();
         $model = $model->join("(" . $sql . ") p", 'u.user_id = p.uid', 'LEFT');
-        $model = $model->where('u.parent_id',  $uid);
+        $model = $model->where('u.parent_id',  $uid)->where('is_del',0)->where('status',1);
         $model = $model->field("u.user_id,u.mer_name,u.image,from_unixtime(u.add_time,'%Y/%m/%d') as time,p.numberCount,p.orderCount");
         if (strlen(trim($keyword))) $model = $model->where('u.mer_name', 'like', "%$keyword%");
         $model = $model->group('u.id');

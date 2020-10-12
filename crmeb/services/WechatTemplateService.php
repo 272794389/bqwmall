@@ -83,6 +83,9 @@ class WechatTemplateService implements ProviderInterface
     //提现成功通知
     const CASHF_SUCCESS = 'OPENTM409879070';
     
+    //退款成功通知
+    const  REFUND_SUCCESS = 'OPENTM417876452';
+    
     
     
 

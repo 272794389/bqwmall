@@ -36,11 +36,17 @@ Route::group(function () {
     
     
     Route::get('admin/order/mystaticstics/:check_id', 'admin.StoreOrderController/mystaticstics')->name('mystaticstics');
+    Route::get('admin/order/paystaticstics/:check_id', 'admin.StoreOrderController/paystaticstics')->name('paystaticstics');
+    Route::get('admin/order/payorderdetail/:order_id', 'admin.StoreOrderController/payorderdetail')->name('payorderdetail');
+    
+    
     
     Route::get('admin/order/statistics', 'admin.StoreOrderController/statistics')->name('adminOrderStatistics');//订单数据统计
     Route::get('admin/order/data', 'admin.StoreOrderController/data')->name('adminOrderData');//订单每月统计数据
     Route::get('admin/order/mydata', 'admin.StoreOrderController/mydata')->name('adminMyOrderData');//订单每月统计数据
     Route::get('admin/order/mypaydata', 'admin.StoreOrderController/mypaydata')->name('adminMyPayOrderData');//订单每月统计数据
+    
+    Route::get('admin/order/mypayorderdata', 'admin.StoreOrderController/mypayorderdata')->name('adminMyPayOrderListData');//订单每月统计数据
     
     
     
@@ -175,6 +181,7 @@ Route::group(function () {
     //充值类
     Route::post('recharge/routine', 'user.UserRechargeController/routine')->name('rechargeRoutine');//小程序充值
     Route::post('recharge/wechat', 'user.UserRechargeController/wechat')->name('rechargeWechat');//公众号充值
+    Route::post('recharge/refund', 'user.UserRechargeController/refund')->name('refundWechat');//公众号充值
     Route::get('recharge/index','user.UserRechargeController/index')->name('rechargeQuota');//充值余额选择
     // 商家类
     Route::post('merchant/apply', 'admin.MerchantController/apply')->name('rechargeRoutine');// 商家申请
