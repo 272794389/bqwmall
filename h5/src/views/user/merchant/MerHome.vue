@@ -43,7 +43,7 @@
         :to="'/customer/myorder/'+ service.uid" v-if="service.uid>0"
       >
         <span class="iconfont icon-xiaolian"></span>
-        <div>我的业绩</div>
+        <div>我的业绩1</div>
       </router-link>
       <router-link
         class="item acea-row row-center-wrapper row-column"
