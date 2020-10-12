@@ -47,7 +47,7 @@
       </router-link>
       <router-link
         class="item acea-row row-center-wrapper row-column"
-        :to="'/customer/payorder/'+ service.uid" v-if="service.uid>0"
+        :to="'/customer/payorder/'+ service.uid"
       >
         <span class="iconfont icon-tuikuanzhong"></span>
         <div>预收款管理</div>
