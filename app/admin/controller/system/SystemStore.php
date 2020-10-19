@@ -82,7 +82,7 @@ class SystemStore extends AuthController
     {
         $type = $this->request->param('type');
         $show = SystemStoreModel::where('status', 1)->where('is_del', 0)->count();//显示中的门店
-        $hide = SystemStoreModel::where('status', 0)->count();//隐藏的门店
+        $hide = SystemStoreModel::where('status', 0)->where('is_del', 0)->count();//隐藏的门店
         $recycle = SystemStoreModel::where('is_del', 1)->count();//删除的门店
         if ($type == null) $type = 1;
         $this->assign(compact('type', 'show', 'hide', 'recycle'));
