@@ -3034,15 +3034,15 @@ class StoreOrder extends BaseModel
         return $model->select();
     }
     
-    public static function getMyPayOrderDataPriceList($uid,$page, $limit,$store_id)
+    public static function getMyPayOrderDataPriceList($uid,$page, $limit,$check,$store_id)
     {
+
         $pre_day = strtotime(date('Y-m-d', strtotime('-1 day')));//昨日
         if (!$limit) return [];
         $model = StorePayOrder::alias('a')->join('system_store b', 'a.store_id = b.id')->join('user c', 'b.user_id = c.uid')->where('a.store_id','=',$store_id)->where('a.pay_time','>',$pre_day);
         $model = $model->field('a.id,a.total_amount,a.pay_amount,a.refund_status,a.store_id,FROM_UNIXTIME(a.pay_time, \'%Y-%m-%d %h:%i:%s\') as time,c.nickname,c.phone');
         $model = $model->order('a.pay_time DESC');
         $data = $model->select();
-        print  $model->getLastSql();
         if ($page) $model = $model->page($page, $limit);
         return $model->select();
     }
