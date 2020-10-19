@@ -85,8 +85,6 @@ class SystemStore extends AuthController
         $hide = SystemStoreModel::where('status', 0)->where('is_del', 0)->count();//隐藏的门店
         $recycle = SystemStoreModel::where('is_del', 1)->count();//删除的门店
         if ($type == null) $type = 1;
-        
-
         $this->assign(compact('type', 'show', 'hide', 'recycle'));
         return $this->fetch();
     }
