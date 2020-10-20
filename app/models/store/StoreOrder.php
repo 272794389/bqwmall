@@ -2994,7 +2994,8 @@ class StoreOrder extends BaseModel
         $model = $model->where('is_del', 0);
         $model = $model->where('paid', 1);
         $model = $model->where('store_id', "in",$merList );
-        $model = $model->where('refund_status', 0);
+        $model = $model->whereOr([[['refunc_status','=',0]],[['refunc_status','=',1]]]);
+        //$model = $model->where('refund_status', 0);
         $model = $model->group("FROM_UNIXTIME(pay_time, '%Y-%m-%d')");
         $model = $model->order('pay_time DESC');
         if ($page) $model = $model->page($page, $limit);
