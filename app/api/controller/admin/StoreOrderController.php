@@ -132,6 +132,28 @@ class StoreOrderController
         return app('json')->successful([]);
     }
     
+    public function sumdata(Request $request)
+    {
+        $uid = $request->uid();
+        if (!StoreService::orderServiceStatus($uid))
+            return app('json')->fail('权限不足');
+        list($page, $limit, $start, $stop) = UtilService::getMore([
+            ['page', 1],
+            ['limit', 7],
+            ['start', ''],
+            ['stop', '']
+        ], $request, true);
+        if (!$limit) return app('json')->successful([]);
+        $data = StoreOrder::getOrderDataPriceCount($uid,$page, $limit, $start, $stop);
+        //提取消费订单信息
+        $cservice = StoreService::where('uid',$uid)->find();
+        $mydata = StoreOrder::getMyOrderDataPriceCount($uid,$page, $limit, $start, $stop,$uid,$cservice['store_id']);
+        $tmepArray = array_merge($data->toArray(),$mydata->toArray());
+        if ($data || $mydata) return app('json')->successful($tmepArray);
+        //if ($data || $mydata) return app('json')->successful($data->toArray());
+        return app('json')->successful([]);
+    }
+    
 
     /**
      * 订单每月统计数据
