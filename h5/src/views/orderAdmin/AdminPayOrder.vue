@@ -25,7 +25,7 @@
         <span class="iconfont icon-xiangxishuju"></span>交易详细数据
       </div>
       <div class="nav acea-row row-between-wrapper" >
-        <div class="data">昵称</div>
+        <div class="data">订单ID</div>
         <div class="browse">金额</div>
         <div class="turnover">操作</div>
       </div>
@@ -35,7 +35,7 @@
           v-for="(item, index) in xlist"
           :key="index"
         >
-          <div class="data"><span class="timesytle">{{ item.nickname }}</span><span  class="timesytle">{{ item.time }}</span></div>
+          <div class="data"><span class="timesytle">{{ item.order_id }}</span><span  class="timesytle">{{ item.time }}</span></div>
           <div class="browse">{{ item.total_amount }}</div>
           <div class="turnover" v-if="item.refund_status==0">
             <router-link :to="'/customer/refundorder/'+ item.id" style="color:#f00;">退款 </router-link>
