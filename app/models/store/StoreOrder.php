@@ -887,7 +887,7 @@ class StoreOrder extends BaseModel
      * @param unknown $order
      */
     public static function BackPoint($order)
-    {
+    {print_r("dddddd");
          return false !== Db::table('eb_user')->where('uid',$order['uid'])->update(['pay_point'=>1]);
          //.Db::name('user')->getLastSql();
          
