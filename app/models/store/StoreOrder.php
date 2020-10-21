@@ -888,7 +888,7 @@ class StoreOrder extends BaseModel
      */
     public static function BackPoint($order)
     {
-        return false !== User::where('uid',$order['uid'])->dec('pay_point',$order['give_point'])->update();
+        return false !== User::where('uid',$order['uid'])->dec('pay_point',$order['pay_point'])->update();
     }
 
 
