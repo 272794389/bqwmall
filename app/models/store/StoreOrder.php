@@ -888,7 +888,7 @@ class StoreOrder extends BaseModel
      */
     public static function BackPoint($order)
     {
-        return Db::table('eb_user')->where('uid',$order['uid'])->dec('real_name',$order['pay_point'])->update();
+        return Db::table('eb_user')->where('uid',$order['uid'])->dec('pay_count',$order['pay_point'])->update();
         //return Db::name('user')->getLastSql();
     }
 
