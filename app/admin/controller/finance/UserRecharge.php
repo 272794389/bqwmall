@@ -104,7 +104,7 @@ SCRIPT;
         $refund_price = $data['refund_price'];
         $data['refund_price'] = bcadd($data['refund_price'], $UserRecharge['refund_price'], 2);
         $bj = bccomp((float)$UserRecharge['price'], (float)$data['refund_price'], 2);
-        if ($bj < 0) return JsonService::fail('退款金额大于支付金额，请修改退款金额');
+        if ($bj < 0) return JsonService::fail('退款金额大于支付金额，请修改退款金额!!');
         $refund_data['pay_price'] = $UserRecharge['price'];
         $refund_data['refund_price'] = $refund_price;
 //        $refund_data['refund_account']='REFUND_SOURCE_RECHARGE_FUNDS';
