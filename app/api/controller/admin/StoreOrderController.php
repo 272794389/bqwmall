@@ -628,7 +628,7 @@ class StoreOrderController
                     User::bcDec($item['uid'], 'brokerage_price', $item['number'], 'uid');
                     UserBill::expend('退款退佣金', $item['uid'], 'now_money', 'brokerage', $item['number'], $orderId, bcsub($usermoney, $item['number'], 2), '订单退款扣除佣金' . floatval($item['number']) . '元');
                 }
-            return app('json')->successful('修改成功!');
+            return app('json')->successful('修改成功!!');
         } else {
             StoreOrderStatus::status($orderInfo['id'], 'refund_price', '退款给用户' . $price . '元失败');
             return app('json')->successful('修改失败!');
