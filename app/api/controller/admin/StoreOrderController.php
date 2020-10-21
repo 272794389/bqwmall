@@ -602,7 +602,7 @@ class StoreOrderController
             if (!$res) return app('json')->fail('余额退款失败!');
         }
         //回退积分
-        StoreOrder::BackPoint($orderInfo);
+        $sqlxx = StoreOrder::BackPoint($orderInfo);
         //User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
         //Db::table("eb_user")->where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
@@ -630,7 +630,7 @@ class StoreOrderController
                     User::bcDec($item['uid'], 'brokerage_price', $item['number'], 'uid');
                     UserBill::expend('退款退佣金', $item['uid'], 'now_money', 'brokerage', $item['number'], $orderId, bcsub($usermoney, $item['number'], 2), '订单退款扣除佣金' . floatval($item['number']) . '元');
                 }
-            return app('json')->successful('修改成功!!');
+            return app('json')->successful('修改成功!!'.$sqlxx);
         } else {
             StoreOrderStatus::status($orderInfo['id'], 'refund_price', '退款给用户' . $price . '元失败');
             return app('json')->successful('修改失败!!');
