@@ -605,6 +605,7 @@ class StoreOrderController
 
          //Db::name('user')->where('uid',$orderInfo['uid'])->inc('pay_point',$orderInfo['pay_point'])->update();
         $userinfo = Db::name('user')->where('uid',$orderInfo['uid'])->select();
+        print_r($userinfo);
         Db::name('user')->where('uid',$orderInfo['uid'])->update(["pay_point"=>$userinfo['pay_point']-$orderInfo['pay_point']]);
 
 
