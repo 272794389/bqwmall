@@ -594,7 +594,7 @@ class StoreOrder extends AuthController
                 }
 
             BaseModel::commitTrans();
-            return Json::successful('修改成功!');
+            return Json::successful('修改成功!!!');
         } else {
             StoreOrderStatus::setStatus($id, 'refund_price', '退款给用户' . $refund_price . '元失败');
             return Json::fail('修改失败!');
