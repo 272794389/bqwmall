@@ -115,7 +115,7 @@ class StoreOrderController
      * @param Request $request
      * @return mixed
      */
-    /*public function data(Request $request)
+    public function data(Request $request)
     {
         $uid = $request->uid();
         if (!StoreService::orderServiceStatus($uid))
@@ -130,9 +130,9 @@ class StoreOrderController
         $data = StoreOrder::getOrderDataPriceCount($uid,$page, $limit, $start, $stop);
         if ($data) return app('json')->successful($data->toArray());
         return app('json')->successful([]);
-    }*/
+    }
     
-    public function data(Request $request)
+    /*public function data(Request $request)
     {
         $uid = $request->uid();
         if (!StoreService::orderServiceStatus($uid))
@@ -152,7 +152,7 @@ class StoreOrderController
         if ($data || $mydata) return app('json')->successful($tmepArray);
         //if ($data || $mydata) return app('json')->successful($data->toArray());
         return app('json')->successful([]);
-    }
+    }*/
     
 
     /**
