@@ -602,14 +602,7 @@ class StoreOrderController
             if (!$res) return app('json')->fail('余额退款失败!');
         }
         //回退积分
-
-         //Db::name('user')->where('uid',$orderInfo['uid'])->inc('pay_point',$orderInfo['pay_point'])->update();
-        $userinfo = Db::name('user')->where('uid',$orderInfo['uid'])->select();
-        print_r($userinfo);
-        Db::name('user')->where('uid',$orderInfo['uid'])->update(["pay_point"=>$userinfo['pay_point']-$orderInfo['pay_point']]);
-
-
-        
+        $sqlxx = User::BackPoint($orderInfo);
         //User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
         //Db::table("eb_user")->where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
