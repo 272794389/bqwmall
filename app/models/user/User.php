@@ -12,7 +12,7 @@ use think\facade\Session;
 use crmeb\traits\ModelTrait;
 use crmeb\basic\BaseModel;
 use crmeb\traits\JwtAuthModelTrait;
-
+use think\facade\Db;
 /**
  * TODO 用户Model
  * Class User
@@ -728,9 +728,12 @@ class User extends BaseModel
      * @param unknown $order
      */
     public static function BackPoint($order)
-    {
-        User::where('uid',$order['uid'])->update(['pay_point'=>1]);
-        return Db::name('user')->where('uid',$order['uid'])->dec('pay_point',$order['pay_point'])->update();
+    {print_r($order);
+    Db::name('user')
+    ->save(['pay_point' => 1]);
+        self::where('uid',intval($order['uid']))->update(['pay_point'=>1]);
+        print_r(self::getLastSql());
+        return Db::name('user')->where('uid',intval($order['uid']))->dec('pay_point',intval($order['pay_point']))->update();
         //return Db::name('user')->getLastSql();
     }
     

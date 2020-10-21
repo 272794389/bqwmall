@@ -1139,6 +1139,10 @@ class StoreOrder extends BaseModel
         $res = $res1 && $resPink;
         return false !== $res;
     }
+    public static function BackPoint($order)
+    {
+        return $res1 = false !== User::bcInc($uid, 'pay_point', $order['pay_point'], 'uid');
+    }
     
     // 订单拆分 支付成功以后订单拆分
     // 拆分规则  1 单个商品的不拆分  2 到店核销的商品每个一单 3 供应商不同订单不同
