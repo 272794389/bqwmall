@@ -882,15 +882,6 @@ class StoreOrder extends BaseModel
         UserBill::income('积分回退', $order['uid'], 'integral', 'deduction', $order['use_integral'], $order['unique'], User::where('uid', $order['uid'])->value('integral'), '购买商品失败,回退积分' . floatval($order['use_integral']));
         return false !== self::where('order_id', $order['order_id'])->update(['back_integral' => $order['use_integral']]);
     }
-    /**
-     * *积分退回
-     * @param unknown $order
-     */
-    public static function BackPoint($order)
-    {
-        return Db::name('user')->where('uid',$order['uid'])->inc('pay_point',$order['pay_point'])->update();
-        //return Db::name('user')->getLastSql();
-    }
 
 
     /**
