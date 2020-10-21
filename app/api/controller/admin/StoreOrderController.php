@@ -564,7 +564,7 @@ class StoreOrderController
         if (!$price) return app('json')->fail('请输入退款金额');
         $data['refund_price'] = bcadd($price, $orderInfo['refund_price'], 2);
         $bj = bccomp((float)$orderInfo['pay_price'], (float)$data['refund_price'], 2);
-        if ($bj < 0) return app('json')->fail('退款金额大于支付金额，请修改退款金额!!');
+        if ($bj < 0) return app('json')->fail('退款金额大于支付金额，请修改退款金额');
         $refundData['pay_price'] = $orderInfo['pay_price'];
         $refundData['refund_price'] = $price;
         if ($orderInfo['pay_type'] == 'weixin') {
@@ -600,7 +600,9 @@ class StoreOrderController
             StoreOrder::checkTrans($res);
             if (!$res) return app('json')->fail('余额退款失败!');
         }
-
+        //回退积分
+        StoreOrder::BackPoint($orderInfo);
+        //print_r(StoreOrder::getLastSql());
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
         if ($resEdit) {
             $data['type'] = $type;
