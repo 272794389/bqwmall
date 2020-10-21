@@ -602,6 +602,7 @@ class StoreOrderController
         }
         //回退积分
         StoreOrder::BackPoint($orderInfo);
+        print_r($storeOrder->getLastSql());
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
         if ($resEdit) {
             $data['type'] = $type;
