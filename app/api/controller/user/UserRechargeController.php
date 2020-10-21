@@ -123,7 +123,7 @@ class UserRechargeController
             return app('json')->fail('订单不存在');
         }
         if($price>$orderinfo['total_amount']){
-            return app('json')->fail('退款金额不能大于支付金额');
+            return app('json')->fail('退款金额不能大于支付金额!!');
         }
         
         $data['refund_status']=1;
