@@ -604,7 +604,7 @@ class StoreOrderController
         //回退积分
         //StoreOrder::BackPoint($orderInfo);
         //User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
-        Db::table("user")->where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
+        Db::table("eb_user")->where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
         ///return (StoreOrder::getLastSql());
         $sqlxx = StoreOrder::getLastSql();
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
