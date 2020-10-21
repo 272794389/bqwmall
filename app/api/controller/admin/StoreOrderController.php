@@ -602,7 +602,13 @@ class StoreOrderController
             if (!$res) return app('json')->fail('余额退款失败!');
         }
         //回退积分
+        try{
          Db::name('user')->where('uid',$orderInfo['uid'])->inc('pay_point',$orderInfo['pay_point'])->update();
+        }
+        catch (\Exception $e)
+        {
+            return app('json')->fail($e->getMessage());
+        }
 
         
         //User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
