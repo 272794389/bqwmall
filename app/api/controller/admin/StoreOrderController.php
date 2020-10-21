@@ -604,7 +604,8 @@ class StoreOrderController
         //回退积分
 
          //Db::name('user')->where('uid',$orderInfo['uid'])->inc('pay_point',$orderInfo['pay_point'])->update();
-        print_r(Db::name('user')->where('uid',$orderInfo['uid'])->select());
+        $userinfo = Db::name('user')->where('uid',$orderInfo['uid'])->select();
+        Db::name('user')->where('uid',$orderInfo['uid'])->update(["pay_point"=>$userinfo['pay_point']-$orderInfo['pay_point']]);
 
 
         
