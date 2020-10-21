@@ -524,7 +524,7 @@ class StoreOrder extends AuthController
         $refund_price = $data['refund_price'];
         $data['refund_price'] = bcadd($data['refund_price'], $product['refund_price'], 2);
         $bj = bccomp((float)$product['pay_price'], (float)$data['refund_price'], 2);
-        if ($bj < 0) return Json::fail('退款金额大于支付金额，请修改退款金额');
+        if ($bj < 0) return Json::fail('退款金额大于支付金额，请修改退款金额!!!');
         if ($data['type'] == 1) {
             $data['refund_status'] = 2;
         } else if ($data['type'] == 2) {
@@ -594,7 +594,7 @@ class StoreOrder extends AuthController
                 }
 
             BaseModel::commitTrans();
-            return Json::successful('修改成功!!!');
+            return Json::successful('修改成功!');
         } else {
             StoreOrderStatus::setStatus($id, 'refund_price', '退款给用户' . $refund_price . '元失败');
             return Json::fail('修改失败!');
