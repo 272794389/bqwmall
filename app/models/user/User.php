@@ -724,4 +724,5 @@ class User extends BaseModel
         return $model->where('brokerage_price', '>', $brokerage_price)->count('uid');
     }
     
+    /***/
 }
