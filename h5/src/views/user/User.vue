@@ -170,7 +170,7 @@
 	  <div class="title"  v-if="userInfo.is_check==1">
 		 <router-link :to="'/customer/orders/1'" class="title1">
 		  <div class="title1-1"><img src="@assets/images/dsh.png" /></div>
-		  <div class="title1-2">订单管理</div>
+		  <div class="title1-2">商家订单</div>
 		  <div class="title1-3">订单发货<span class="iconfont icon-jiantou"></span></div>
 		 </router-link>
 	  </div>
