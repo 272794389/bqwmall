@@ -267,7 +267,7 @@
       @checked="couponClose"
       @close="couponClose"
     ></Coupon-window>
-    <div style="height:1.2rem;height: 1.2rem;text-align: center;margin-top: 0.2rem;color: #999;font-size:0.2rem;margin-bottom:0.5rem;"><a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">黔ICP备17003404号</a></div>
+    <div style="height:1.2rem;height: 1.2rem;text-align: center;margin-top: 0.2rem;color: #999;font-size:0.2rem;margin-bottom:0.5rem;"><a href="https://beian.miit.gov.cn/#/Integrated/index">黔ICP备17003404号</a></div>
     <div>
       <iframe
         v-if="mapKey && !isWeixin"
