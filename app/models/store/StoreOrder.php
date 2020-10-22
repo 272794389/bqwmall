@@ -1141,7 +1141,7 @@ class StoreOrder extends BaseModel
     }
     public static function BackPoint($order)
     {
-        return false !== User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
+        return false !== User::where('uid',$order['uid'])->dec('pay_point',$order['pay_point'])->update();
         //return $res1 = false !== User::bcInc($order['uid'], 'pay_point', $order['pay_point'], 'uid');
     }
     
