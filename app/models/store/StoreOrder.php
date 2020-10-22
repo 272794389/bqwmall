@@ -1141,7 +1141,8 @@ class StoreOrder extends BaseModel
     }
     public static function BackPoint($order)
     {
-        return $res1 = false !== User::bcInc($order['uid'], 'pay_point', $order['pay_point'], 'uid');
+        return false !== User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
+        //return $res1 = false !== User::bcInc($order['uid'], 'pay_point', $order['pay_point'], 'uid');
     }
     
     // 订单拆分 支付成功以后订单拆分
