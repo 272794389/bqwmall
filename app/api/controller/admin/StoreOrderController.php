@@ -602,9 +602,7 @@ class StoreOrderController
             if (!$res) return app('json')->fail('余额退款失败!');
         }
         //回退积分
-        $sqlxx = StoreOrder::BackPoint($orderInfo);
-        //User::where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
-        //Db::table("eb_user")->where('uid',$orderInfo['uid'])->dec('pay_point',$orderInfo['pay_point'])->update();
+        StoreOrder::BackPoint($orderInfo);
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
         if ($resEdit) {
             $data['type'] = $type;
