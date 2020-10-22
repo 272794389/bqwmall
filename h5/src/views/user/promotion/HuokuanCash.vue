@@ -184,6 +184,7 @@ export default {
       );
     },
     async submitted() {
+    this.isDisable = true;
       let bankname = this.post.bankname,
         alipay_code = this.post.alipay_code,
         money = this.post.money,
