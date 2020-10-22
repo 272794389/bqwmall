@@ -723,18 +723,6 @@ class User extends BaseModel
         }
         return $model->where('brokerage_price', '>', $brokerage_price)->count('uid');
     }
-    /**
-     * *积分退回
-     * @param unknown $order
-     */
-    public static function BackPoint($order)
-    {print_r($order);
-    Db::name('user')
-    ->save(['pay_point' => 1]);
-        self::where('uid',intval($order['uid']))->update(['pay_point'=>1]);
-        print_r(self::getLastSql());
-        return Db::name('user')->where('uid',intval($order['uid']))->dec('pay_point',intval($order['pay_point']))->update();
-        //return Db::name('user')->getLastSql();
-    }
+
     
 }
