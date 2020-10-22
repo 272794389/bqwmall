@@ -631,7 +631,7 @@ export default {
 .index .wrapper .newProducts .swiper-slide .img-box{height:2.2rem;}
 .index .wrapper .newProducts .swiper-slide .money{padding:0rem;}
 .slider-banner{width: 96%;margin-left:2%;border-radius:0.2rem;}
-.cate_style{color: #f7332c; margin-right: 0.3rem;line-height: 0.5rem;}
+.cate_style{color: #f96829; margin-right: 0.3rem;line-height: 0.5rem;}
 .morestyle{width: 96%;margin-left: 2%; text-align: center;line-height: 1rem;background: #fff;margin-top: 0.2rem;}
 .morestyle a{color: #14adfb;font-weight: 700;}
 .activity {
