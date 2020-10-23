@@ -125,7 +125,7 @@
         合计:
         <span class="font-color-red">￥{{ orderPrice.pay_amount }}</span>
       </div>
-      <div class="settlement" @click="payOrder">立即支付</div>
+      <div class="settlement" @click="payOrder" :disabled="submitDisabled">立即支付</div>
     </div>
   </div>
 </template>
@@ -172,6 +172,7 @@ export default {
       usePayIntegral:false,
       isWeixin: _isWeixin,
       active: _isWeixin ? "weixin" : "yue",
+      submitDisabled:false,
       orderPrice: {
         pay_price: "计算中"
       },
@@ -261,6 +262,7 @@ export default {
       if (!this.active) return this.$dialog.toast({ mes: "请选择支付方式" });
      
       this.$dialog.loading.open("订单提交中");
+      this.submitDisabled = true;
       payOrder({
         payType: this.active,
         from: this.from,
