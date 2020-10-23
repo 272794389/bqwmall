@@ -125,7 +125,7 @@
         合计:
         <span class="font-color-red">￥{{ orderPrice.pay_amount }}</span>
       </div>
-      <div class="settlement" @click="payOrder" :disabled="submitDisabled">立即支付</div>
+      <div class="settlement" @click="payOrder" :disabled="isDisable">立即支付</div>
     </div>
   </div>
 </template>
@@ -172,7 +172,7 @@ export default {
       usePayIntegral:false,
       isWeixin: _isWeixin,
       active: _isWeixin ? "weixin" : "yue",
-      submitDisabled:false,
+      isDisable: false,
       orderPrice: {
         pay_price: "计算中"
       },
@@ -256,6 +256,17 @@ export default {
     },
     payItem: function(index) {
       this.active = index;
+    },
+    
+    disabel:function(){
+    //点击按钮之后禁用按钮
+    this.isDisable = true
+    //处理
+    ......
+    //
+    setTimeout(() => {
+        this.isDisable = false
+    }, 2000)
     },
     
     payOrder() {
