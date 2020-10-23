@@ -631,7 +631,7 @@ class StoreOrderController
             return app('json')->successful('修改成功'); 
         } else {
             StoreOrderStatus::status($orderInfo['id'], 'refund_price', '退款给用户' . $price . '元失败');
-            return app('json')->successful('修改失败!!');
+            return app('json')->successful('修改失败');
         }
     }
 
