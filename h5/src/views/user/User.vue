@@ -32,7 +32,7 @@
       <div class="nav acea-row row-middle">
         <router-link :to="{ path: '/user/account' }" class="item">
           <div class="num">{{ userInfo.now_money || 0 }}</div>
-          <div>余额</div>
+          <div>余额1</div>
         </router-link>
         <router-link :to="{ path: '/user/huokuan' }" class="item" v-if="userInfo.store_name!=''">
           <div class="num">{{ userInfo.huokuan || 0 }}</div>
