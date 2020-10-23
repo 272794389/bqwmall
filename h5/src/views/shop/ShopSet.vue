@@ -271,6 +271,7 @@ export default {
     
     payOrder() {
       if (!this.active) return this.$dialog.toast({ mes: "请选择支付方式" });
+      this.isDisable = true;
      
       this.$dialog.loading.open("订单提交中");
       this.submitDisabled = true;
