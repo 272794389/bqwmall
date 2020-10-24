@@ -603,6 +603,8 @@ class StoreOrderController
         }
         //回退积分
         StoreOrder::BackPoint($orderInfo);
+        //退货款
+        StoreOrder::BackHuokuan($orderInfo);
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
         if ($resEdit) {
             $data['type'] = $type;

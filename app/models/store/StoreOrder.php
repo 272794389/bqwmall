@@ -1139,10 +1139,23 @@ class StoreOrder extends BaseModel
         $res = $res1 && $resPink;
         return false !== $res;
     }
+    /**
+     * 退消费积分
+     * @param  $order
+     * @return boolean
+     */
     public static function BackPoint($order)
     {
         return false !== User::where('uid',$order['uid'])->dec('pay_point',$order['pay_point'])->update(); 
-        //return $res1 = false !== User::bcInc($order['uid'], 'pay_point', $order['pay_point'], 'uid');
+    }
+    /**
+     * 退货款
+     * @param  $order
+     * @return boolean
+     */
+    public static function BackHuokuan($order)
+    {
+        return false !== User::where('uid',$order['uid'])->dec('huokuan',$order['total_price']*0.8)->update();
     }
     
     // 订单拆分 支付成功以后订单拆分
