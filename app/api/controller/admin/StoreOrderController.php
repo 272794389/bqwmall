@@ -601,11 +601,10 @@ class StoreOrderController
             StoreOrder::checkTrans($res);
             if (!$res) return app('json')->fail('余额退款失败!');
         }
-        print_r($request->uid());echo "dddddd";
         //回退积分
-        StoreOrder::BackPoint($orderInfo);
+        //StoreOrder::BackPoint($orderInfo,$request->uid());
         //退货款
-        StoreOrder::BackHuokuan($orderInfo);
+        //StoreOrder::BackHuokuan($orderInfo,$request->uid());
         $resEdit = StoreOrder::edit($data, $orderInfo['id'], 'id');
         if ($resEdit) {
             $data['type'] = $type;
