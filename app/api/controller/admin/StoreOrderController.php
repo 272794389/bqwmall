@@ -590,7 +590,7 @@ class StoreOrderController
                 return app('json')->fail('订单用户不存在');
             }
             $res1 = User::bcInc($orderInfo['uid'], 'now_money', $price, 'uid');
-            $res2 = $res2 = UserBill::income('商品退款', $orderInfo['uid'], 'now_money', 'pay_product_refund', $price, $orderInfo['id'], bcadd($userInfo['now_money'], $price, 2), '订单退款到余额' . floatval($price) . '元');
+            $res2 = UserBill::income('商品退款', $orderInfo['uid'], 'now_money', 'pay_product_refund', $price, $orderInfo['id'], bcadd($userInfo['now_money'], $price, 2), '订单退款到余额' . floatval($price) . '元');
             try {
                 OrderRepository::storeOrderYueRefund($orderInfo, $refundData);
             } catch (\Exception $e) {
