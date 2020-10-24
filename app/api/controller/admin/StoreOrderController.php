@@ -601,6 +601,7 @@ class StoreOrderController
             StoreOrder::checkTrans($res);
             if (!$res) return app('json')->fail('余额退款失败!');
         }
+        print_r($request->uid());echo "dddddd";
         //回退积分
         StoreOrder::BackPoint($orderInfo);
         //退货款
