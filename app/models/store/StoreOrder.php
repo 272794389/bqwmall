@@ -1144,20 +1144,126 @@ class StoreOrder extends BaseModel
      * @param  $order
      * @return boolean
      */
-    public static function BackPoint($order)
+    public static function BackPoint($order,$sid)
     {
 
-        return false !== User::where('uid',$order['uid'])->dec('pay_point',$order['pay_point'])->update(); 
+        $give_point = $order['give_point'];
+        $pay_point = $order['pay_point'];
+        $pay_repeatpoint = $order['pay_repeatpoint'];
+        //消费者UID
+        $uid = $order['uid'];
+        //返还消费积分
+        $res1=true;
+        if($res1&&$order['pay_paypoint']>0){
+            $res1 = false !== User::bcInc($uid, 'pay_point', $order['pay_paypoint'], 'uid');
+            $pay_point = -$order['pay_paypoint'];
+
+        }
+        //返还购物积分
+        if($res1&&$order['give_rate']>0){
+            $res1 = false !== User::bcInc($uid, 'give_point', $order['give_rate'], 'uid');
+            $give_point = -$order['give_rate'];
+        }
+        //返还重消积分
+        if($res1&&$order['pay_repeatpoint']>0){
+            $res1 = false !== User::bcInc($uid, 'repeat_point', $order['pay_repeatpoint'], 'uid');
+            $repeat_point = -$order['pay_repeatpoint'];
+        }
+        if($res1&&($give_point!=0||$pay_point!=0||$pay_repeatpoint!=0)){
+            
+            $res1 = StorePayLog::expend($uid, $order['id'], 1, 0, 0, $give_point, $pay_point,$pay_repeatpoint,0, '购买商品抵扣');
+        }
+        
+        //购物积分系统收回
+        if($res1&&$order['give_point']>0){
+            $res1 = false !== User::bcDec($uid, 'give_point', $order['give_point'], 'uid');
+        }
+        //消费积分系统收回
+        if($res1&&$order['pay_point']>0){
+            $res1 = false !== User::bcDec($uid, 'pay_point', $order['pay_point'], 'uid');
+        }
+         
+        if($res1&&($order['give_point']>0||$order['pay_point']>0)){
+            $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回');
+        }
+        
+        
+        if($order['coupon_price']>0){//如果使用了抵扣券
+            $coupon_price = $order['coupon_price'];
+            $couponList = GoodsCouponUser::getCouponList($uid,0);
+            foreach ($couponList as $coupon){
+                $amount = bcadd($coupon['coupon_price'],$coupon['hamount'],2);
+                if($amount>0&&$amount>$coupon_price&&$coupon_price>0){//该次抵扣券足够抵扣
+                    //更改已使用金额
+                    $pamount = bcsub($coupon['hamount'],$coupon_price,2);
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $pamount]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $order['order_id'],
+                        'coupon_price' => '-'.$coupon_price,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=0;
+                    break;
+                }else if($amount>0&&($amount<$coupon_price||$amount==$coupon_price)){//该次抵扣券不足以抵扣
+                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $coupon['coupon_price']]);
+                    //写入抵扣记录
+                    $couponUse = [
+                        'cid' => $coupon['id'],
+                        'order_id' => $order['order_id'],
+                        'coupon_price' => $amount,
+                        'add_time' => time(),
+                    ];
+                    $info = GoodsCouponUse::create($couponUse);
+                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
+                    $coupon_price=bcadd($coupon_price,$amount,2);
+                }
+                if($coupon_price==0){
+                    break;
+                }
+            }
+        }
+
+        //货款
+        
+        $store_id = $order['store_id'];
+        $system_store_info = Db::name('system_store')->where('id','=',$store_id)->find();
+        $user_id = $system_store_info['user_id'];
+        User::bcDec($user_id, 'huokuan', $order['total_price']*0.8, 'uid');
+        //Db::name('user')->where('uid','=',$user_id)->dec('huokuan',$order['total_price']*0.8)->update();
+        //推荐人余额
+        $config_info = Db::name('data_config')->where('id','=',1)->find();
+        $first_rec = $config_info['rec_f'];
+        $second_rec = $config_info['rec_s'];
+        $shop_rec = $config_info['shop_rec'];
+        $first_user = Db::name('user')->where('uid',$uid)->find();
+        $first_uid = $first_user['spread_uid'];
+        $second_user = Db::name('user')->where('uid',$first_uid)->find();
+        $second_uid = $second_user['spread_uid'];
+        
+        $now_money = Db::name('user')->where('uid','=',$first_uid)->find();
+        User::bcDec($first_uid, 'now_money', $order['total_price']*0.8*0.1*$first_rec/100, 'uid');
+        User::bcDec($second_uid, 'now_money', $order['total_price']*0.8*0.1*$second_rec/100, 'uid');
+        //推荐人重消积分
+        User::bcDec($first_uid, 'repeat_point', $order['total_price']*0.1*0.1*$first_rec/100, 'uid');
+        User::bcDec($second_uid, 'repeat_point', $order['total_price']*0.1*0.1*$second_rec/100, 'uid');
+        //商家推荐人余额
+        $shop_parent_id = $system_store_info['parent_id'];
+        User::bcDec($shop_parent_id, 'now_money', $order['total_price']*0.8*0.1*$shop_rec/100, 'uid');
+        User::bcDec($shop_parent_id, 'repeat_point', $order['total_price']*0.1*0.1*$shop_rec/100, 'uid');
+
+        
+        
+        
+        
+        
+        return "ddd";
+        
     }
-    /**
-     * 退货款
-     * @param  $order
-     * @return boolean
-     */
-    public static function BackHuokuan($order)
-    {
-        return false !== User::where('uid',$order['uid'])->dec('huokuan',$order['total_price']*0.8)->update();
-    }
+
     
     // 订单拆分 支付成功以后订单拆分
     // 拆分规则  1 单个商品的不拆分  2 到店核销的商品每个一单 3 供应商不同订单不同
