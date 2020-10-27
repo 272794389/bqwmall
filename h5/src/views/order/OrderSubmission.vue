@@ -30,14 +30,14 @@
           </div>
           <div>
             <span class="default font-color-red" v-if="addressInfo.is_default"
-              >[默认]</span
+              >[榛樿]</span
             >
             {{ addressInfo.province }}{{ addressInfo.city
             }}{{ addressInfo.district }}{{ addressInfo.detail }}
           </div>
         </div>
         <div class="addressCon" v-else>
-          <div class="setaddress">设置收货地址</div>
+          <div class="setaddress">璁剧疆鏀惰揣鍦板潃</div>
         </div>
         <div class="iconfont icon-jiantou"></div>
       </div>
@@ -66,15 +66,15 @@
         @click="couponTap"
         v-if="deduction === false"
       >
-        <div>优惠券</div>
+        <div>浼樻儬鍒�</div>
         <div class="discount">
-          {{ usableCoupon.coupon_title || "请选择" }}
+          {{ usableCoupon.coupon_title || "璇烽�夋嫨" }}
           <span class="iconfont icon-jiantou"></span>
         </div>
       </div>
       -->
       <div class="item acea-row row-between-wrapper">
-        <div>使用积分抵扣</div>
+        <div>浣跨敤绉垎鎶垫墸</div>
         <div class="discount">
           <div class="select-btn">
             <div class="checkbox-wrapper">
@@ -82,9 +82,9 @@
                 <input type="checkbox" v-model="useIntegral" />
                 <i class="icon"></i>
                 <span class="integral">
-                  当前可抵扣
+                  褰撳墠鍙姷鎵�
                   <span class="num font-color-red">
-                    ￥{{ orderPrice.total_price-orderPrice.pay_price-orderPrice.coupon_price || 0 }}
+                    锟{ orderPrice.total_price-orderPrice.pay_price-orderPrice.coupon_price || 0 }}
                   </span>
                 </span>
               </label>
@@ -93,7 +93,7 @@
         </div>
       </div>
       <div class="item acea-row row-between-wrapper">
-        <div>抵扣券抵扣</div>
+        <div>鎶垫墸鍒告姷鎵�</div>
         <div class="discount">
           <div class="select-btn">
             <div class="checkbox-wrapper">
@@ -101,9 +101,9 @@
                 <input type="checkbox" v-model="useCoupon" />
                 <i class="icon"></i>
                 <span class="integral">
-                  当前可抵扣
+                  褰撳墠鍙姷鎵�
                   <span class="num font-color-red">
-                                                      ￥{{orderPrice.coupon_price || 0 }}
+                                                      锟{orderPrice.coupon_price || 0 }}
                   </span>
                 </span>
               </label>
@@ -122,52 +122,52 @@
             orderGroupInfo.seckill_id == 0
         "
       >
-        会员优惠
-        <div class="discount">-￥{{ orderGroupInfo.priceGroup.vipPrice }}</div>
+        浼氬憳浼樻儬
+        <div class="discount">-锟{ orderGroupInfo.priceGroup.vipPrice }}</div>
       </div>
       <div class="item acea-row row-between-wrapper" v-if="shipping_type === 0">
-        <div>快递费用</div>
+        <div>蹇�掕垂鐢�</div>
         <div class="discount">
           {{
             orderPrice.pay_postage > 0
-              ? "￥" + orderPrice.pay_postage
-              : "免运费"
+              ? "锟�" + orderPrice.pay_postage
+              : "鍏嶈繍璐�"
           }}
         </div>
       </div>
       <div v-else>
         <div class="item acea-row row-between-wrapper">
-          <div>联系人</div>
+          <div>鑱旂郴浜�</div>
           <div class="discount">
             <input
               type="text"
-              placeholder="请填写您的联系姓名"
-              v-model="contacts"
+              placeholder="璇峰～鍐欐偍鐨勮仈绯诲鍚�"
+              v-model="contacts" 
             />
           </div>
         </div>
         <div class="item acea-row row-between-wrapper">
-          <div>联系电话</div>
+          <div>鑱旂郴鐢佃瘽</div>
           <div class="discount">
             <input
               type="text"
-              placeholder="请填写您的联系电话"
+              placeholder="璇峰～鍐欐偍鐨勮仈绯荤數璇�"
               v-model="contactsTel"
             />
           </div>
         </div>
       </div>
       <div class="item">
-        <div>备注信息</div>
+        <div>澶囨敞淇℃伅</div>
         <textarea
-          placeholder="请添加备注（150字以内）"
+          placeholder="璇锋坊鍔犲娉紙150瀛椾互鍐咃級"
           v-model="mark"
         ></textarea>
       </div>
     </div>
     <div class="wrapper">
       <div class="item">
-        <div>支付方式</div>
+        <div>鏀粯鏂瑰紡</div>
         <div class="list">
           <div
             class="payItem acea-row row-middle"
@@ -180,9 +180,9 @@
                 class="iconfont icon-weixin2"
                 :class="active === 'weixin' ? 'bounceIn' : ''"
               ></div>
-              微信支付
+              寰俊鏀粯
             </div>
-            <div class="tip">微信快捷支付</div>
+            <div class="tip">寰俊蹇嵎鏀粯</div>
           </div>
           <div
             class="payItem acea-row row-middle"
@@ -195,9 +195,9 @@
                 class="iconfont icon-weixin2"
                 :class="active === 'weixin' ? 'bounceIn' : ''"
               ></div>
-              微信支付
+              寰俊鏀粯
             </div>
-            <div class="tip">微信快捷支付</div>
+            <div class="tip">寰俊蹇嵎鏀粯</div>
           </div>
           <div
             class="payItem acea-row row-middle"
@@ -209,9 +209,9 @@
                 class="iconfont icon-icon-test"
                 :class="active === 'yue' ? 'bounceIn' : ''"
               ></div>
-              余额支付
+              浣欓鏀粯
             </div>
-            <div class="tip">可用余额：{{ userInfo.now_money || 0 }}</div>
+            <div class="tip">鍙敤浣欓锛歿{ userInfo.now_money || 0 }}</div>
           </div>
           <div
             class="payItem acea-row row-middle"
@@ -228,9 +228,9 @@
                 class="iconfont icon-yinhangqia"
                 :class="active === 'offline' ? 'bounceIn' : ''"
               ></div>
-              线下支付
+              绾夸笅鏀粯
             </div>
-            <div class="tip">线下方便支付</div>
+            <div class="tip">绾夸笅鏂逛究鏀粯</div>
           </div>
         </div>
       </div>
@@ -240,74 +240,74 @@
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.total_price !== undefined"
       >
-        <div>商品总价：</div>
-        <div class="money">￥{{ orderPrice.total_price }}</div>
+        <div>鍟嗗搧鎬讳环锛�</div>
+        <div class="money">锟{ orderPrice.total_price }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.give_rate !== undefined &&orderPrice.give_rate>0"
       >
-        <div>购物积分抵扣：</div>
-        <div class="money">￥{{ orderPrice.give_rate }}</div>
+        <div>璐墿绉垎鎶垫墸锛�</div>
+        <div class="money">锟{ orderPrice.give_rate }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.pay_paypoint !== undefined &&orderPrice.pay_paypoint>0"
       >
-        <div>消费积分抵扣：</div>
-        <div class="money">￥{{ orderPrice.pay_paypoint }}</div>
+        <div>娑堣垂绉垎鎶垫墸锛�</div>
+        <div class="money">锟{ orderPrice.pay_paypoint }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.pay_repeatpoint !== undefined &&orderPrice.pay_repeatpoint>0"
       >
-        <div>重消积分抵扣：</div>
-        <div class="money">￥{{ orderPrice.pay_repeatpoint }}</div>
+        <div>閲嶆秷绉垎鎶垫墸锛�</div>
+        <div class="money">锟{ orderPrice.pay_repeatpoint }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.give_point !== undefined &&orderPrice.give_point>0"
       >
-        <div>赠送购物积分：</div>
-        <div class="money">￥{{ orderPrice.give_point }}</div>
+        <div>璧犻�佽喘鐗╃Н鍒嗭細</div>
+        <div class="money">锟{ orderPrice.give_point }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.pay_point !== undefined &&orderPrice.pay_point>0"
       >
-        <div>赠送消费积分：</div>
-        <div class="money">￥{{ orderPrice.pay_point }}</div>
+        <div>璧犻�佹秷璐圭Н鍒嗭細</div>
+        <div class="money">锟{ orderPrice.pay_point }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.pay_postage > 0"
       >
-        <div>运费：</div>
-        <div class="money">+￥{{ orderPrice.pay_postage }}</div>
+        <div>杩愯垂锛�</div>
+        <div class="money">+锟{ orderPrice.pay_postage }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.coupon_price > 0"
       >
-        <div>优惠券抵扣：</div>
-        <div class="money">-￥{{ orderPrice.coupon_price }}</div>
+        <div>浼樻儬鍒告姷鎵ｏ細</div>
+        <div class="money">-锟{ orderPrice.coupon_price }}</div>
       </div>
       <div
         class="item acea-row row-between-wrapper"
         v-if="orderPrice.deduction_price > 0"
       >
-        <div>积分抵扣：</div>
-        <div class="money">-￥{{ orderPrice.deduction_price }}</div>
+        <div>绉垎鎶垫墸锛�</div>
+        <div class="money">-锟{ orderPrice.deduction_price }}</div>
       </div>
     </div>
 
     <div style="height:1.2rem"></div>
     <div class="footer acea-row row-between-wrapper">
       <div>
-        合计:
-        <span class="font-color-red">￥{{ orderPrice.pay_price }}</span>
+        鍚堣:
+        <span class="font-color-red">锟{ orderPrice.pay_price }}</span>
       </div>
-      <div class="settlement" @click="createOrder">立即结算</div>
+      <div class="settlement" @click="createOrder">绔嬪嵆缁撶畻</div>
     </div>
     <CouponListWindow
       v-on:couponchange="changecoupon($event)"
@@ -360,7 +360,7 @@
 .order-submission .allAddress .nav .item.on:before {
   position: absolute;
   bottom: 0;
-  content: "快递配送";
+  content: "蹇�掗厤閫�";
   font-size: 0.28rem;
   display: block;
   height: 0;
@@ -374,7 +374,7 @@
   line-height: 0.8rem;
 }
 .order-submission .allAddress .nav .item:nth-of-type(2).on:before {
-  content: "到店自提";
+  content: "鍒板簵鑷彁";
   border-width: 0 0 0.8rem 0.2rem;
   border-radius: 0.3rem 0.07rem 0 0;
 }
@@ -384,7 +384,7 @@
 .order-submission .allAddress .nav .item.on2:before {
   position: absolute;
   bottom: 0;
-  content: "到店自提";
+  content: "鍒板簵鑷彁";
   font-size: 0.28rem;
   display: block;
   height: 0;
@@ -397,7 +397,7 @@
   line-height: 0.6rem;
 }
 .order-submission .allAddress .nav .item:nth-of-type(1).on2:before {
-  content: "快递配送";
+  content: "蹇�掗厤閫�";
   border-width: 0 0.6rem 0.6rem 0;
   border-radius: 0.06rem 0.4rem 0 0;
 }
@@ -468,7 +468,7 @@ export default {
       useIntegral: true,
       useCoupon: true,
       orderPrice: {
-        pay_price: "计算中"
+        pay_price: "璁＄畻涓�"
       },
       mark: "",
       system_store: {},
@@ -508,11 +508,11 @@ export default {
       that.cartid = that.$route.params.id;
   },
   methods: {
-    // 获取门店列表数据
+    // 鑾峰彇闂ㄥ簵鍒楄〃鏁版嵁
     getList: function() {
       let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
+        latitude: cookie.get(LATITUDE) || "", //绾害
+        longitude: cookie.get(LONGITUDE) || "", //缁忓害
         page: 1,
         limit: 10
       };
@@ -524,7 +524,7 @@ export default {
           this.$dialog.error(err.msg);
         });
     },
-    // 跳转到门店列表
+    // 璺宠浆鍒伴棬搴楀垪琛�
     showStoreList() {
       this.$store.commit("GET_TO", "orders");
       this.$router.push("/shop/storeList/orders");
@@ -533,6 +533,7 @@ export default {
       getUser()
         .then(res => {
           this.userInfo = res.data;
+          console.log(this.userInfo);
           this.contacts = this.userInfo.real_name;
           this.contactsTel =  this.userInfo.phone;
         })
@@ -541,9 +542,9 @@ export default {
    
     addressType: function(index) {
       if (index && !this.system_store.id)
-        return this.$dialog.error("暂无门店信息，您无法选择到店自提！");
+        return this.$dialog.error("鏆傛棤闂ㄥ簵淇℃伅锛屾偍鏃犳硶閫夋嫨鍒板簵鑷彁锛�");
       if (this.isHex == 1 && index!=1)
-        return this.$dialog.error("该商品只能到店自提！");
+        return this.$dialog.error("璇ュ晢鍝佸彧鑳藉埌搴楄嚜鎻愶紒");
         this.shipping_type = index;
     },
     computedPrice() {
@@ -575,7 +576,7 @@ export default {
     getCartInfo() {
       const cartIds = this.$route.params.id;
       if (!cartIds) {
-        this.$dialog.error("参数有误");
+        this.$dialog.error("鍙傛暟鏈夎");
         return this.$router.go(-1);
       }
       postOrderConfirm(cartIds)
@@ -594,7 +595,7 @@ export default {
           this.computedPrice();
         })
         .catch(() => {
-          this.$dialog.error("加载订单数据失败");
+          this.$dialog.error("鍔犺浇璁㈠崟鏁版嵁澶辫触");
         });
     },
     addressTap: function() {
@@ -613,7 +614,7 @@ export default {
     },
     changeCoupon: function(coupon) {
       if (!coupon) {
-        this.usableCoupon = { coupon_title: "不使用优惠券", id: 0 };
+        this.usableCoupon = { coupon_title: "涓嶄娇鐢ㄤ紭鎯犲埜", id: 0 };
       } else {
         this.usableCoupon = coupon;
       }
@@ -629,23 +630,23 @@ export default {
     },
     createOrder() {
       let shipping_type = this.shipping_type;
-      if (!this.active) return this.$dialog.toast({ mes: "请选择支付方式" });
+      if (!this.active) return this.$dialog.toast({ mes: "璇烽�夋嫨鏀粯鏂瑰紡" });
       if (!this.addressInfo.id && !this.shipping_type)
-        return this.$dialog.toast({ mes: "请选择收货地址" });
+        return this.$dialog.toast({ mes: "璇烽�夋嫨鏀惰揣鍦板潃" });
       if (this.shipping_type) {
         if (
           (this.contacts === "" || this.contactsTel === "") &&
           this.shipping_type
         )
-          return this.$dialog.toast({ mes: "请填写联系人或联系人电话" });
+          return this.$dialog.toast({ mes: "璇峰～鍐欒仈绯讳汉鎴栬仈绯讳汉鐢佃瘽" });
         if (!/^1(3|4|5|7|8|9|6)\d{9}$/.test(this.contactsTel)) {
-          return this.$dialog.toast({ mes: "请填写正确的手机号" });
+          return this.$dialog.toast({ mes: "璇峰～鍐欐纭殑鎵嬫満鍙�" });
         }
         if (!/^[\u4e00-\u9fa5\w]{2,16}$/.test(this.contacts)) {
-          return this.$dialog.toast({ mes: "请填写您的真实姓名" });
+          return this.$dialog.toast({ mes: "璇峰～鍐欐偍鐨勭湡瀹炲鍚�" });
         }
       }
-      this.$dialog.loading.open("生成订单中");
+      this.$dialog.loading.open("鐢熸垚璁㈠崟涓�");
       createOrder(this.orderGroupInfo.orderKey, {
         real_name: this.contacts,
         phone: this.contactsTel,
@@ -701,7 +702,7 @@ export default {
         })
         .catch(err => {
           console.log(err);
-          this.$dialog.error(err.msg || "创建订单失败");
+          this.$dialog.error(err.msg || "鍒涘缓璁㈠崟澶辫触");
           this.$dialog.loading.close();
           this.$router.go(-1);
         });
