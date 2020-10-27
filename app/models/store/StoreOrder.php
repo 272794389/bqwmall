@@ -1255,7 +1255,6 @@ class StoreOrder extends BaseModel
         User::bcDec($shop_parent_id, 'now_money', $order['pay_price']*0.8*0.1*$shop_rec/100, 'uid');
         User::bcDec($shop_parent_id, 'repeat_point', $order['pay_price']*0.1*0.1*$shop_rec/100, 'uid');
 
-        
         return "ddd";
         
     }
