@@ -533,6 +533,8 @@ export default {
       getUser()
         .then(res => {
           this.userInfo = res.data;
+          this.contacts = this.userInfo.real_name;
+          this.contactsTel =  this.userInfo.phone;
         })
         .catch(() => {});
     },
