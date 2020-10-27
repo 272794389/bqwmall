@@ -142,7 +142,7 @@
             <input
               type="text"
               placeholder="请填写您的联系姓名"
-              v-model="contacts"
+              v-model="contacts" 
             />
           </div>
         </div>
