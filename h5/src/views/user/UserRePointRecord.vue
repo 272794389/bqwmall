@@ -14,7 +14,7 @@
     <div class="sign-record">
       <div class="list">
         <div class="item" v-for="(item, index) in list" :key="index">
-          <div class="data">{{ item.time }}&nbsp;&nbsp;当前重消积分：{{item.dangqianpaypoint}}&nbsp;&nbsp;重消积分变化：{{item.paypointbianhua}}</div>
+          <div class="data">{{ item.time }}&nbsp;&nbsp;当前重消积分：{{item.dangqianrepeatpoint}}&nbsp;&nbsp;重消积分变化：{{item.dangqianrepeatpoint}}</div>
           <div class="listn" v-for="(val, key) in item.list" :key="key">
             <div class="itemn acea-row row-between-wrapper">
               <div>
