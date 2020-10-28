@@ -14,6 +14,7 @@
      </div>
  </div>
  </div>
+ </div>
 </template>
 <script>
 import {swiperSlide } from "vue-awesome-swiper";

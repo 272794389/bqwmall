@@ -262,7 +262,6 @@ export default {
     //点击按钮之后禁用按钮
     this.isDisable = true
     //处理
-    ......
     //
     setTimeout(() => {
         this.isDisable = false

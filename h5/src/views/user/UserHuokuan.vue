@@ -79,6 +79,10 @@ export default {
           that.now_money = res.data.huokuan;
           that.in_amount = res.data.in_huokuan;
           that.out_amount = res.data.out_huokuan;
+
+          //modify by xinchow at 2020-10-28
+          console.log(res.data);
+
         },
         err => {
           that.$dialog.message(err.msg);

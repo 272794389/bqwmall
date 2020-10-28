@@ -14,7 +14,7 @@
     <div class="sign-record">
       <div class="list">
         <div class="item" v-for="(item, index) in list" :key="index">
-          <div class="data">{{ item.time }}</div>
+          <div class="data">{{ item.time }}&nbsp;&nbsp;当前货款：{{item.dangqianhuokuan}}&nbsp;&nbsp;货款变化：{{item.huokuanbianhua}}</div>
           <div class="listn" v-for="(val, key) in item.list" :key="key">
             <div class="itemn acea-row row-between-wrapper">
               <div>
@@ -22,7 +22,7 @@
                 <div>{{ val.add_time }}</div>
               </div>
               <div class="num" :class="val.huokuan < 0 ? 'font-color-red' : ''">
-                {{ val.huokuan > 0 ? "+" : "" }}{{ val.huokuan }}
+                {{ val.huokuan > 0 ? "+" : "" }}{{ val.huokuan }}&nbsp;积分：{{val.dangqianhuokuan}}
               </div>
             </div>
           </div>
@@ -100,6 +100,29 @@ export default {
           that.loaded = res.data.length < that.where.limit;
           that.where.page = that.where.page + 1;
           that.list.push.apply(that.list, res.data);
+          //modify by xinchow at 2020-10-28
+          let last = 0;
+          let temp = parseFloat(res.data[0].dangqianhuokuan);
+          that.list.forEach((item, index) => {
+            item.list.forEach((item1,index1)=>{
+              console.log(item1,index1);
+              
+              if(index1>0)
+              {
+                temp -= parseFloat(last);
+                item1.dangqianhuokuan = temp.toFixed(2);
+                last = parseFloat(item1.huokuan);
+                last = last.toFixed(2);
+              }
+              else
+              {
+                item1.dangqianhuokuan = parseFloat(temp);
+                last = parseFloat(item1.huokuan);
+                last = last.toFixed(2);
+              }
+
+            });
+          });
         },
         error => {
           that.$dialog.message(error.msg);

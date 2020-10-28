@@ -151,6 +151,7 @@
 		    <div class="morestyle"><router-link :to="{path: '/wgoods_list/'}" >去看更多商品&nbsp;></router-link></div>
 	  </div>
 </div>
+</div>
 </template>
 <script>
 import {swiperSlide } from "vue-awesome-swiper";

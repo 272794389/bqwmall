@@ -1124,7 +1124,7 @@ position:relative;}
 .sign-record .list .item .listn{background-color:#fff;font-size:0.24rem;color:#999;}
 .sign-record .list .item .listn .itemn{height:1.2rem;border-bottom:1px solid #eee;padding-right:0.3rem;margin-left:0.3rem;}
 .sign-record .list .item .listn .itemn .name{width:3.9rem;font-size:0.28rem;color:#282828;margin-bottom:0.06rem;}
-.sign-record .list .item .listn .itemn .num{font-size:0.36rem;font-family: 'GuildfordProBook 5';color:#16ac57;}
+.sign-record .list .item .listn .itemn .num{font-size:0.34rem;font-family: 'GuildfordProBook 5';color:#16ac57;}
 /*申请退货*/
 .apply-return .list{background-color:#fff;margin-top:0.18rem;}
 .apply-return .list .item{margin-left:0.3rem;padding-right:0.3rem;min-height:0.9rem;border-bottom:1px solid #eee;font-size:0.3rem;color:#333;}

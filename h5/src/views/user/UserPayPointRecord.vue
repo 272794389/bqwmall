@@ -14,7 +14,7 @@
     <div class="sign-record">
       <div class="list">
         <div class="item" v-for="(item, index) in list" :key="index">
-          <div class="data">{{ item.time }}</div>
+          <div class="data">{{ item.time }}&nbsp;&nbsp;当前消费积分：{{item.dangqianpaypoint}}&nbsp;&nbsp;消费积分变化：{{item.paypointbianhua}}</div>
           <div class="listn" v-for="(val, key) in item.list" :key="key">
             <div class="itemn acea-row row-between-wrapper">
               <div>
@@ -22,7 +22,7 @@
                 <div>{{ val.add_time }}</div>
               </div>
               <div class="num" :class="val.pay_point < 0 ? 'font-color-red' : ''">
-                {{ val.pay_point > 0 ? "+" : "" }}{{ val.pay_point }}
+                {{ val.pay_point > 0 ? "+" : "" }}{{ val.pay_point }}&nbsp;积分：{{val.dangqianpaypoint}}
               </div>
             </div>
           </div>
@@ -100,6 +100,29 @@ export default {
           that.loaded = res.data.length < that.where.limit;
           that.where.page = that.where.page + 1;
           that.list.push.apply(that.list, res.data);
+          //
+          let last = 0;
+          let temp = parseFloat(res.data[0].dangqianpaypoint);
+          that.list.forEach((item, index) => {
+            item.list.forEach((item1,index1)=>{
+              console.log(item1,index1);
+              
+              if(index1>0)
+              {
+                temp -= parseFloat(last);
+                item1.dangqianpaypoint = temp.toFixed(2);
+                last = parseFloat(item1.pay_point);
+                last = last.toFixed(2);
+              }
+              else
+              {
+                item1.dangqianpaypoint = parseFloat(temp);
+                last = parseFloat(item1.pay_point);
+                last = last.toFixed(2);
+              }
+
+            });
+          });
         },
         error => {
           that.$dialog.message(error.msg);

@@ -77,7 +77,7 @@
       <div class="item acea-row row-between-wrapper">
         <div>真实姓名</div>
         <div class="input acea-row row-between-wrapper">
-          <input type="text" :value="real_name" v-model="real_name"  class="id" />
+          <input type="text"  v-model="real_name"  class="id" />
         </div>
       </div>
       <div v-if="!userInfo.phone">

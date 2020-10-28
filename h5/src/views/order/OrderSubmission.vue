@@ -533,9 +533,9 @@ export default {
       getUser()
         .then(res => {
           this.userInfo = res.data;
-          console.log(this.userInfo);
-          this.contacts = this.userInfo.real_name;
-          this.contactsTel =  this.userInfo.phone;
+         /* console.log(this.userInfo);
+          this.contacts = this.userInfo.real_name || this.userInfo.nickname;
+          this.contactsTel =  this.userInfo.phone;*/
         })
         .catch(() => {});
     },
@@ -593,6 +593,8 @@ export default {
             this.shipping_type =1;
           }
           this.computedPrice();
+          this.contacts = this.addressInfo.real_name ;
+         // this.contactsTel =  this.userInfo.phone;
         })
         .catch(() => {
           this.$dialog.error("加载订单数据失败");

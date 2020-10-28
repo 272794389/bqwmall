@@ -5,6 +5,7 @@
        <div class="shop_amount"><span style="font-size:0.7rem; color:#000">￥</span><input type="text" placeholder="" v-model="amount" /></div>
        <div class="pay_btn" @click="confirm" type="text">立即付款</div>
     </div>
+  </div>
 </template>
 <script>
 import { mapGetters } from "vuex";

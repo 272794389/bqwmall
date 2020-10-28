@@ -193,6 +193,7 @@
 	  <div class="foot3">© 2017-2020 佰仟万电商平台 版权所有，并保留所有权利。</div>
 	</div>		  
   </div>
+  </div>
 	  
 </template>
 
