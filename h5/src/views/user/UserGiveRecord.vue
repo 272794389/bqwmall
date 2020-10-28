@@ -22,7 +22,7 @@
                 <div>{{ val.add_time }}</div>
               </div>
               <div class="num" :class="val.give_point < 0 ? 'font-color-red' : ''">
-                {{ val.give_point > 0 ? "+" : "" }}{{ val.give_point }}&nbsp;余额：{{val.dangqiangive}}
+                {{ val.give_point > 0 ? "+" : "" }}{{ val.give_point }}&nbsp;积分：{{val.dangqiangive}}
               </div>
             </div>
           </div>

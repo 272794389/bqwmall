@@ -22,7 +22,7 @@
                 <div>{{ val.add_time }}</div>
               </div>
               <div class="num" :class="val.huokuan < 0 ? 'font-color-red' : ''">
-                {{ val.huokuan > 0 ? "+" : "" }}{{ val.huokuan }}&nbsp;积分：{{val.dangqianhuokuan}}
+                {{ val.huokuan > 0 ? "+" : "" }}{{ val.huokuan }}&nbsp;货款：{{val.dangqianhuokuan}}
               </div>
             </div>
           </div>
