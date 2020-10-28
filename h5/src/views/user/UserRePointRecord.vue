@@ -123,6 +123,7 @@ export default {
 
             });
           });
+          console.log(res.data);
         },
         error => {
           that.$dialog.message(error.msg);

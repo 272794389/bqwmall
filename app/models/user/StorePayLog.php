@@ -221,7 +221,7 @@ class StorePayLog extends BaseModel
         foreach ($list as $item) {
             $value['time'] = $item['time'];
             $value['repeatpointbianhua'] = $item['repeatpointbianhua'];
-            $value['dangqianreapeatpoint'] = $repeatpoint;
+            $value['dangqianrepeatpoint'] = $repeatpoint;
             $value['list'] = self::where('id', 'in', $item['ids'])->field('FROM_UNIXTIME(add_time,"%Y-%m-%d %H:%i") as add_time,mark,repeat_point')->order('add_time DESC')->select();
             array_push($data, $value);
         }
