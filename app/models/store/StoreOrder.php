@@ -1245,16 +1245,16 @@ class StoreOrder extends BaseModel
         $second_uid = $second_user['spread_uid'];
         
         $now_money = Db::name('user')->where('uid','=',$first_uid)->find();
-        User::bcDec($first_uid, 'now_money', $order['pay_price']*0.8*0.1*$first_rec/100, 'uid');
-        User::bcDec($second_uid, 'now_money', $order['pay_price']*0.8*0.1*$second_rec/100, 'uid');
+        User::bcDec($first_uid, 'now_money', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$first_rec/100), 0, -1)), 'uid');
+        User::bcDec($second_uid, 'now_money', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$second_rec/100), 0, -1)), 'uid');
         //推荐人重消积分
-        User::bcDec($first_uid, 'repeat_point', $order['pay_price']*0.1*0.1*$first_rec/100, 'uid');
-        User::bcDec($second_uid, 'repeat_point', $order['pay_price']*0.1*0.1*$second_rec/100, 'uid');
+        User::bcDec($first_uid, 'repeat_point', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$first_rec/100), 0, -1)), 'uid');
+        User::bcDec($second_uid, 'repeat_point', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$second_rec/100), 0, -1)), 'uid');
         //商家推荐人余额
         $shop_parent_id = $system_store_info['parent_id'];
-        User::bcDec($shop_parent_id, 'now_money', $order['pay_price']*0.8*0.1*$shop_rec/100, 'uid');
-        User::bcDec($shop_parent_id, 'repeat_point', $order['pay_price']*0.1*0.1*$shop_rec/100, 'uid');
-
+        User::bcDec($shop_parent_id, 'now_money', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 'uid');
+        User::bcDec($shop_parent_id, 'repeat_point', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$shop_rec/100), 0, -1)), 'uid');
+        //print_r(sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$second_rec/100), 0, -1)));
         return "ddd";
         
     }
