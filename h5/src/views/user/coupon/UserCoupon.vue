@@ -11,8 +11,10 @@
         </div>
         <div class="text">
           <div class="condition line1">
+            <span class="line-title" :class="'bg-color-check'" v-if="item.is_flag==0">商品消费抵扣劵</span>
             <span class="line-title" :class="'bg-color-check'" v-if="item.is_flag==1">商家消费抵扣劵</span>
-            <span class="line-title" :class="'bg-color-check'" v-else>商品抵扣劵</span>
+            <span class="line-title" :class="'bg-color-check'" v-if="item.is_flag==2">通用抵扣劵</span>
+            <!--<span class="line-title" :class="'bg-color-check'" v-else>商品抵扣劵</span>-->
             <span>{{ item.title }}</span>
           </div>
           <div class="data acea-row row-between-wrapper">

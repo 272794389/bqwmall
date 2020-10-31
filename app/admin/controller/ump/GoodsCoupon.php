@@ -48,7 +48,7 @@ class GoodsCoupon extends AuthController
         $formbuiderfoot[] = Form::number('coupon_time', '有效期限')->min(0);
         $formbuiderfoot[] = Form::number('sort', '排序');
         $formbuiderfoot[] = Form::hidden('type', $data['type']);
-        $formbuiderfoot[] = Form::radio('is_flag', '抵扣券类型', 0)->options([['label' => '商家抵扣券', 'value' => 1], ['label' => '商品抵扣券', 'value' => 0]])->value(1);
+        $formbuiderfoot[] = Form::radio('is_flag', '抵扣券类型', 0)->options([['label' => '商家抵扣券', 'value' => 1], ['label' => '商品抵扣券', 'value' => 0],['label' => '通用抵扣券', 'value' => 2]])->value(1);
         $formbuiderfoot[] = Form::radio('status', '状态', 0)->options([['label' => '开启', 'value' => 1], ['label' => '关闭', 'value' => 0]])->value(1);
         $formbuiders = array_merge($f, $formbuider, $formbuiderfoot);
         $form = Form::make_post_form('添加抵扣券', $formbuiders, Url::buildUrl('save'));
@@ -135,6 +135,25 @@ class GoodsCoupon extends AuthController
             ['title', ''],
             ['is_del', 0],
             ['is_flag', 1],
+        ], $this->request);
+        $nickname = UserModel::where('uid', 'IN', $id)->column('nickname', 'uid');
+        $this->assign('where', $where);
+        $this->assign('uid', $id);
+        $this->assign('nickname', implode(',', $nickname));
+        $this->assign(CouponModel::systemPageCoupon($where));
+        return $this->fetch();
+    }
+    
+    /**
+     * @param $id
+     */
+    public function cgrant($id)
+    {
+        $where = Util::getMore([
+            ['status', ''],
+            ['title', ''],
+            ['is_del', 0],
+            ['is_flag', 2],
         ], $this->request);
         $nickname = UserModel::where('uid', 'IN', $id)->column('nickname', 'uid');
         $this->assign('where', $where);

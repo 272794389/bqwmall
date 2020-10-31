@@ -223,7 +223,6 @@ class StoreOrderController
             $isChannel = 2;
         $order = StoreOrder::cacheKeyCreateOrder($request->uid(), $key, $addressId, $payType, (int)$useIntegral,(int)$useCoupon, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, false, $isChannel, $shipping_type, $real_name, $phone, $storeId);
         if ($order === false) return app('json')->fail(StoreOrder::getErrorInfo('订单生成失败'));
-       
         $orderId = $order['order_id'];
         $info = compact('orderId', 'key');
         if ($orderId) {

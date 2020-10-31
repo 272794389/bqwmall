@@ -28,6 +28,7 @@
                                 <option value="">抵扣券类型</option>
                                 <option value="1" {eq name="where.is_flag" value="1"}selected="selected"{/eq}>商家抵扣券</option>
                                 <option value="0" {eq name="where.is_flag" value="0"}selected="selected"{/eq}>商品抵扣券</option>
+                                <option value="2" {eq name="where.is_flag" value="2"}selected="selected"{/eq}>通用抵扣券</option>
                             </select>
                             <div class="input-group">
                                 <input type="text" name="title" value="{$where.title}" placeholder="请输入抵扣券名称" class="input-sm form-control">
@@ -62,9 +63,11 @@
                                 {$vo.title}
                             </td>
                             <td class="text-center">
-                                {if condition="$vo['is_flag']"}
+                                {if condition="$vo['is_flag']==1"}
                                   商家抵扣券
-                                {else}
+                                {elseif condition="$vo['is_flag']==2"}
+                                通用抵扣券
+                                {elseif  condition="$vo['is_flag']==0"}
                                 商品抵扣券
                                 {/if}
                             </td>

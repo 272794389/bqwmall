@@ -181,7 +181,8 @@ class StoreOrder extends BaseModel
         $ugive_point = $userInfo['give_point'];
         $upay_point = $userInfo['pay_point'];
         $repeat_point = $userInfo['repeat_point'];
-        $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+        //$couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where('is_flag',0)->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
+        $couponMap = GoodsCouponUser::where('uid',$uid)->where('is_fail',0)->where(['is_flag'=>[0,2]])->field('sum(coupon_price) as acoupon_price,sum(hamount) as hamount')->find();
         $mcouponAmount = 0;
         if($couponMap){
             $mcouponAmount = $couponMap['acoupon_price']-$couponMap['hamount'];
@@ -665,7 +666,6 @@ class StoreOrder extends BaseModel
             $cartGroup = self::getCacheOrderInfo($uid, $key);
             if (!$cartGroup) return self::setErrorInfo('订单已过期,请刷新当前页面!', true);
             $cartInfo = $cartGroup['cartInfo'];
-            
             $priceGroup = $cartGroup['priceGroup'];
             $other = $cartGroup['other'];
             $payPrice = (float)$priceGroup['totalPrice'];
@@ -711,6 +711,7 @@ class StoreOrder extends BaseModel
             }
             //使用优惠劵
             $res1 = true;
+            //print_r($couponId);
             if ($couponId) {
                 $couponInfo = StoreCouponUser::validAddressWhere()->where('id', $couponId)->where('uid', $uid)->find();
                 if (!$couponInfo) return self::setErrorInfo('选择的优惠劵无效!', true);
@@ -773,7 +774,6 @@ class StoreOrder extends BaseModel
             }
             if (!$res2) return self::setErrorInfo('使用积分抵扣失败!', true);
             if ($payPrice <= 0) $payPrice = 0;
-           
             if ($test) {
                 self::rollbackTrans();
                 return [
@@ -791,7 +791,6 @@ class StoreOrder extends BaseModel
                     'SurplusIntegral' => $SurplusIntegral,
                 ];
             }
-           
             $orderInfo = [
                 'uid' => $uid,
                 'order_id' => $test ? 0 : self::getNewOrderId(),
@@ -1169,10 +1168,7 @@ class StoreOrder extends BaseModel
             $res1 = false !== User::bcInc($uid, 'repeat_point', $order['pay_repeatpoint'], 'uid');
             $repeat_point = -$order['pay_repeatpoint'];
         }
-        if($res1&&($give_point!=0||$pay_point!=0||$pay_repeatpoint!=0)){
-            
-            $res1 = StorePayLog::expend($uid, $order['id'], 1, 0, 0, $give_point, $pay_point,$pay_repeatpoint,0, '购买商品抵扣');
-        }
+       
         
         //购物积分系统收回
         if($res1&&$order['give_point']>0){
@@ -1182,50 +1178,24 @@ class StoreOrder extends BaseModel
         if($res1&&$order['pay_point']>0){
             $res1 = false !== User::bcDec($uid, 'pay_point', $order['pay_point'], 'uid');
         }
-         
-        if($res1&&($order['give_point']>0||$order['pay_point']>0)){
-            $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回');
-        }
         
         
-        if($order['coupon_price']>0){//如果使用了抵扣券
+        
+        
+        //回退优惠券
+        self::RegressionCoupon($order);
+        //回退抵扣券
+        if($order['coupon_price']>0)
+        {
             $coupon_price = $order['coupon_price'];
-            $couponList = GoodsCouponUser::getCouponList($uid,0);
-            foreach ($couponList as $coupon){
-                $amount = bcadd($coupon['coupon_price'],$coupon['hamount'],2);
-                if($amount>0&&$amount>$coupon_price&&$coupon_price>0){//该次抵扣券足够抵扣
-                    //更改已使用金额
-                    $pamount = bcsub($coupon['hamount'],$coupon_price,2);
-                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $pamount]);
-                    //写入抵扣记录
-                    $couponUse = [
-                        'cid' => $coupon['id'],
-                        'order_id' => $order['order_id'],
-                        'coupon_price' => '-'.$coupon_price,
-                        'add_time' => time(),
-                    ];
-                    $info = GoodsCouponUse::create($couponUse);
-                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
-                    $coupon_price=0;
-                    break;
-                }else if($amount>0&&($amount<$coupon_price||$amount==$coupon_price)){//该次抵扣券不足以抵扣
-                    GoodsCouponUser::where('id',$coupon['id'])->update(['hamount' => $coupon['coupon_price']]);
-                    //写入抵扣记录
-                    $couponUse = [
-                        'cid' => $coupon['id'],
-                        'order_id' => $order['order_id'],
-                        'coupon_price' => $amount,
-                        'add_time' => time(),
-                    ];
-                    $info = GoodsCouponUse::create($couponUse);
-                    if (!$info) return self::setErrorInfo('抵扣券记录写入失败!', true);
-                    $coupon_price=bcadd($coupon_price,$amount,2);
-                }
-                if($coupon_price==0){
-                    break;
-                }
-            }
+            //查询抵扣券ID
+            $coupon_info = GoodsCouponUse::where('order_id',$order['order_id'])->find();
+            $cid = $coupon_info['cid'];
+            $coupon_user_info = GoodsCouponUser::where('id','=',$cid)->find();
+            $pamount = bcsub($coupon_user_info['hamount'],$coupon_price,2);
+            GoodsCouponUser::where('id',$cid)->update(['hamount' => $pamount]);
         }
+
 
         //货款
         
@@ -1254,7 +1224,16 @@ class StoreOrder extends BaseModel
         $shop_parent_id = $system_store_info['parent_id'];
         User::bcDec($shop_parent_id, 'now_money', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 'uid');
         User::bcDec($shop_parent_id, 'repeat_point', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$shop_rec/100), 0, -1)), 'uid');
-        //print_r(sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$second_rec/100), 0, -1)));
+        
+        /*if($res1&&($give_point!=0||$pay_point!=0||$pay_repeatpoint!=0)){
+        
+            $res1 = StorePayLog::expend($uid, $order['id'], 1, 0, 0, $give_point, $pay_point,$pay_repeatpoint,0, '购买商品抵扣1');
+        }*/
+
+        if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
+            $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回1');
+        }
+
         return "ddd";
         
     }

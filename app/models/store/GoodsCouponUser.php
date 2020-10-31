@@ -53,7 +53,7 @@ class GoodsCouponUser extends BaseModel
     {
         self::checkInvalidCoupon();
         $couponList = self::where('uid', $uid)->order('is_fail ASC,add_time DESC')->select()->toArray();
-        
+        //print_r($couponList);
         /*
         if($status==1){//有效可使用
             $couponList = self::where('uid', $uid)->where('is_fail',0)->order('is_fail ASC,add_time DESC')->select()->toArray();
@@ -66,7 +66,8 @@ class GoodsCouponUser extends BaseModel
     
     // 批量获取抵扣券
     public static function getCouponList($uid,$is_flag){
-        $rs =self::where('uid',$uid)->where('is_fail',0)->where('is_flag',$is_flag)->select();
+       // $rs =self::where('uid',$uid)->where('is_fail',0)->where('is_flag','in',$is_flag)->select();
+        $rs =self::where(['uid'=>$uid,'is_fail'=>0,'is_flag'=>[$is_flag,2]])->select();
         return empty($rs) ?[]:$rs->toArray();
     }
     
