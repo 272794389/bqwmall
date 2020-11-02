@@ -1229,9 +1229,10 @@ class StoreOrder extends BaseModel
         
             $res1 = StorePayLog::expend($uid, $order['id'], 1, 0, 0, $give_point, $pay_point,$pay_repeatpoint,0, '购买商品抵扣1');
         }*/
-
+        $huokuan = $order['total_price']*0.8;
+        $use_money = $order['pay_price'];
         if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
-            $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回1');
+            $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回');
         }
 
         return "ddd";
