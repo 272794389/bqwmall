@@ -1231,11 +1231,24 @@ class StoreOrder extends BaseModel
         }*/
         $huokuan = $order['total_price']*0.8;
         $use_money = $order['pay_price'];
+        //消费者余额，消费积分记录
         if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
-            $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款系统收回');
+            $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款');
         }
-
-        return "ddd";
+        //商家推荐人记录
+        $res1 = StorePayLog::expend($shop_parent_id, $order['id'], 1,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 0, 0, 0,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$shop_rec/100), 0, -1)),0, '商品退款');
+        //一代推荐人记录
+        $res1 = StorePayLog::expend($first_uid, $order['id'], 1,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 0, 0, 0,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$first_rec/100), 0, -1)),0, '商品退款');
+        //二代推荐人记录
+        $res1 = StorePayLog::expend($second_uid, $order['id'], 1,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$second_rec/100), 0, -1)), 0, 0, 0,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$second_rec/100), 0, -1)),0, '商品退款');
+        //商家退款
+        $res1 = StorePayLog::expend($user_id, $order['id'], 1,0, '-'.$order['total_price']*0.8, 0, 0,0,0, '商品退款');
+        
+        
+        return $res1;
+        
+        
+        
         
     }
 
