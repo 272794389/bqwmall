@@ -1238,6 +1238,9 @@ class StoreOrder extends BaseModel
                 $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款');
             }
         }
+        if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
+            $res1 = StorePayLog::expend($uid, $order['id'], 1,0, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款');
+        }
         //商家推荐人记录
         $res1 = StorePayLog::expend($shop_parent_id, $order['id'], 1,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 0, 0, 0,'-'.sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$shop_rec/100), 0, -1)),0, '商品退款');
         //一代推荐人记录
