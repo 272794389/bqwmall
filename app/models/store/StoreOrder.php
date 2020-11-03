@@ -1232,7 +1232,7 @@ class StoreOrder extends BaseModel
         $huokuan = $order['total_price']*0.8;
         $use_money = $order['pay_price'];
         //消费者余额，消费积分记录
-        if($order('pay_type')=='yue')
+        if($order['pay_type']=='yue')
         {
             if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
                 $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款');
