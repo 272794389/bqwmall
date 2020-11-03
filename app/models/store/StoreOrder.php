@@ -1235,7 +1235,7 @@ class StoreOrder extends BaseModel
         if($order['pay_type']=='yue')
         {
             if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
-                $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, '-'.$order['give_point'], '-'.$order['pay_point'],0,0, '商品退款');
+                $res1 = StorePayLog::expend($uid, $order['id'], 1,$use_money, 0, 0, 0,0,0, '商品退款');
             }
         }
         if($res1&&($order['give_point']>0||$order['pay_point']>0||$order['pay_point']>0)){
