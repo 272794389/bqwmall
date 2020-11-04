@@ -6,7 +6,7 @@
         <div class="samebox"">
            <div class="font-img" @click="set_where(0)"></div>
            <span @click="set_where(1)" :class="condition==1 ? 'on' : ''">同城</span>
-           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''" style="width:" style="width: 0.9rem;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
+           <span @click="set_where(2)" :class="condition==2 ? 'on' : ''"  style="width: 0.9rem;overflow: hidden;padding-left:0.1rem;padding-right:0.1rem;">{{model2}}</span>
            <CitySelect
               ref="cityselect"
               v-model="show2"
@@ -72,7 +72,7 @@
     </div>
     <Recommend v-if="storeList.length === 0 && where.page > 1"></Recommend>
   </div>
-    </div>
+
     <div>
       <iframe
         v-if="locationShow && !isWeixin"
@@ -160,7 +160,7 @@ export default {
       system_store: {},
       mapKey: cookie.get(MAPKEY),
       locationShow: false,
-      condition: 1,
+      condition: 2,
       model2: "全国",
     };
   },
