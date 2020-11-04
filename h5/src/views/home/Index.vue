@@ -1,5 +1,5 @@
 <template>
-  <div class="index" v-cloak style="background: #F5F5F5;">
+  <div class="index" v-cloak style="background: #FFFFFF;">
   <!--
     <div
       class="follow acea-row row-between-wrapper" v-if="followHid && isWeixin"
@@ -17,7 +17,7 @@
     -->
     <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
-      <router-link :to="'/search'" class="search acea-row row-middle">
+      <router-link :to="'/tsearch'" class="search acea-row row-middle">
         <span class="iconfont icon-xiazai5"></span>搜索商家
       </router-link>
     </div>
@@ -93,6 +93,27 @@
 		   -->
        </swiper>
     </div>
+    <div  id="searchBar" class="specialArea acea-row row-between-wrapper">
+        <div   :class="searchBarFixed == true ? 'isFixed' :''">
+            <div class="nav_box">
+	          <span  class="nav_title_font"  @click="set_where(3)">本地特惠</span>
+	          <span class="nav_desc" :class="'nav_on'">衣食住行></span>
+	        </div>
+	        <div class="nav_box">
+	          <span class="nav_title_font"  @click="set_where(2)">周边的店</span>
+	          <span class="nav_desc" :class="'nav_on'">商家直达></span>
+	        </div>
+	        <div class="nav_box">
+	          <span class="nav_title_font"  @click="set_where(1)">商品中心</span>
+	          <span class="nav_desc" :class="'nav_on'">积分兑换></span>
+	        </div>
+	        <div class="nav_box">
+	          <span class="nav_title_font"  @click="set_where(4)">佰商荟萃</span>
+	          <span class="nav_desc" :class="'nav_on'">精挑细选></span>
+	        </div>
+       </div>
+    </div>
+    <!--
     <div class="wrapper jinpbox" v-if="info.hostList.length > 0">
       <div class="title acea-row row-between-wrapper">
         <div class="text">
@@ -123,31 +144,12 @@
         </swiper>
       </div>
      </div>
-     <div  id="searchBar" class="specialArea acea-row row-between-wrapper">
-        <div   :class="searchBarFixed == true ? 'isFixed' :''">
-            <div class="nav_box">
-	          <span  :class="condition==3 ? 'nav_title_font' : 'nav_title'"  @click="set_where(3)">本地特惠</span>
-	          <span class="nav_desc" :class="condition==3 ? 'nav_on' : ''">衣食住行</span>
-	        </div>
-	        <div class="nav_box">
-	          <span :class="condition==2 ? 'nav_title_font' : 'nav_title'"  @click="set_where(2)">周边的店</span>
-	          <span class="nav_desc" :class="condition==2 ? 'nav_on' : ''">商家直达</span>
-	        </div>
-	        <div class="nav_box">
-	          <span :class="condition==1 ? 'nav_title_font' : 'nav_title'"  @click="set_where(1)">商品中心</span>
-	          <span class="nav_desc" :class="condition==1 ? 'nav_on' : ''">积分兑换</span>
-	        </div>
-	        <div class="nav_box">
-	          <span :class="condition==4 ? 'nav_title_font' : 'nav_title'"  @click="set_where(4)">佰商荟萃</span>
-	          <span class="nav_desc" :class="condition==4 ? 'nav_on' : ''">精挑细选</span>
-	        </div>
-       </div>
-    </div>
+     -->
     <div v-if="condition==3">
 	    <div class="wrapper" v-if="nearGoodList.length>0">
 		      <div class="productList" ref="container">
 		         <div class="list acea-row row-between-wrapper" :class="on" ref="container" style="margin-top:0px;">
-				      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" class="item" :title="item.store_name">
+				      <div @click="goDetail(item)" v-for="(item, index) in nearGoodList" :key="index" style="border:1px solid #eee;" class="item" :title="item.store_name">
 					        <div class="pictrue">
 					          <img :src="item.image"/> 
 					        </div>
@@ -295,7 +297,7 @@ import ShopGoodList from "@components/ShopGoodList";
 import PromotionGood from "@components/PromotionGood";
 import CouponWindow from "@components/CouponWindow";
 import Reta from "@components/Star";
-import { getHomeData, getShare, follow,goodListApi,getNearStoreData } from "@api/public";
+import { getHomeData, getShare, follow,goodIndexListApi,getNearStoreData } from "@api/public";
 import cookie from "@utils/store/cookie";
 import { openShareAll, wxShowLocation } from "@libs/wechat";
 import { isWeixin, cdnZipImg } from "@utils/index";
@@ -334,6 +336,8 @@ export default {
       article: {},
       storeList: [],
       nearGoodList: [],
+      lat:"",
+      lang:"",
       info: {
         fastList: [],
         bastList: [],
@@ -421,7 +425,7 @@ export default {
     this.getFollow();
     let that = this;
     this.getWXLocation();
-    window.addEventListener('scroll', this.handleScroll);
+    //window.addEventListener('scroll', this.handleScroll);
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
       cookie.set(MAPKEY, that.mapKey);
@@ -467,7 +471,20 @@ export default {
     //点击事件处理
     set_where: function(index) {
       let that = this;
-      that.condition = index;
+      //that.condition = index;
+      if(index==3){//本地特惠
+       this.$router.push({
+          path:"/hui"});
+      }else if(index==2){//周边的店
+       this.$router.push({
+          path:"/store"});
+      }else if(index==1){//商品中心
+       this.$router.push({
+          path:"/shopcenter"});
+      }else if(index==4){//网店中心
+       this.$router.push({
+          path:"/netcenter"});
+      }
     },
     // 商品详情跳转
     goDetail(item) {
@@ -525,28 +542,31 @@ export default {
           false
         );
       }
+      this.lat = cookie.get(LATITUDE);
+      this.lang = cookie.get(LONGITUDE);
     },
    
      // 获取门店列表数据
     getList: function() {
-       if (!cookie.get(LATITUDE) && !cookie.get(LONGITUDE)){
+       if (!this.lat && !this.lang){
           getNearStoreData().then(res => {
            this.$set(this, "storeList", res.data.storeList);
            this.$set(this, "nearGoodList", res.data.nearGoodList);
           });
        }else{
 	      let data = {
-	        latitude: cookie.get(LATITUDE) || "", //纬度
-	        longitude: cookie.get(LONGITUDE) || "", //经度
+	        latitude: this.lat, //纬度
+	        longitude: this.lang, //经度
 	        page: 1,
 	        limit: 10
 	      };
+	      /*
 	      storeListApi(data).then(res => {
 	          this.storeList.push.apply(this.storeList, res.data.list);
 	        }).catch(err => {
 	          this.$dialog.error(err.msg);
-	        });
-	       goodListApi(data).then(res => {
+	        });*/
+	       goodIndexListApi(data).then(res => {
               this.nearGoodList.push.apply(this.nearGoodList, res.data.list);
            }) .catch(err => {
                this.$dialog.error(err.msg);
@@ -670,5 +690,15 @@ export default {
     bottom: 50%;
     margin-bottom: -.05rem;
     border-right-color: #fff;
+}
+.productList .list .item .text {
+    padding: 0.2rem 0.0rem 0.26rem 0.17rem;
+    font-size: 0.3rem;
+    color: #222;
+    text-align: left;
+}
+.index .specialArea {
+    padding: 0rem;
+    margin-bottom: 0.1rem;
 }
 </style>
