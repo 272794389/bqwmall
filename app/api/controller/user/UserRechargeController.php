@@ -8,6 +8,8 @@ use app\models\store\GoodsCouponUser;
 use app\models\user\User;
 use app\models\user\WechatUser;
 use app\models\user\StorePayLog;
+use app\models\store\GoodsCouponUse;
+
 use crmeb\basic\BaseModel;
 use app\Request;
 use crmeb\services\GroupDataService;
@@ -126,13 +128,20 @@ class UserRechargeController
             return app('json')->fail('退款金额不能大于支付金额!!');
         }
         
+        //modify by xinchow at 2020-11-4
+        if($price>$orderinfo['pay_amount'])
+        {
+            return app('json')->fail('退款金额不能大于实际支付金额!!');
+        }
+        
         $data['refund_status']=1;
         $data['refund_amount']=$price;
         $data['refund_uid']= $request->uid();;
         
         $payamount = $orderinfo['total_amount']-$price;//本次消费金额
         //计算实际应退还金额
-        $refund_price = $orderinfo['pay_amount']-$payamount;
+        //$refund_price = $orderinfo['pay_amount']-$payamount;
+        $refund_price = $orderinfo['pay_amount'];
         $refund_data['pay_price'] = $orderinfo['pay_amount'];
         $refund_data['refund_price'] = $refund_price;
         if ($orderinfo['pay_type'] == 'weixin') {
@@ -149,6 +158,18 @@ class UserRechargeController
             $res = $res1 && $res2;
             BaseModel::checkTrans($res);
             if (!$res) return Json::fail('余额退款失败!');
+        }
+        //modify by xinchow at  2020-11-4
+
+        if($orderinfo['coupon_amount']>0)
+        {
+            $coupon_price = $orderinfo['coupon_amount'];
+            //查询抵扣券ID
+            $coupon_info = GoodsCouponUse::where('order_id',$orderinfo['order_id'])->find();
+            $cid = $coupon_info['cid'];
+            $coupon_user_info = GoodsCouponUser::where('id','=',$cid)->find();
+            $pamount = bcsub($coupon_user_info['hamount'],$coupon_price,2);
+            GoodsCouponUser::where('id',$cid)->update(['hamount' => $pamount]);
         }
         
         //处理积分、奖励、货款退回
