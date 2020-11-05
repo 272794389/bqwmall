@@ -160,14 +160,6 @@ export function storeListApi(data) {
   return request.get("store_list", data, { login: false });
 }
 
-/**
- * 门店列表
- */
-export function storeIndexListApi(data) {
-  return request.get("store_index_list", data, { login: false });
-}
-
-
 /*
  * 商家消费
  * */
