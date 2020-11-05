@@ -4,7 +4,7 @@ import toLogin from "@libs/login";
 import { VUE_APP_API_URL } from "@utils/index";
 
 const instance = axios.create({
-  baseURL: 'http://localhost/api',
+  baseURL: VUE_APP_API_URL,
   timeout: 5000
 });
 
