@@ -3217,62 +3217,7 @@ class StoreOrder extends BaseModel
             }
             $item['_info'] = $_info;
             $item['add_time'] = date('Y-m-d H:i:s', $item['add_time']);
-//            if($item['pink_id'] || $item['combination_id']){
-//                $pinkStatus = StorePink::where('order_id_key',$item['id'])->value('status');
-//                switch ($pinkStatus){
-//                    case 1:
-//                        $item['pink_name'] = '[拼团订单]正在进行中';
-//                        $item['color'] = '#f00';
-//                        break;
-//                    case 2:
-//                        $item['pink_name'] = '[拼团订单]已完成';
-//                        $item['color'] = '#00f';
-//                        break;
-//                    case 3:
-//                        $item['pink_name'] = '[拼团订单]未完成';
-//                        $item['color'] = '#f0f';
-//                        break;
-//                    default:
-//                        $item['pink_name'] = '[拼团订单]历史订单';
-//                        $item['color'] = '#457856';
-//                        break;
-//                }
-//            }elseif ($item['seckill_id']){
-//                $item['pink_name'] = '[秒杀订单]';
-//                $item['color'] = '#32c5e9';
-//            }elseif ($item['bargain_id']){
-//                $item['pink_name'] = '[砍价订单]';
-//                $item['color'] = '#12c5e9';
-//            }else{
-//                $item['pink_name'] = '[普通订单]';
-//                $item['color'] = '#895612';
-//            }
-//            if($item['paid']==1){
-//                switch ($item['pay_type']){
-//                    case 'weixin':
-//                        $item['pay_type_name']='微信支付';
-//                        break;
-//                    case 'yue':
-//                        $item['pay_type_name']='余额支付';
-//                        break;
-//                    case 'offline':
-//                        $item['pay_type_name']='线下支付';
-//                        break;
-//                    default:
-//                        $item['pay_type_name']='其他支付';
-//                        break;
-//                }
-//            }else{
-//                switch ($item['pay_type']){
-//                    default:
-//                        $item['pay_type_name']='未支付';
-//                        break;
-//                    case 'offline':
-//                        $item['pay_type_name']='线下支付';
-//                        $item['pay_type_info']=1;
-//                        break;
-//                }
-//            }
+
 
             if ($status) {
                 $status = [];
