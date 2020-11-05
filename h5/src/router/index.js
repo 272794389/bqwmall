@@ -28,6 +28,50 @@ const router = new Router({
       component: Index
     },
     {
+        path: "/hui",
+        name: "HuiIndex",
+        meta: {
+          title: "本地特惠首页",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/home/HuiIndex.vue")
+      },
+    {
+      path: "/store",
+      name: "StoreIndex",
+      meta: {
+        title: "周边的店首页",
+        keepAlive: true,
+        footer: true,
+        backgroundColor: "#fff"
+      },
+      component: () => import("@views/home/StoreIndex.vue")
+    },
+    {
+        path: "/netcenter",
+        name: "NetIndex",
+        meta: {
+          title: "佰商荟萃首页",
+          keepAlive: true,
+          footer: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/home/NetIndex.vue")
+     },
+     {
+         path: "/shopcenter",
+         name: "ShopIndex",
+         meta: {
+           title: "商品中心首页",
+           keepAlive: true,
+           footer: true,
+           backgroundColor: "#fff"
+         },
+         component: () => import("@views/home/ShopIndex.vue")
+     },
+    {
       path: "/customer/chat/:id/:productId?",
       name: "CustomerService",
       meta: {
@@ -108,11 +152,41 @@ const router = new Router({
       path: "/search",
       name: "GoodSearch",
       meta: {
-        title: "搜索商品",
+        title: "搜索商家",
         keepAlive: true,
         backgroundColor: "#fff"
       },
       component: Search
+    },
+    {
+        path: "/tsearch",
+        name: "TGoodSearch",
+        meta: {
+          title: "搜索特惠商品",
+          keepAlive: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/TgoodSearch.vue")
+    },
+    {
+        path: "/nsearch",
+        name: "NGoodSearch",
+        meta: {
+          title: "搜索商品",
+          keepAlive: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/NgoodSearch.vue")
+    },
+    {
+        path: "/psearch",
+        name: "PGoodSearch",
+        meta: {
+          title: "搜索商品",
+          keepAlive: true,
+          backgroundColor: "#fff"
+        },
+        component: () => import("@views/shop/PgoodSearch.vue")
     },
     {
       path: "/news_detail/:id",

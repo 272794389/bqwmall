@@ -277,8 +277,13 @@ Route::group(function () {
 
     //同城商品列表
     Route::get('tgoods_list', 'PublicController/tgoods_list')->name('tgoodsList');
+    Route::get('txgoods_list', 'PublicController/txgoods_list')->name('txgoodsList');
+    
+    Route::get('thgoods_list', 'PublicController/thgoods_list')->name('thgoodsList');
+    
     //门店列表
     Route::get('store_list', 'PublicController/store_list')->name('storeList');
+    Route::get('store_index_list', 'PublicController/store_index_list')->name('storeIndexList');
     //获取城市列表
     Route::get('city_list', 'PublicController/city_list')->name('cityList');
    // Route::get('product/detail/:id/[:type]', 'store.StoreProductController/detail')->name('detail');//产品详情

@@ -843,7 +843,7 @@
                                     <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
                                         <div class="grid-demo grid-demo-bg1">
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label">热卖单品</label>
+                                                <label class="layui-form-label">首页推荐</label>
                                                 <div class="layui-input-block">
                                                     <input type="radio" name="is_hot" lay-filter="is_hot" value="1" title="开启"
                                                            :checked="formData.is_hot == 1 ? true : false">

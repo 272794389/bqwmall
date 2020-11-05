@@ -501,6 +501,23 @@ class StoreProduct extends BaseModel
         return self::setLevelPrice($list, $uid);
     }
     
+    public static function getProductIndexListByBelong($limit = 0, $uid = 0,$belong_t=0, bool $bool = true)
+    {
+    	if (!$limit && !$bool) return [];
+    	$model = self::where('is_del', 0)
+    	->where('stock', '>', 0)->where('is_best', 1)->where('is_show', 1)->where('belong_t',$belong_t)->field("id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point")
+    	->order('sales DESC, id DESC');
+    	if ($limit) $model->limit($limit);
+    	$list = $model->select();
+    	$list = count($list) ? $list->toArray() : [];
+    	if (!empty($list)) {
+    		foreach ($list as $k => $v) {
+    			$list[$k]['activity'] = self::activity($v['id']);
+    		}
+    	}
+    	return self::setLevelPrice($list, $uid);
+    }
+    
     public static function getNetList($limit = 0,$uid = 0)
     {
         if (!$limit && !$bool) return [];
@@ -516,6 +533,23 @@ class StoreProduct extends BaseModel
             }
         }
         return self::setLevelPrice($list, $uid);
+    }
+    
+    public static function getNetIndexList($limit = 0,$uid = 0)
+    {
+    	if (!$limit && !$bool) return [];
+    	$model = self::where('is_del', 0)
+    	->where('stock', '>', 0)->where('is_hot','<>', 2)->where('is_show', 1)->where('belong_t',1)->field("id,image,store_name,cate_id,price,ot_price,IFNULL(sales,0) + IFNULL(ficti,0) as sales,unit_name,pay_amount,pay_paypoint,pay_repeatpoint,give_rate,give_point,pay_point")
+    	->order('sort DESC');
+    	if ($limit) $model->limit($limit);
+    	$list = $model->select();
+    	$list = count($list) ? $list->toArray() : [];
+    	if (!empty($list)) {
+    		foreach ($list as $k => $v) {
+    			$list[$k]['activity'] = self::activity($v['id']);
+    		}
+    	}
+    	return self::setLevelPrice($list, $uid);
     }
     
     /**
@@ -545,6 +579,66 @@ class StoreProduct extends BaseModel
         if ($limit) $model->page($page, $limit);
         $list = $model->select();
         return $list;
+    }
+    
+    
+    /**
+     * 同城商品列表
+     * @return mixed
+     */
+    public static function xlst($latitude, $longitude,$mapkay, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder)
+    {
+    	if($latitude){
+    		$crr = self::getCity($longitude, $latitude,$mapkay);
+    		$city = $crr['result']['address_component']['city'];
+    		$district = $crr['result']['address_component']['district'];
+    	}else{
+    		$city='';
+    		$district ='';
+    	}
+    
+    	$baseOrder = '';
+    	if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+    
+    	if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+    
+    	$baseOrder = 'sort desc,id desc';
+    	$model = self::getXProductWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
+    	->order($baseOrder);
+    	 
+    	if ($limit) $model->page($page, $limit);
+    	$list = $model->select();
+    	return $list;
+    }
+    
+    
+    /**
+     * 同城商品推荐列表
+     * @return mixed
+     */
+    public static function hlst($latitude, $longitude,$mapkay, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder)
+    {
+    	if($latitude){
+    		$crr = self::getCity($longitude, $latitude,$mapkay);
+    		$city = $crr['result']['address_component']['city'];
+    		$district = $crr['result']['address_component']['district'];
+    	}else{
+    		$city='';
+    		$district ='';
+    	}
+    
+    	$baseOrder = '';
+    	if ($salesOrder) $baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+    
+    	if ($priceOrder) $baseOrder = $priceOrder == 'desc' ? 'price DESC' : 'price ASC';
+    
+    	$baseOrder = 'sort desc,id desc';
+    	$model = self::getProductHWhere($city,$district,$sid,$cid,$keyword, self::alias('a')->join('system_store r', 'r.id=a.store_id', 'LEFT'), 'a.', 'r')->field('a.*')
+    	->order($baseOrder);
+    	 
+    	if ($limit) $model->page($page, $limit);
+    	$list = $model->select();
+    	return $list;
     }
     
     /**
@@ -594,6 +688,50 @@ class StoreProduct extends BaseModel
         return $model;
     }
     
+    public static function getXProductWhere($city,$district,$sId,$cid,$keyword,$model, $aler = '', $join = '')
+    {
+    	$model = $model->where($aler.'is_del', 0)->where($aler.'is_hot', 1)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
+    	if($city){
+    		$model = $model->where($join . '.city', 'LIKE', "%$city%");
+    		$model = $model->where($join . '.district', 'LIKE', "%$district%");
+    	}
+    	if ($cid) {
+    		$model->whereIn($aler.'id', function ($query) use ($cid) {
+    			$query->name('store_product_cate')->where('cate_id', $cid)->field('product_id')->select();
+    		});
+    	} elseif ($sId) {
+    		$model->whereIn($aler.'id', function ($query) use ($sId) {
+    			$query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+    				$q->name('store_category')->where('pid', $sId)->field('id')->select();
+    			})->field('product_id')->select();
+    		});
+    	}
+    	if (!empty($keyword)) $model->where($aler.'store_name', 'LIKE', htmlspecialchars("%$keyword%"));
+    	return $model;
+    }
+    
+    public static function getProductHWhere($city,$district,$sId,$cid,$keyword,$model, $aler = '', $join = '')
+    {
+    	$model = $model->where($aler.'is_del', 0)->where($aler.'is_best', 1)->where($aler.'stock', '>', 0)->where($aler.'is_show', 1)->where($aler.'belong_t',2);
+    	if($city){
+    		$model = $model->where($join . '.city', 'LIKE', "%$city%");
+    		$model = $model->where($join . '.district', 'LIKE', "%$district%");
+    	}
+    	if ($cid) {
+    		$model->whereIn($aler.'id', function ($query) use ($cid) {
+    			$query->name('store_product_cate')->where('cate_id', $cid)->field('product_id')->select();
+    		});
+    	} elseif ($sId) {
+    		$model->whereIn($aler.'id', function ($query) use ($sId) {
+    			$query->name('store_product_cate')->whereIn('cate_id', function ($q) use ($sId) {
+    				$q->name('store_category')->where('pid', $sId)->field('id')->select();
+    			})->field('product_id')->select();
+    		});
+    	}
+    	if (!empty($keyword)) $model->where($aler.'store_name', 'LIKE', htmlspecialchars("%$keyword%"));
+    	return $model;
+    }
+    
     
     
     
@@ -625,7 +763,7 @@ class StoreProduct extends BaseModel
     public static function getBestProduct($field = '*', $limit = 0, $uid = 0, bool $bool = true)
     {
         if (!$limit && !$bool) return [];
-        $model = self::where('is_best', 1)->where('is_del', 0)->where('mer_id', 0)
+        $model = self::where('is_hot', 1)->where('is_del', 0)->where('mer_id', 0)
         ->where('stock', '>', 0)->where('is_show', 1)->field($field)
         ->order('sort DESC, id DESC');
         if ($limit) $model->limit($limit);

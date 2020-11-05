@@ -41,6 +41,10 @@ class PublicController
     public function index(Request $request)
     {
         $banner = sys_data('routine_home_banner') ?: [];//TODO 首页banner图
+        $hbanner = sys_data('routine_hui_home_banner') ?: [];//TODO 本地特惠首页banner图
+        $sbanner = sys_data('routine_store_home_banner') ?: [];//TODO 周边的店首页banner图
+        $nbanner = sys_data('routine_net_home_banner') ?: [];//TODO 网店首页banner图
+        $pbanner = sys_data('routine_shop_home_banner') ?: [];//TODO 商品中心首页banner图
         $activity = sys_data('routine_home_activity', 3) ?: [];//TODO 首页活动区域图片
         $site_name = sys_config('site_name');
         $routine_index_page = sys_data('routine_index_page');
@@ -59,8 +63,8 @@ class PublicController
         $info['tfastList'] = StoreCategory::getIndexList(20, 10,false);//TODO 分类个数
         $info['ffastList'] = StoreCategory::getIndexList(30, 10,false);//TODO 分类个数
         
-        $info['bastList'] = StoreProduct::getProductListByBelong((int)$bastNumber, $request->uid(),0, false);//TODO 商品中心产品列表
-        $info['netGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),1, false);//TODO 网店商品列表
+        $info['bastList'] = StoreProduct::getProductIndexListByBelong(20, $request->uid(),0, false);//TODO 商品中心产品列表
+        $info['netGoodList'] = StoreProduct::getProductIndexListByBelong(20, $request->uid(),1, false);//TODO 网店商品列表
         $info['nearGoodList'] = StoreProduct::getProductListByBelong((int)$firstNumber, $request->uid(),2, false);//TODO 吃喝玩乐商品列表
         $info['hostList'] = StoreProduct::getBestProduct('*',(int)$firstNumber, $request->uid(),false);
         
@@ -70,13 +74,13 @@ class PublicController
         $newGoodsBananr = sys_config('new_goods_bananr');
         $tengxun_map_key = sys_config('tengxun_map_key');
         $article = Article::getArticleNotice(1);
-        return app('json')->successful(compact('banner', 'info', 'activity',  'logoUrl', 'couponList', 'site_name', 'subscribe', 'newGoodsBananr', 'tengxun_map_key','article'));
+        return app('json')->successful(compact('banner','hbanner','sbanner','nbanner','pbanner', 'info', 'activity',  'logoUrl', 'couponList', 'site_name', 'subscribe', 'newGoodsBananr', 'tengxun_map_key','article'));
     }
     
     public function getNearStoreData(Request $request)
     {
         $storeList = SystemStore::netlst(1, 10,0,0,'','desc','','');
-        $nearGoodList = StoreProduct::getNetList(10,$request->uid());
+        $nearGoodList = StoreProduct::getNetIndexList(10,$request->uid());
         return app('json')->successful(compact('storeList','nearGoodList'));
     }
     
@@ -298,6 +302,33 @@ class PublicController
     
     
     /**
+     * 门店列表
+     * @return mixed
+     */
+    public function store_index_list(Request $request)
+    {
+    	list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition,$city,$district) = UtilService::getMore([
+    			['latitude', ''],
+    			['longitude', ''],
+    			['page', 1],
+    			['limit', 15],
+    			['sid', 0],
+    			['cid', 0],
+    			['keyword', ''],
+    			['salesOrder', ''],
+    			['condition', 1],
+    			['city', ''],
+    			['district', '']
+    	], $request, true);
+    	$list = SystemStore::indexlst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition);
+    	if (!$list) $list = [];
+    	$data['list'] = $list;
+    	$data['tengxun_map_key'] = sys_config('tengxun_map_key');
+    	return app('json')->successful($data);
+    }
+    
+    
+    /**
      * 同城商品列表
      * @return mixed
      */
@@ -319,6 +350,57 @@ class PublicController
         $data['list'] = $list;
         $data['tengxun_map_key'] = sys_config('tengxun_map_key');
         return app('json')->successful($data);
+    }
+    
+    /**
+     * 首页显示
+     * @return mixed
+     */
+    public function txgoods_list(Request $request)
+    {
+    	list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder) = UtilService::getMore([
+    			['latitude', ''],
+    			['longitude', ''],
+    			['page', 1],
+    			['limit', 10],
+    			['sid', 0],
+    			['cid', 0],
+    			['keyword', ''],
+    			['salesOrder', ''],
+    			['priceOrder', '']
+    	], $request, true);
+    	$list = StoreProduct::xlst($latitude, $longitude,sys_config('tengxun_map_key'), $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder);
+    	if (!$list) $list = [];
+    	$data['list'] = $list;
+    	$data['tengxun_map_key'] = sys_config('tengxun_map_key');
+    	return app('json')->successful($data);
+    }
+    
+    
+    
+    
+    /**
+     * 同城商品推荐列表
+     * @return mixed
+     */
+    public function thgoods_list(Request $request)
+    {
+    	list($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder) = UtilService::getMore([
+    			['latitude', ''],
+    			['longitude', ''],
+    			['page', 1],
+    			['limit', 20],
+    			['sid', 0],
+    			['cid', 0],
+    			['keyword', ''],
+    			['salesOrder', ''],
+    			['priceOrder', '']
+    	], $request, true);
+    	$list = StoreProduct::hlst($latitude, $longitude,sys_config('tengxun_map_key'), $page, $limit,$sid,$cid,$keyword,$salesOrder,$priceOrder);
+    	if (!$list) $list = [];
+    	$data['list'] = $list;
+    	$data['tengxun_map_key'] = sys_config('tengxun_map_key');
+    	return app('json')->successful($data);
     }
     
 

@@ -17,10 +17,25 @@ export function getNearStoreData() {
 }
 
 /**
+ * 同城推荐商品
+ */
+export function goodHuiListApi(data) {
+  return request.get("thgoods_list", data, { login: false });
+}
+
+/**
  * 同城商品
  */
 export function goodListApi(data) {
   return request.get("tgoods_list", data, { login: false });
+}
+
+
+/**
+ * 同城商品
+ */
+export function goodIndexListApi(data) {
+  return request.get("txgoods_list", data, { login: false });
 }
 
 /**

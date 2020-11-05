@@ -226,6 +226,71 @@ class SystemStore extends BaseModel
     }
     
     /**
+     * 同城门店列表
+     * @return mixed
+     */
+    public static function indexlst($latitude, $longitude, $page, $limit,$sid,$cid,$keyword,$salesOrder,$condition)
+    {
+    	$model = new self();
+    	$model = $model->where('is_del', 0);
+    	$model = $model->where('is_show',1);
+    	$model = $model->where('is_tui',1);
+    	$model = $model->where('status', 1);
+    	$model = $model->where('belong_t', 2);
+    	if($cid>0){
+    		$model = $model->where('cat_id',$cid);
+    	}
+    	if($sid>0){//大分类
+    		$model->whereIn('cat_id', function ($query) use ($sid) {
+    			$query->name('store_category')->where('pid', $sid)->field('id')->select();
+    		});
+    	}
+    	if (!empty($keyword)){
+    		$sql = [];
+    		$sql[] = '(`mer_name` LIKE "%' . $keyword . '%"  OR `introduction` LIKE "%' . $keyword . '%")';
+    		$model = $model->where(implode(' OR ', $sql));
+    		//$model->where('mer_name', 'LIKE', htmlspecialchars("%$keyword%"));
+    	}
+    	$baseOrder = '';
+    	if ($salesOrder) {
+    		$baseOrder = $salesOrder == 'desc' ? 'sales DESC' : 'sales ASC';
+    	}else{
+    		$baseOrder = $salesOrder == 'id DESC';
+    	}
+    	 
+    	if ($latitude && $longitude) {
+    		if($condition==1){//默认50km
+    			$model = $model->where(self::getDistance($latitude, $longitude,50.1));
+    		}else if($condition==2){
+    			$model = $model->where(self::getDistance($latitude, $longitude,1.1));
+    		}else if($condition==3){
+    			$model = $model->where(self::getDistance($latitude, $longitude,5.1));
+    		}else if($condition==4){
+    			$model = $model->where(self::getDistance($latitude, $longitude,10.1));
+    		}else if($condition==5){
+    			$model = $model->where(self::getDistance($latitude, $longitude,20.1));
+    		}
+    		// $model = $model->where(self::getDistance($latitude, $longitude));
+    		$model = $model->field(['*', self::distanceSql($latitude, $longitude)])->order($baseOrder . 'distance asc');
+    	}
+    	$list = $model->page((int)$page, (int)$limit)
+    	->select()
+    	->hidden(['is_show', 'is_del'])
+    	->toArray();
+    	 
+    	foreach ($list as &$value) {
+    		if ($latitude && $longitude) {
+    			//计算距离
+    			$value['distance'] = sqrt((pow((($latitude - $value['latitude']) * 111000), 2)) + (pow((($longitude - $value['longitude']) * 111000), 2)));
+    			//转换单位
+    			$value['range'] = bcdiv($value['distance'], 1000, 1);
+    		}
+    		$value['cate_name'] = StoreCategory::where('id',$value['cat_id'])->value('cate_name');
+    	}
+    	return $list;
+    }
+    
+    /**
      * 网店列表
      * @return mixed
      */

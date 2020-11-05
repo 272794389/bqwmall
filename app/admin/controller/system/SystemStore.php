@@ -266,6 +266,23 @@ class SystemStore extends AuthController
             return JsonService::fail($status == 1 ? '审核失败' : '设置待审核失败');
         }
     }
+    
+    /**
+     * 设置单个门店是否推荐
+     * @param string $is_show
+     * @param string $id
+     * @return json
+     */
+    public function set_tui($status = '', $id = '')
+    {
+    	($status == '' || $id == '') && JsonService::fail('缺少参数');
+    	$res = SystemStoreModel::where(['id' => $id])->update(['is_tui' => (int)$status]);
+    	if ($res) {
+    		return JsonService::successful('设置成功');
+    	} else {
+    		return JsonService::fail('设置失败');
+    	}
+    }
 
     /**
      * 位置选择

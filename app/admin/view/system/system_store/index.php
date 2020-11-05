@@ -96,6 +96,10 @@
                         <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='status'
                                lay-text='通过|待审核' {{ d.status== 1 ? 'checked' : '' }}>
                     </script>
+                    <script type="text/html" id="checkboxstatustui">
+                        <input type='checkbox' name='id' lay-skin='switch' value="{{d.id}}" lay-filter='is_tui'
+                               lay-text='推荐|不推荐' {{ d.is_tui== 1 ? 'checked' : '' }}>
+                    </script>
                     <script type="text/html" id="act">
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='edit'>
                             编辑商家
@@ -136,7 +140,6 @@
             {field: 'link_name', title: '商家联系人', templet: '#link_name', width: '8%'},
             {field: 'parent_id', title: '商家推荐人', width: '6%',templet:'#parent_id'},
             {field: 'name', title: '门店名称', width: '8%'},
-            {field: 'phone', title: '门店电话', width: '6%'},
             {field: 'address', title: '地址', templet: '#address',width: '12%'},
             {field: 'belong_t', title: '商户类型', templet: '#belong_t', width: '4%'},
             {field: 'sett_rate', title: '分成比例%', width: '4%'},
@@ -144,6 +147,7 @@
             {field: 'day_time', title: '营业时间', width: '10%'},
             // {field: 'valid_time', title: '核销有效日期', width: '11%'},
             {field: 'status', title: '状态', templet: "#checkboxstatus", width: '6%'},
+            {field: 'is_tui', title: '推荐', templet: "#checkboxstatustui", width: '6%'},
             {field: 'right', title: '操作', align: 'center', toolbar: '#act', width: '10%'},
         ];
     });
@@ -173,6 +177,30 @@
             layList.baseGet(layList.Url({
                 c: 'system.system_store',
                 a: 'set_status',
+                p: {status: 0, id: value}
+            }), function (res) {
+                layList.msg(res.msg, function () {
+                    layList.reload();
+                });
+            });
+        }
+    });
+    //是否推荐
+    layList.switch('is_tui', function (odj, value) {
+        if (odj.elem.checked == true) {
+            layList.baseGet(layList.Url({
+                c: 'system.system_store',
+                a: 'set_tui',
+                p: {status: 1, id: value}
+            }), function (res) {
+                layList.msg(res.msg, function () {
+                    layList.reload();
+                });
+            });
+        } else {
+            layList.baseGet(layList.Url({
+                c: 'system.system_store',
+                a: 'set_tui',
                 p: {status: 0, id: value}
             }), function (res) {
                 layList.msg(res.msg, function () {
