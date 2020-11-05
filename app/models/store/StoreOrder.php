@@ -1178,10 +1178,7 @@ class StoreOrder extends BaseModel
         if($res1&&$order['pay_point']>0){
             $res1 = false !== User::bcDec($uid, 'pay_point', $order['pay_point'], 'uid');
         }
-        
-        
-        
-        
+
         //回退优惠券
         self::RegressionCoupon($order);
         //回退抵扣券
