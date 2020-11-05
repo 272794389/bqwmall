@@ -1222,10 +1222,7 @@ class StoreOrder extends BaseModel
         User::bcDec($shop_parent_id, 'now_money', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.8*0.1*$shop_rec/100), 0, -1)), 'uid');
         User::bcDec($shop_parent_id, 'repeat_point', sprintf("%.2f",substr(sprintf("%.3f", $order['pay_price']*0.1*0.1*$shop_rec/100), 0, -1)), 'uid');
         
-        /*if($res1&&($give_point!=0||$pay_point!=0||$pay_repeatpoint!=0)){
-        
-            $res1 = StorePayLog::expend($uid, $order['id'], 1, 0, 0, $give_point, $pay_point,$pay_repeatpoint,0, '购买商品抵扣1');
-        }*/
+
         $huokuan = $order['total_price']*0.8;
         $use_money = $order['pay_price'];
         //消费者余额，消费积分记录
