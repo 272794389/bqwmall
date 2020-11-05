@@ -3377,30 +3377,7 @@ class StoreOrder extends BaseModel
                     $item['status_name'] = '已完成';
                 }
             }
-//            unset($item['refund_status']);
-//            else if($item['paid']==1 && $item['refund_status']==1){
-//                $item['status_name']=<<<HTML
-//<b style="color:#f124c7">申请退款</b><br/>
-//<span>退款原因：{$item['refund_reason_wap']}</span>
-//HTML;
-//            }else if($item['paid']==1 && $item['refund_status']==2){
-//                $item['status_name']='已退款';
-//            }
-//            if($item['paid']==0 && $item['status']==0 && $item['refund_status']==0){
-//                $item['_status']=1;
-//            }else if($item['paid']==1 && $item['status']==0 && $item['refund_status']==0){
-//                $item['_status']=2;
-//            }else if($item['paid']==1 && $item['refund_status']==1){
-//                $item['_status']=3;
-//            }else if($item['paid']==1 && $item['status']==1 && $item['refund_status']==0){
-//                $item['_status']=4;
-//            }else if($item['paid']==1 && $item['status']==2 && $item['refund_status']==0){
-//                $item['_status']=5;
-//            }else if($item['paid']==1 && $item['status']==3 && $item['refund_status']==0){
-//                $item['_status']=6;
-//            }else if($item['paid']==1 && $item['refund_status']==2){
-//                $item['_status']=7;
-//            }
+
         }
         return $data;
     }
