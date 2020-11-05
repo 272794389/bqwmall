@@ -18,7 +18,7 @@
     <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/tsearch'" class="search acea-row row-middle">
-        <span class="iconfont icon-xiazai5"></span>搜索商家
+        <span class="iconfont icon-xiazai5"></span>搜索特惠商品
       </router-link>
     </div>
     <div class="slider-banner banner">
@@ -145,6 +145,11 @@
       </div>
      </div>
      -->
+    <div class="title acea-row row-between-wrapper" style="width:96%;margin-left:3%;margin-top:0.3rem;">
+        <div class="text">
+          <div class="name line1 blabel">精品推荐</div>
+        </div>
+    </div>
     <div v-if="condition==3">
 	    <div class="wrapper" v-if="nearGoodList.length>0">
 		      <div class="productList" ref="container">
@@ -558,7 +563,7 @@ export default {
 	        latitude: this.lat, //纬度
 	        longitude: this.lang, //经度
 	        page: 1,
-	        limit: 10
+	        limit: 30
 	      };
 	      /*
 	      storeListApi(data).then(res => {
@@ -700,5 +705,12 @@ export default {
 .index .specialArea {
     padding: 0rem;
     margin-bottom: 0.1rem;
+}
+.title .text .name {
+    color: #282828;
+    font-size: .3rem;
+    font-weight: 700;
+    margin-bottom: .05rem;
+    position: relative;
 }
 </style>

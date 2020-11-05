@@ -32,7 +32,7 @@ export default {
           name: "分类",
           icon1: "icon-yingyongchengxu-xianxing",
           icon2: "icon-yingyongchengxu",
-          url: "/spcategory"
+          url: "/category"
         },
         {
           name: "购物车",
