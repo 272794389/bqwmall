@@ -18,7 +18,7 @@
     <div class="header acea-row row-center-wrapper" style="background:#fff;">
       <div class="logo" style="width: 2rem;margin-right: 0.15rem;"><img :src="logoUrl" /></div>
       <router-link :to="'/tsearch'" class="search acea-row row-middle">
-        <span class="iconfont icon-xiazai5"></span>搜索特惠商品
+        <span class="iconfont icon-xiazai5"></span>搜索商家
       </router-link>
     </div>
     <div class="slider-banner banner">
@@ -96,19 +96,19 @@
     <div  id="searchBar" class="specialArea acea-row row-between-wrapper">
         <div   :class="searchBarFixed == true ? 'isFixed' :''">
             <div class="nav_box">
-	          <span  class="nav_title"  @click="set_where(3)">本地特惠</span>
+	          <span  class="nav_title_font"  @click="set_where(3)">本地特惠</span>
 	          <span class="nav_desc" :class="'nav_on'">衣食住行></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title"  @click="set_where(2)">周边的店</span>
+	          <span class="nav_title_font"  @click="set_where(2)">周边的店</span>
 	          <span class="nav_desc" :class="'nav_on'">商家直达></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title"  @click="set_where(1)">商品中心</span>
+	          <span class="nav_title_font"  @click="set_where(1)">商品中心</span>
 	          <span class="nav_desc" :class="'nav_on'">积分兑换></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title"  @click="set_where(4)">佰商荟萃</span>
+	          <span class="nav_title_font"  @click="set_where(4)">佰商荟萃</span>
 	          <span class="nav_desc" :class="'nav_on'">精挑细选></span>
 	        </div>
        </div>
@@ -145,11 +145,6 @@
       </div>
      </div>
      -->
-    <div class="title acea-row row-between-wrapper" style="width:96%;margin-left:3%;margin-top:0.3rem;">
-        <div class="text">
-          <div class="name line1 blabel">精品推荐</div>
-        </div>
-    </div>
     <div v-if="condition==3">
 	    <div class="wrapper" v-if="nearGoodList.length>0">
 		      <div class="productList" ref="container">
@@ -563,7 +558,7 @@ export default {
 	        latitude: this.lat, //纬度
 	        longitude: this.lang, //经度
 	        page: 1,
-	        limit: 30
+	        limit: 10
 	      };
 	      /*
 	      storeListApi(data).then(res => {
@@ -705,12 +700,5 @@ export default {
 .index .specialArea {
     padding: 0rem;
     margin-bottom: 0.1rem;
-}
-.title .text .name {
-    color: #282828;
-    font-size: .3rem;
-    font-weight: 700;
-    margin-bottom: .05rem;
-    position: relative;
 }
 </style>
