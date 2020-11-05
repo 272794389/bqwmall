@@ -431,7 +431,7 @@ export default {
     this.getFollow();
     let that = this;
     this.getWXLocation();
-    //window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('scroll', this.handleScroll);
     getHomeData().then(res => {
       that.mapKey = res.data.tengxun_map_key;
       cookie.set(MAPKEY, that.mapKey);

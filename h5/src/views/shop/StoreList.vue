@@ -160,8 +160,10 @@ export default {
       system_store: {},
       mapKey: cookie.get(MAPKEY),
       locationShow: false,
-      condition: 2,
+      condition: 1,
       model2: "全国",
+      lat:"",
+      lang:"",
     };
   },
   watch: {
@@ -256,6 +258,8 @@ export default {
         );
         // this.$refs.geoPage.contentWindow.postMessage("getLocation", "*");
       }
+      this.lat = cookie.get(LATITUDE);
+      this.lang = cookie.get(LONGITUDE);
     },
     showMaoLocation(e) {
       this.system_store = e;
@@ -324,9 +328,6 @@ export default {
           this.loading = false;
           this.loaded = res.data.list.length < this.where.limit;
           this.storeList.push.apply(this.storeList, res.data.list);
-          
-          
-          
           this.where.page = this.where.page + 1;
         }).catch(err => {
           this.$dialog.error(err.msg);
@@ -369,8 +370,8 @@ export default {
       } else if (that.stock === 2) {
         that.where.salesOrder = "desc";
       }
-      that.where.latitude = cookie.get(LATITUDE) || "";
-      that.where.longitude = cookie.get(LONGITUDE) || "";
+      that.where.latitude = this.lat;
+      that.where.longitude = this.lang;
       that.where.condition = that.condition;
     },
   }

@@ -130,7 +130,7 @@
       
       
       <div class="store-info" v-if="system_store.id !== undefined && storeSelfMention">
-      <div class="title" style="padding-left:0.3rem;">商家信息</div>
+      <div class="title" style="padding-left:0.3rem;">商家信息<span @click="goDetail(system_store.id)" style="float: right;margin-right: 0.2rem;color: #f00;">进入店铺<span class="iconfont icon-jiantou"></span></span></div>
          
       <div class="info acea-row row-between-wrapper">
       <div class="pictrue"><img :src="system_store.image" /></div>
