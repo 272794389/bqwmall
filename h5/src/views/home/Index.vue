@@ -96,19 +96,19 @@
     <div  id="searchBar" class="specialArea acea-row row-between-wrapper">
         <div   :class="searchBarFixed == true ? 'isFixed' :''">
             <div class="nav_box">
-	          <span  class="nav_title_font"  @click="set_where(3)">本地特惠</span>
+	          <span  class="nav_title"  @click="set_where(3)">本地特惠</span>
 	          <span class="nav_desc" :class="'nav_on'">衣食住行></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title_font"  @click="set_where(2)">周边的店</span>
+	          <span class="nav_title"  @click="set_where(2)">周边的店</span>
 	          <span class="nav_desc" :class="'nav_on'">商家直达></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title_font"  @click="set_where(1)">商品中心</span>
+	          <span class="nav_title"  @click="set_where(1)">商品中心</span>
 	          <span class="nav_desc" :class="'nav_on'">积分兑换></span>
 	        </div>
 	        <div class="nav_box">
-	          <span class="nav_title_font"  @click="set_where(4)">佰商荟萃</span>
+	          <span class="nav_title"  @click="set_where(4)">佰商荟萃</span>
 	          <span class="nav_desc" :class="'nav_on'">精挑细选></span>
 	        </div>
        </div>
