@@ -294,6 +294,15 @@ const router = new Router({
         component: () => import("@views/shop/ShopPay.vue")
     },
     {
+        path: "/showCetification/:id",
+        name: "ShowCetification",
+        meta: {
+          title: "商家证照",
+          keepAlive: false
+        },
+        component: () => import("@views/shop/ShowCetification.vue")
+    },
+    {
         path: "/shopset/:id",
         name: "ShopSet",
         meta: {

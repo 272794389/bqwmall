@@ -8,7 +8,7 @@
     <div class="superior" id="title2">
       <div class="store-name">{{ storeInfo.name }}</div>
       <div style="width: 100%;line-height: 0.8rem;color: #282828;">
-                    {{storeInfo.cate_name}} &nbsp;|&nbsp;{{ storeInfo.sales }}人消费过 </div>
+                    {{storeInfo.cate_name}} &nbsp;|&nbsp;{{ storeInfo.sales }}人消费过&nbsp; |&nbsp;<span @click="showImg(storeInfo)">查看证照</span></div>
       
       <product-con-swiper :img-urls="storeInfo.slider_image"></product-con-swiper>
       <div class="storeBox-box" style="background: #fff;">
@@ -269,6 +269,9 @@ export default {
     },
     goPay(item) {
         this.$router.push({ path: "/shoppay/" + item.id });
+    },
+    showImg(item) {
+        this.$router.push({ path: "/showCetification/" + item.id });
     },
     selfLocation() {
       if (isWeixin()) {
