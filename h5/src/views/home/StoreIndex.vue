@@ -332,7 +332,6 @@ export default {
       this.lat = cookie.get(LATITUDE);
       this.lang = cookie.get(LONGITUDE);
     },
-   
      // 获取门店列表数据
     getList: function() {
        if (!this.lat && !this.lang){
