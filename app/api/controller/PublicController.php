@@ -362,7 +362,7 @@ class PublicController
     			['latitude', ''],
     			['longitude', ''],
     			['page', 1],
-    			['limit', 10],
+    			['limit', 30],
     			['sid', 0],
     			['cid', 0],
     			['keyword', ''],
