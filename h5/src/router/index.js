@@ -316,7 +316,8 @@ const router = new Router({
         name: "StoreList",
         meta: {
           title: "门店列表",
-          keepAlive: false
+          keepAlive: false,
+          footer: true
         },
         component: () => import("@views/shop/StoreList.vue")
       },
@@ -336,7 +337,8 @@ const router = new Router({
       name: "GoodsList",
       meta: {
         title: "商品列表",
-        keepAlive: true
+        keepAlive: true,
+        footer: true
       },
       component: GoodsList
     },
@@ -354,7 +356,8 @@ const router = new Router({
       name: "WGoodsList",
       meta: {
         title: "网店商品列表",
-        keepAlive: true
+        keepAlive: true,
+        footer: true
       },
       component: () => import("@views/shop/GoodsListNet.vue")
     },
@@ -363,7 +366,8 @@ const router = new Router({
         name: "TGoodsList",
         meta: {
           title: "同城商品列表",
-          keepAlive: true
+          keepAlive: true,
+          footer: true
         },
         component: () => import("@views/shop/GoodsListTong.vue")
      },
