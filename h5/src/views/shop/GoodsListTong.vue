@@ -296,7 +296,7 @@ export default {
       that.get_product_list();
     },
     
-    // 商品详情跳转
+    // 商品详情跳转1
     goDetail(item) {
       if (item.activity && item.activity.type === "1") {
         this.$router.push({
