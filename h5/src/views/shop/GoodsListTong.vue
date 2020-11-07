@@ -170,7 +170,7 @@ export default {
       price: 0,
       stock: 0,
       nows: false,
-      condition: 1,
+      condition: 2,
       model2: "全国"
     };
   },
