@@ -295,6 +295,7 @@ export default {
       
       that.get_product_list();
     },
+    
     // 商品详情跳转
     goDetail(item) {
       if (item.activity && item.activity.type === "1") {
