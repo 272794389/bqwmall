@@ -42,7 +42,13 @@
         <span class="iconfont icon-qiandai"></span>
         <div>推广商家统计</div>
       </router-link>
-      
+      <router-link
+        class="item acea-row row-center-wrapper row-column"
+        :to="'/user/myshoppromoter_list'"
+      >
+        <span class="iconfont icon-paihang"></span>
+        <div>我的服务商家</div>
+      </router-link>
       <!--
       <router-link
         class="item acea-row row-center-wrapper row-column"

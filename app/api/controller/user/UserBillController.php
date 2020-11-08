@@ -6,6 +6,7 @@ use app\admin\model\system\SystemAttachment;
 use app\models\routine\RoutineCode;
 use app\models\routine\RoutineQrcode;
 use app\models\store\StoreOrder;
+use app\models\store\StoreMission as StoreMissionModel;
 use app\models\user\User;
 use app\models\user\UserBill;
 use app\models\user\UserExtract;
@@ -105,6 +106,29 @@ class UserBillController
         return app('json')->successful($data);
     }
     
+    
+    /**
+     * 我的服务商
+     * @param Request $request
+     * @return mixed
+     *
+     *
+     * keyword 会员名称查询
+     *
+     * sort     numberCount ASC/DESC  金额排序  orderCount  ASC/DESC  订单排序
+     */
+    public function spread_myshop(Request $request)
+    {
+    	$spreadInfo = UtilService::postMore([
+    			['page', 1],
+    			['limit', 20],
+    			['keyword', ''],
+    	], $request);
+    	$uid = $request->uid();
+    	$data['list'] = StoreMissionModel::getMyShopSpreadCountList($uid, $spreadInfo['keyword'], $spreadInfo['page'], $spreadInfo['limit']);
+    	$data['total'] = StoreMissionModel::getMySpreadShopCount($uid, $spreadInfo['keyword']);
+    	return app('json')->successful($data);
+    }
     
 
     /**

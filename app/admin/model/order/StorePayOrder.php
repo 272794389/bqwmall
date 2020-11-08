@@ -76,6 +76,24 @@ class StorePayOrder extends BaseModel
         return self::page($model, $where);
     }
     
+    public static function getOrderCounts($store_id,$date,$minAmount,$startTime,$endTime){
+    	$model = new self;
+    	$model = $model->where('store_id',$store_id);
+    	$model = $model->where('total_amount','>',$minAmount);
+    	$model = $model->where('pay_time','>',$startTime);
+    	$model = $model->where('pay_time','<',$endTime);
+    	return $model->count();
+    }
+    
+    public static function getOrderAmount($store_id,$date,$minAmount,$startTime,$endTime){
+    	$model = new self;
+    	$model = $model->where('store_id',$store_id);
+    	$model = $model->where('total_amount','>',$minAmount);
+    	$model = $model->where('pay_time','>',$startTime);
+    	$model = $model->where('pay_time','<',$endTime);
+    	return $model->sum('total_amount');
+    }
+    
     /**
      * @param $where
      * @return array

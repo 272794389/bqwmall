@@ -157,6 +157,7 @@ Route::group(function () {
     Route::get('commission', 'user.UserBillController/commission')->name('commission');//推广数据 昨天的佣金 累计提现金额 当前佣金
     Route::post('spread/people', 'user.UserBillController/spread_people')->name('spreadPeople');//推荐用户
     Route::post('spread/shop', 'user.UserBillController/spread_shop')->name('spreadShop');//推荐用户
+    Route::post('spread/myshop', 'user.UserBillController/spread_myshop')->name('spreadMyShop');//我的服务商
     Route::post('spread/order', 'user.UserBillController/spread_order')->name('spreadOrder');//推广订单
     Route::get('spread/commission/:type', 'user.UserBillController/spread_commission')->name('spreadCommission');//推广佣金明细
     Route::get('spread/count/:type', 'user.UserBillController/spread_count')->name('spreadCount');//推广 佣金 3/提现 4 总和

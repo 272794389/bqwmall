@@ -397,6 +397,18 @@ class User extends BaseModel
         }
         return $list;
     }
+    
+    
+    public static function getUserCounts($parent_id,$startTime,$endTime,$flag){
+    	$model = new self;
+    	$model = $model->where('a.spread_uid',$parent_id);
+    	$model = $model->where('a.add_time','>',$startTime);
+    	$model = $model->where('a.add_time','<',$endTime);
+    	if($flag==1)$model = $model->where('b.subscribe',1);
+    	$model = $model->alias('a');
+    	$model = $model->join('wechat_user b', 'b.uid=a.uid', 'LEFT');
+    	return $model->count();
+    }
 
     /*
      * 获取 相对于上月或者其他的数据

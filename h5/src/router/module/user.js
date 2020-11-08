@@ -184,6 +184,16 @@ export default [
     component: () => import("@views/user/promotion/ShopPromoterList.vue")
   },
   {
+    path: "/user/myshoppromoter_list",
+    name: "MyPromoterList",
+    meta: {
+      title: "我的服务商家",
+      keepAlive: true,
+      auth: true
+    },
+    component: () => import("@views/user/promotion/MyShopPromoterList.vue")
+  },
+  {
     path: "/user/user_promotion",
     name: "UserPromotion",
     meta: {

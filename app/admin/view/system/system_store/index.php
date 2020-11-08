@@ -113,6 +113,9 @@
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='upload'>
                             上传轮播图
                         </button>
+                        <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='setmission'>
+                            设置任务
+                        </button>
                         <button type="button" class="layui-btn layui-btn-xs layui-btn-normal" lay-event='del'>
                             {{# if(d.is_del){ }}
                             恢复商家
@@ -234,6 +237,9 @@
                 break;
             case 'edit':
                 $eb.createModalFrame(data.name + '-编辑', layList.U({a: 'add', q: {id: data.id}}), {h: 700, w: 1100});
+                break;
+            case 'setmission':
+                $eb.createModalFrame(data.name + '-设置任务', layList.U({a: 'setmission', q: {id: data.id}}), {h: 700, w: 1100});
                 break;
             case 'upload':
             	location.href = layList.U({a:'upload',q:{id:data.id}});

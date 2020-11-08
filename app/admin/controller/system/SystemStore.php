@@ -6,6 +6,7 @@ use app\admin\controller\AuthController;
 use app\admin\model\system\SystemStore as SystemStoreModel;
 use app\admin\model\user\User;
 use app\admin\model\system\SystemAttachment;
+use app\admin\model\store\StoreMission as StoreMissionModel;
 use app\admin\model\store\StoreCategory as StroreCateModel;
 use crmeb\services\{
     JsonService, UtilService, JsonService as Json, FormBuilder as Form
@@ -209,6 +210,16 @@ class SystemStore extends AuthController
         $this->assign(compact('store', 'catList'));
         return $this->fetch();
     }
+    
+    
+    public function setmission($id = 0){
+    	$dateTime = date('Y-m',strtotime('now'));
+    	$minfo = StoreMissionModel::getMissionInfo($id,$dateTime);
+    	$minfo['dateTime']=$dateTime;
+    	$store = SystemStoreModel::getStoreDispose($id);
+    	$this->assign(compact('minfo','store'));
+    	return $this->fetch();
+    }
 
     /**
      * 删除恢复门店
@@ -319,6 +330,42 @@ class SystemStore extends AuthController
         $data['storeInfo'] = $storeInfo;
         return JsonService::successful($data);
     }
+    
+    public function insave($id = 0){
+    	$data = UtilService::postMore([
+    			['store_id', 0],
+    			['date', ''],
+    			['ocnt', 0],
+    			['ucnt', 0],
+    			['minAmount', 0],
+    			]);
+    	StoreMissionModel::beginTrans();
+    	try {
+    		if ($id) {
+    			if (StoreMissionModel::where('id', $id)->update($data)) {
+    				StoreMissionModel::commitTrans();
+    				return JsonService::success('修改成功');
+    			} else {
+    				StoreMissionModel::rollbackTrans();
+    				return JsonService::fail('修改失败或者您没有修改什么！');
+    			}
+    		} else {
+    			if ($res = StoreMissionModel::create($data)) {
+    				StoreMissionModel::commitTrans();
+    				return JsonService::success('保存成功', ['id' => $res->id]);
+    			} else {
+    				StoreMissionModel::rollbackTrans();
+    				return JsonService::fail('保存失败！');
+    			}
+    		}
+    	} catch (\Exception $e) {
+    		StoreMissionModel::rollbackTrans();
+    		return JsonService::fail($e->getMessage());
+    	}
+    }
+    
+    
+    
     /**
      * 保存修改门店信息
      * @param int $id

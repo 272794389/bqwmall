@@ -220,6 +220,13 @@ export function getSpreadShop(screen) {
 }
 
 /*
+ * 我的推广商户列表
+ * */
+export function getMySpreadShop(screen) {
+  return request.post("/spread/myshop", screen);
+}
+
+/*
  * 推广人订单
  * */
 export function getSpreadOrder(where) {
