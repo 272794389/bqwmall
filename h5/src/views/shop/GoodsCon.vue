@@ -405,7 +405,8 @@ export default {
       navList: [],
       lock: false,
       navActive: 0,
-      opacity: 0
+      opacity: 0,
+      flag:0
     };
   },
   computed: mapGetters(["isLogin"]),
@@ -938,7 +939,8 @@ export default {
     },
     //立即购买；
     tapBuy: function() {
-      if(this.storeInfo.hex_t>0){
+ 
+      if(this.storeInfo.hex_t>0 && this.flag<1){
        //  1=直接购买
        this.$dialog.confirm({
               mes: "该商品需到店核销使用，不提供配送服务！",
@@ -959,6 +961,7 @@ export default {
                 }
               ]
             });
+            this.flag = 1;
       }else{
          this.goCat(1);
       }
