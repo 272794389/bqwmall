@@ -101,6 +101,8 @@ export default {
           that.where.page = that.where.page + 1;
           that.list.push.apply(that.list, res.data);
           //
+          let tempyue = 0;
+          let temparr = [];
           let last = 0;
           let temp = parseFloat(res.data[0].dangqianrepeatpoint);
           that.list.forEach((item, index) => {
@@ -116,10 +118,24 @@ export default {
               }
               else
               {
-                item1.dangqianrepeatpoint = parseFloat(temp);
-                last = parseFloat(item1.repeat_point);
-                last = last.toFixed(2);
+                if(tempyue>0)
+                {
+                  item1.dangqianrepeatpoint = parseFloat(temparr.dangqianrepeatpoint - temparr.repeat_point).toFixed(2);
+                  last = parseFloat(item1.repeat_point);
+                  last = last.toFixed(2);
+                  temp -=  temparr.repeat_point;
+
+                }
+                else
+                {
+                  item1.dangqianrepeatpoint = parseFloat(temp);
+                  last = parseFloat(item1.repeat_point);
+                  last = last.toFixed(2);
+                }
               }
+
+              tempyue = tempyue + 1 ;
+              temparr = item1;
 
             });
           });
