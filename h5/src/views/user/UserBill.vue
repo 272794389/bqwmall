@@ -97,6 +97,8 @@ export default {
       getPayLog(that.where, that.types).then(
         res => {
           let temp = parseFloat(res.data[0].yue);
+          let tempyue = 0;
+          let temparr = [];
           let last = 0;
           that.loading = false;
           that.loaded = res.data.length < that.where.limit;
@@ -104,10 +106,11 @@ export default {
           that.list.push.apply(that.list, res.data);
           that.list.forEach((item, index) => {
             item.list.forEach((item1,index1)=>{
-              console.log(item1,index1);
-              
+              //console.log(item1,index1);
+
               if(index1>0)
               {
+
                 temp -= parseFloat(last);
                 item1.yue = temp.toFixed(2);
                 last = parseFloat(item1.use_money);
@@ -115,10 +118,27 @@ export default {
               }
               else
               {
-                item1.yue = parseFloat(temp);
-                last = parseFloat(item1.use_money);
-                last = last.toFixed(2);
+                if(tempyue>0)
+                {
+                  item1.yue = parseFloat(temparr.yue - temparr.use_money).toFixed(2);
+                  //item1.yue -=  parseFloat(last);
+                  last = parseFloat(item1.use_money);
+                  last = last.toFixed(2);
+                  temp -=  temparr.use_money;
+                  console.log("----------");
+                  console.log(last);
+                }
+                else
+                {
+                  item1.yue = parseFloat(temp);
+                  last = parseFloat(item1.use_money);
+                  last = last.toFixed(2);
+                }
+
               }
+              tempyue = tempyue + 1 ;
+              temparr = item1;
+              
 
             });
           });
