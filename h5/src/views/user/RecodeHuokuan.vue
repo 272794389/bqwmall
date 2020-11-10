@@ -102,6 +102,8 @@ export default {
           that.list.push.apply(that.list, res.data);
           //modify by xinchow at 2020-10-28
           let last = 0;
+          let tempyue = 0;
+          let temparr = [];
           let temp = parseFloat(res.data[0].dangqianhuokuan);
           that.list.forEach((item, index) => {
             item.list.forEach((item1,index1)=>{
@@ -116,10 +118,23 @@ export default {
               }
               else
               {
-                item1.dangqianhuokuan = parseFloat(temp);
-                last = parseFloat(item1.huokuan);
-                last = last.toFixed(2);
+                if(tempyue>0)
+                {
+                  item1.dangqianhuokuan = parseFloat(temparr.dangqianhuokuan - temparr.huokuan).toFixed(2);
+                  last = parseFloat(item1.huokuan);
+                  last = last.toFixed(2);
+                  temp -=  temparr.huokuan;
+                }
+                else
+                {
+                  item1.dangqianhuokuan = parseFloat(temp);
+                  last = parseFloat(item1.huokuan);
+                  last = last.toFixed(2);
+                }
               }
+
+              tempyue = tempyue + 1 ;
+              temparr = item1;
 
             });
           });
